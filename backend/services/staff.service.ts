@@ -1,17 +1,15 @@
-import StaffRepository from "../repositories/staff.repository";
+import StaffRepository from "../repositories/staff.repo";
 import { CreateStaffDTO } from "../DTOs/createStaff.DTO";
 
 export const StaffService = {
-            getAll: async () => {
-    
-                const items = await StaffRepository.findAll();
-                return items;
-            },
-        
-            getById: async (id: number) => {
-                return await StaffRepository.findById(id);
-            },
-            create : async (data: CreateStaffDTO) => {
-                return await StaffRepository.create(data);
-            },
-}
+    getAll: async () => {
+        const items = await StaffRepository.findAll();
+        return items;
+    },
+    getById: async (id: number) => {
+        return await StaffRepository.findById(id);
+    },
+    create: async (data: CreateStaffDTO) => {
+        return await StaffRepository.create(data);
+    },
+};
