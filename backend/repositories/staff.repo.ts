@@ -1,5 +1,4 @@
-import { Staff } from "../models/staff.model.ts";
-import { IStaff } from "../interfaces/staff.interface.ts";
+import { Staff, IStaff } from "../models/staff.model.ts";
 
 export const StaffRepository = {
     findAll: () => Staff.find(),

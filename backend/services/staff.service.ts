@@ -1,5 +1,5 @@
 import StaffRepository from "../repositories/staff.repo";
-import { IStaff } from "../interfaces/staff.interface";
+import { IStaff } from "../models/staff.model.ts";
 
 export const StaffService = {
     getAll: async () => {
