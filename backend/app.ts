@@ -7,9 +7,11 @@ import logger from "./middleware/logger.ts";
 const app = express();
 const allowedOrigins = process.env.WHITELIST;
 
-app.use(cors({
-    origin: allowedOrigins
-}));
+app.use(
+    cors({
+        origin: allowedOrigins,
+    }),
+);
 
 app.use(express.json());
 
