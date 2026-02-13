@@ -7,7 +7,7 @@ export const appointmentTypes = [
     "passport-lost",
 ] as const;
 
-export interface IAppointment {
+export interface IAppointment extends mongoose.Document {
     type: (typeof appointmentTypes)[number];
     time: string;
 }

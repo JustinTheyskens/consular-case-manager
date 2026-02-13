@@ -2,7 +2,7 @@ import mongoose, { Schema, Types } from "mongoose";
 
 const caseStatusTypes = ["scheduled", "in-review", "approved", "rejected", "completed"] as const;
 
-export interface ICase {
+export interface ICase extends mongoose.Document {
     reference: number;
     status: (typeof caseStatusTypes)[number];
     appointment: Types.ObjectId;
@@ -15,6 +15,7 @@ export interface ICase {
 const caseSchema = new Schema<ICase>({
     reference: {
         required: true,
+        unique: true,
         type: Number,
     },
 
