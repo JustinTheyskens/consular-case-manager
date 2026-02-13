@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const appointmentTypes = [
+export const appointmentTypes = [
     "passport-renewal",
     "passport-first",
     "passport-emergency",
