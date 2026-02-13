@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-export interface ICitizen {
+export interface ICitizen extends mongoose.Document {
     email: string;
     password: string;
     firstName: string;
