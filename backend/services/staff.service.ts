@@ -1,5 +1,5 @@
 import StaffRepository from "../repositories/staff.repo";
-import { CreateStaffDTO } from "../DTOs/createStaff.DTO";
+import { IStaff } from "../interfaces/staff.interface";
 
 export const StaffService = {
     getAll: async () => {
@@ -9,7 +9,7 @@ export const StaffService = {
     getById: async (id: number) => {
         return await StaffRepository.findById(id);
     },
-    create: async (data: CreateStaffDTO) => {
+    create: async (data: IStaff) => {
         return await StaffRepository.create(data);
     },
 };
