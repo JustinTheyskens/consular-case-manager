@@ -1,17 +1,22 @@
 import express from "express";
 import { type Request, type Response } from "express";
-//TODO: CONTROLLER IMPORT
+import citizensController from "../controllers/citizens.controller";
 
 const router = express.Router();
 
 router
     .route("/")
-    .get((req: Request, res: Response) => {})
+    .get((req: Request, res: Response) => {
+        citizensController.getAllCitizens(req, res);
+    })
     .post(async (req: Request, res: Response) => {});
 
 router
     .route("/:id")
-    .get(async (req: Request, res: Response) => {})
+    .get(async (req: Request, res: Response) => {
+        let id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+        citizensController.getCitizenById(req, res, id);
+    })
     .put(async (req: Request, res: Response) => {})
     .delete(async (req: Request, res: Response) => {});
 

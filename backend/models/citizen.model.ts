@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface ICitizen {
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
 }
 
 const citizenSchema = new Schema<ICitizen>({
@@ -15,18 +15,18 @@ const citizenSchema = new Schema<ICitizen>({
 
     password: {
         required: true,
-        type: String
+        type: String,
     },
 
     firstName: {
         required: true,
-        type: String
+        type: String,
     },
 
     lastName: {
         required: true,
-        type: String
-    }
+        type: String,
+    },
 });
 
 export const Citizen = mongoose.model<ICitizen>("Citizen", citizenSchema, "citizens");

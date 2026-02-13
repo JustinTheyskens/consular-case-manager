@@ -1,8 +1,8 @@
-//IMPORT CITIZEN MODEL
+import { Citizen, ICitizen } from "../models/citizen.model";
 
 async function getAllCitizens() {
     let allCitizens;
-    await Citizen.find()
+    Citizen.find()
         .then((res: ICitizen[]) => {
             allCitizens = res;
         })
@@ -15,8 +15,8 @@ async function getAllCitizens() {
 
 async function getCitizenById(id: string) {
     let citizen;
-    await Citizen.findById(id)
-        .then((res: ICitizen) => {
+    Citizen.findById(id)
+        .then((res: ICitizen | null) => {
             citizen = res;
         })
         .catch((error: Error) => {
