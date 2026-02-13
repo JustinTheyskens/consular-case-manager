@@ -7,15 +7,15 @@ const port = process.env.PORT ?? "8080";
 
 //Cases Routes
 import casesRouter from "./routes/cases.routes.ts";
-app.use(casesRouter);
+app.use("/cases", casesRouter);
 
 //Staff Routes
 import staffRouter from "./routes/staff.routes.ts";
-app.use(staffRouter);
+app.use("/staff", staffRouter);
 
 //Citizen Routes
 import citizenRouter from "./routes/citizens.routes.ts";
-app.use(citizenRouter);
+app.use("/citizens", citizenRouter);
 
 await dbConnect();
 
