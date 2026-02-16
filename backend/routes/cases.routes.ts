@@ -1,6 +1,6 @@
 import express from "express";
 import { type Request, type Response } from "express";
-import CaseController, { type CaseParams } from "../controllers/case.controller.ts";
+import CaseController, { type CaseParams } from "../controllers/cases.controller.ts";
 
 const router = express.Router();
 

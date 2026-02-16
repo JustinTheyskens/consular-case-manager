@@ -1,4 +1,4 @@
-import { type ICitizen } from "../models/citizen.model.ts";
+import { type ICitizen } from "../models/citizens.model.ts";
 import citizenRepo from "../repositories/citizens.repository.ts";
 
 async function getAllCitizens() {

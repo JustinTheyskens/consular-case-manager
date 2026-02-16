@@ -1,4 +1,4 @@
-import { type ICitizen } from "../models/citizen.model.ts";
+import { type ICitizen } from "../models/citizens.model.ts";
 import citizenService from "../services/citizens.service.ts";
 import { type Request, type Response } from "express";
 

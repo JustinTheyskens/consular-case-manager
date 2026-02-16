@@ -1,5 +1,5 @@
-import { ICase } from "../models/case.model.ts";
-import CaseRepository from "../repositories/case.repo.ts";
+import { ICase } from "../models/cases.model.ts";
+import CaseRepository from "../repositories/cases.repo.ts";
 
 /**
  * Gets all cases in from the repository
