@@ -1,6 +1,6 @@
 import express from "express";
 import { type Request, type Response } from "express";
-import citizensController from "../controllers/citizens.controller";
+import citizensController from "../controllers/citizens.controller.ts";
 
 const router = express.Router();
 

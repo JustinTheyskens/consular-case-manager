@@ -1,29 +1,21 @@
-import { Citizen, ICitizen } from "../models/citizen.model";
+import { Citizen, type ICitizen } from "../models/citizen.model.ts";
 
 async function getAllCitizens() {
-    let allCitizens;
-    Citizen.find()
-        .then((res: ICitizen[]) => {
-            allCitizens = res;
-        })
-        .catch((error: Error) => {
-            console.log(error);
-            throw new Error("getAllCitizens Repo recieved Error with DB");
-        });
-    return allCitizens;
+    try {
+        return await Citizen.find();
+    } catch (error) {
+        //TODO 500 error
+        console.log(error);
+    }
 }
 
 async function getCitizenById(id: string) {
-    let citizen;
-    Citizen.findById(id)
-        .then((res: ICitizen | null) => {
-            citizen = res;
-        })
-        .catch((error: Error) => {
-            console.log(error);
-            throw new Error("getAllCitizens Repo recieved Error with DB");
-        });
-    return citizen;
+    try {
+        return await Citizen.findById(id);
+    } catch (error) {
+        //TODO 500 error
+        console.log(error);
+    }
 }
 
 export default { getAllCitizens, getCitizenById };
