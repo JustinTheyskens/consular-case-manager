@@ -2,9 +2,11 @@ import mongoose, { Schema, Types } from "mongoose";
 
 const caseStatusTypes = ["scheduled", "in-review", "approved", "rejected", "completed"] as const;
 
+type CaseStatus = (typeof caseStatusTypes)[number];
+
 export interface ICase extends mongoose.Document {
     reference: number;
-    status: (typeof caseStatusTypes)[number];
+    status: CaseStatus;
     appointment: Types.ObjectId;
     assignedStaff: Types.ObjectId;
     citizen: Types.ObjectId;
