@@ -1,18 +1,21 @@
 import express from "express";
 import { type Request, type Response } from "express";
-//TODO: CONTROLLER IMPORT
+import { StaffController } from "../controllers/staff.controller";
 
 const router = express.Router();
 
-router
-    .route("/")
-    .get((req: Request, res: Response) => {})
-    .post(async (req: Request, res: Response) => {});
+router.route("/").get(StaffController.getAll).post(StaffController.create);
 
 router
     .route("/:id")
-    .get(async (req: Request, res: Response) => {})
-    .put(async (req: Request, res: Response) => {})
-    .delete(async (req: Request, res: Response) => {});
+    .get(StaffController.getById)
+    .put(StaffController.update)
+    .delete(StaffController.delete);
+
+/* Prob won't use if everything is in update */
+// router
+//     .patch("/:id/availability/:day",
+//         StaffController.updateAvailabilityDay
+//     );
 
 export default router;
