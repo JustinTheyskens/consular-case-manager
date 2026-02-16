@@ -14,7 +14,7 @@ function findAll() {
  * @return A promise with the populated case file
  */
 function findCaseByRef(ref: number) {
-    return Case.find({ refencence: ref })
+    return Case.findOne({ refencence: ref })
         .populate(["appointment", "assignedStaff", "citizen"])
         .exec();
 }
