@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { appointmentTypes } from "./appointment.model.ts";
+import { type AppointmentType } from "./appointment.model.ts";
 
 /**
  * Represents a period of availability on a given day
@@ -8,7 +8,7 @@ export interface AvailabilityPeriod {
     startTime: string;
     endTime: string;
     capacity: number;
-    allowedAppointments: (typeof appointmentTypes)[number][];
+    allowedAppointments: AppointmentType[];
 }
 
 /**
