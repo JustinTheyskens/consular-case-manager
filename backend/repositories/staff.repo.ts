@@ -1,4 +1,4 @@
-import { Staff, IStaff } from "../models/staff.model.ts";
+import { Staff, IStaff, Availability, AvailabilityPeriod } from "../models/staff.model.ts";
 
 export const StaffRepository = {
     findAll: () => Staff.find(),
@@ -6,6 +6,12 @@ export const StaffRepository = {
     create: (data: IStaff) => Staff.create(data),
     update: (id: number, data: IStaff) => Staff.findByIdAndUpdate(id, data, { new: true }),
     delete: (id: number) => Staff.findByIdAndDelete(id),
+    updateAvailabilityDay: (staffId: number,day: keyof Availability, periods: AvailabilityPeriod[]) => {
+        return Staff.findByIdAndUpdate(staffId,
+            { $set: { [`availability.${day}`]: periods } },
+            { new: true } 
+        );
+    },
 };
 
 export default StaffRepository;
