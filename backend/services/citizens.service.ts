@@ -1,3 +1,4 @@
+import { type ICitizen } from "../models/citizen.model.ts";
 import citizenRepo from "../repositories/citizens.repository.ts";
 
 async function getAllCitizens() {
@@ -8,4 +9,16 @@ async function getCitizenById(id: string) {
     return await citizenRepo.getCitizenById(id);
 }
 
-export default { getAllCitizens, getCitizenById };
+async function createCitizen(newCitizen: ICitizen) {
+    return await citizenRepo.createCitizen(newCitizen);
+}
+
+async function updateCitizen(id: string, updatedCitizen: ICitizen) {
+    return await citizenRepo.updateCitizen(id, updatedCitizen);
+}
+
+async function deleteCitizen(id: string) {
+    return await citizenRepo.deleteCitizen(id);
+}
+
+export default { getAllCitizens, getCitizenById, createCitizen, updateCitizen, deleteCitizen };
