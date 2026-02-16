@@ -12,4 +12,11 @@ export const StaffService = {
     create: async (data: IStaff) => {
         return await StaffRepository.create(data);
     },
+    update: async (id: number, data: IStaff) => {
+        return await StaffRepository.update(id, data);
+    },
+
+    delete: async (id: number) => {
+        return await StaffRepository.delete(id);
+    },
 };
