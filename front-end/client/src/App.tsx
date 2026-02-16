@@ -1,8 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import CssBaseline from "@mui/material/CssBaseline";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-
 export default function App() {
     return (
         <BrowserRouter>
