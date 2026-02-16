@@ -1,4 +1,4 @@
-import { Case, type ICase } from "../models/case.model.ts";
+import { Case, type ICase } from "../models/cases.model.ts";
 
 /**
  * Finds and returns all populated cases files from the database

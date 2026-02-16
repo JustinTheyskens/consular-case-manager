@@ -1,6 +1,6 @@
 import { type Request, type Response } from "express";
-import CaseService from "../services/case.service.ts";
-import { type ICase } from "../models/case.model.ts";
+import CaseService from "../services/cases.service.ts";
+import { type ICase } from "../models/cases.model.ts";
 
 export interface CaseParams {
     ref: string;
