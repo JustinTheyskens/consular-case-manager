@@ -36,7 +36,7 @@ const caseSchema = new Schema<ICase>({
     assignedStaff: {
         required: true,
         type: Types.ObjectId,
-        ref: "AssignedStaff",
+        ref: "Staff",
     },
 
     citizen: {
