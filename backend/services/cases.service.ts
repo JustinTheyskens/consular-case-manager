@@ -1,5 +1,9 @@
 import { type ICase } from "../models/cases.model.ts";
+import { type IAppointment } from "../models/appointments.model.ts";
 import CaseRepository from "../repositories/cases.repo.ts";
+import AppointmentRepository from "../repositories/appointments.repo.ts";
+
+import { startSession } from "mongoose";
 
 /**
  * Gets all cases in from the repository
@@ -24,7 +28,29 @@ async function getCaseByReference(ref: number) {
  * @returns A promise containing the new case file
  */
 async function createCase(data: ICase) {
-    return await CaseRepository.createCase(data);
+    // Begins mongoose transaction for integrity (atomically transfer items)
+    const session = await startSession();
+    let returnValue: ICase | null = null;
+
+    try {
+        await session.withTransaction(async () => {
+            // First creates an appointment
+            const { appointment } = data;
+            const appointmentDetails = appointment as IAppointment; 
+
+            const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
+
+            // Creates a case with the linked appointment
+            returnValue = await CaseRepository.createCase({ ...data, appointment: _id } as ICase); 
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error("Case creation was attempted but was unsuccessful");
+    } finally {
+        await session.endSession();
+        
+        return returnValue;
+    }
 }
 
 /**

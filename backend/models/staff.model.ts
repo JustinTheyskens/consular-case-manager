@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { type AppointmentType } from "./appointment.model.ts";
+import { type AppointmentType } from "./appointments.model.ts";
 
 /**
  * Represents a period of availability on a given day
