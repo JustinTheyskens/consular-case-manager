@@ -46,6 +46,7 @@ async function updateCitizen(req: Request, res: Response, id: string) {
 
 async function deleteCitizen(req: Request, res: Response, id: string) {
     try {
+        await citizenService.deleteCitizen(id);
         res.sendStatus(204);
     } catch (error) {
         console.log("Error getting all citizens.");
