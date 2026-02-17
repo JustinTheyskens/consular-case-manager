@@ -39,8 +39,9 @@ export const StaffController = {
     },
     update: async (req: Request, res: Response) => {
         try {
+            const id = String(req.params.id);
             const updatedStaff: IStaff = req.body;
-            res.status(201).send(await StaffService.create(updatedStaff));
+            res.status(201).send(await StaffService.update(id, updatedStaff));
         } catch (err) {
             return res.status(500).json({ message: (err as Error).message });
         }
