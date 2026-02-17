@@ -1,90 +1,69 @@
 import { StaffService } from "../services/staff.service.ts";
 import { type Request, type Response } from "express";
+import type { IStaff } from "../models/staff.model.ts";
 
 export const StaffController = {
     getAll: async (req: Request, res: Response) => {
-        const staff = StaffService.getAll();
-        res.json(staff);
+        try {
+            res.status(200).send(await StaffService.getAll());
+        } catch (error) {
+            console.log("Error getting all staff.");
+            console.log(error);
+            res.sendStatus(404);
+        }
     },
     getById: async (req: Request, res: Response) => {
         try {
-            const id = Number(req.params.id);
+            const id = String(req.params.id);
 
             console.log("Searching for staff member:", id);
 
-            if (Number.isNaN(id)) {
+            if (!id) {
                 return res.status(400).json({ message: "Invalid staff ID" });
             }
 
-            const staff = await StaffService.getById(id);
-
-            if (!staff) {
-                return res.status(404).json({ message: `No staff member found with ID: ${id}` });
-            }
-
-            return res.status(200).json(staff);
+            res.status(200).send(await StaffService.getById(id));
         } catch (error) {
             res.status(500).json({ message: `Error encountered: ${(error as Error).message}` });
         }
     },
-    create: async(req: Request, res: Response) => {
-        try 
-        {
-            const item = await StaffService.create(req.body);
+    create: async (req: Request, res: Response) => {
+        try {
+            const staff = await StaffService.create(req.body);
+            console.log("CREATE ITEM BODY:", req.body);
 
-            console.log('CREATE ITEM BODY:', req.body)
-
-            return res.status(201).json(item);
-        } 
-        catch (error) 
-        {
-            res.status(400).json({message : `Error encountered: ${(error as Error).message}`});
+            return res.status(201).json(staff);
+        } catch (error) {
+            res.status(400).json({ message: `Error encountered: ${(error as Error).message}` });
         }
     },
     update: async (req: Request, res: Response) => {
         try {
-            const staffId = Number(req.params.id);
-
-            if ("availability" in req.body) {
-                const updated = await StaffService.updateAvailability(
-                    staffId,
-                    req.body.availability
-                );
-
-                return res.status(200).json(updated);
-            }
-
-            const updated = await StaffService.updateInfo(staffId, req.body);
-
-            return res.status(200).json(updated);
+            const updatedStaff: IStaff = req.body;
+            res.status(201).send(await StaffService.create(updatedStaff));
         } catch (err) {
-            return res.status(500).json({message: (err as Error).message,});
+            return res.status(500).json({ message: (err as Error).message });
         }
     },
-    delete: async(req: Request, res: Response) => {
-        try
-        {
-            const id = Number(req.params.id);
-
+    delete: async (req: Request, res: Response) => {
+        try {
+            const id = String(req.params.id);
             console.log("Deleting staff:", id);
 
             await StaffService.delete(id);
 
             return res.status(204).send();
-
+        } catch (error) {
+            res.status(500).json({ message: `Error encountered: ${(error as Error).message}` });
         }
-        catch (error)
-        {
-            res.status(500).json({message : `Error encountered: ${(error as Error).message}`});
-        } 
     },
     updateAvailabilityDay: async (req: Request, res: Response) => {
         try {
-            const staffId = Number(req.params.id);
+            const staffId = String(req.params.id);
             const day = String(req.params.day);
             const periods = req.body; // AvailabilityPeriod[]
 
-            if (Number.isNaN(staffId)) {
+            if (!staffId) {
                 return res.status(400).json({ message: "Invalid staff ID" });
             }
 
@@ -100,6 +79,5 @@ export const StaffController = {
                 message: `Error updating availability: ${(err as Error).message}`,
             });
         }
-    }
-
+    },
 };

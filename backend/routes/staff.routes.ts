@@ -12,10 +12,4 @@ router
     .put(StaffController.update)
     .delete(StaffController.delete);
 
-/* Prob won't use if everything is in update */
-// router
-//     .patch("/:id/availability/:day",
-//         StaffController.updateAvailabilityDay
-//     );
-
 export default router;
