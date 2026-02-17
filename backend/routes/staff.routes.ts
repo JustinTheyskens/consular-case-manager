@@ -1,6 +1,6 @@
 import express from "express";
 import { type Request, type Response } from "express";
-import { StaffController } from "../controllers/staff.controller";
+import { StaffController } from "../controllers/staff.controller.ts";
 
 const router = express.Router();
 
