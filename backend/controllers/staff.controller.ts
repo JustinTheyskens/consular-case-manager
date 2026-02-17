@@ -1,4 +1,4 @@
-import { StaffService } from "../services/staff.service";
+import { StaffService } from "../services/staff.service.ts";
 import { Request, Response } from "express";
 
 export const StaffController = {
