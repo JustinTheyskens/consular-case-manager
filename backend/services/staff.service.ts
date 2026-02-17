@@ -30,23 +30,23 @@ type StaffInfoUpdates = Partial<Pick<IStaff, "firstName" | "lastName" | "email" 
 
 export const StaffService = {
     getAll: async () => {
-        const items = await StaffRepository.findAll();
-        return items;
+        const staff = await StaffRepository.findAll();
+        return staff;
     },
-    getById: async (id: number) => {
+    getById: async (id: String) => {
         return await StaffRepository.findById(id);
     },
     create: async (data: IStaff) => {
         return await StaffRepository.create(data);
     },
-    update: async (id: number, data: IStaff) => {
+    update: async (id: String, data: IStaff) => {
         return await StaffRepository.update(id, data);
     },
-    delete: async (id: number) => {
+    delete: async (id: String) => {
         return await StaffRepository.delete(id);
     },
-    updateInfo: async (staffId: number, updatedStaff: IStaff) => {
-        const staff = await StaffRepository.findById(staffId);
+    updateInfo: async (id: String, updatedStaff: IStaff) => {
+        const staff = await StaffRepository.findById(id);
 
         if (!staff) {
             throw new Error("Staff not found");
@@ -70,28 +70,38 @@ export const StaffService = {
             update.password = updatedStaff.password;
         }
 
-        return StaffRepository.update(staffId, updatedStaff);
-    },
-    updateAvailability: async (staffId: number, updatedStaff: IStaff) => {
-            const staff = await StaffRepository.findById(staffId);
-
-        if (!staff) {
-            throw new Error("Staff not found");
-        }
-
         if (!updatedStaff.availability) {
             throw new Error("No availability provided");
         }
 
-        const update: Record<string, unknown> = {};
+        const updatedAvailabity: Record<string, unknown> = {};
 
         for (const [day, periods] of Object.entries(updatedStaff.availability)) {
-            update[`availability.${day}`] = periods;
+            updatedAvailabity[`availability.${day}`] = periods;
         }
 
-        return StaffRepository.update(staffId, updatedStaff);
+        return StaffRepository.update(id, updatedStaff);
     },
-    updateAvailabilityDay: async (staffId: number, day: string, periods: AvailabilityPeriod[]) => {
+    // updateAvailability: async (staffId: number, updatedStaff: IStaff) => {
+    //         const staff = await StaffRepository.findById(staffId);
+
+    //     if (!staff) {
+    //         throw new Error("Staff not found");
+    //     }
+
+    //     if (!updatedStaff.availability) {
+    //         throw new Error("No availability provided");
+    //     }
+
+    //     const update: Record<string, unknown> = {};
+
+    //     for (const [day, periods] of Object.entries(updatedStaff.availability)) {
+    //         update[`availability.${day}`] = periods;
+    //     }
+
+    //     return StaffRepository.update(staffId, updatedStaff);
+    // },
+    updateAvailabilityDay: async (id: String, day: string, periods: AvailabilityPeriod[]) => {
         if (!VALID_DAYS.includes(day as Day)) {
             throw new Error("Invalid day");
         }
@@ -106,6 +116,6 @@ export const StaffService = {
             throw new Error("Availability periods may not overlap");
         }
 
-        return StaffRepository.updateAvailabilityDay(staffId, day as Day, periods);
+        return StaffRepository.updateAvailabilityDay(id, day as Day, periods);
     },
 };
