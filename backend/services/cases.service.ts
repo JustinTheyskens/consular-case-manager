@@ -1,4 +1,4 @@
-import { ICase } from "../models/cases.model.ts";
+import { type ICase } from "../models/cases.model.ts";
 import CaseRepository from "../repositories/cases.repo.ts";
 
 /**

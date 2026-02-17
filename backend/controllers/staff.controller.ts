@@ -1,5 +1,5 @@
 import { StaffService } from "../services/staff.service.ts";
-import { Request, Response } from "express";
+import { type Request, type Response } from "express";
 
 export const StaffController = {
     getAll: async (req: Request, res: Response) => {

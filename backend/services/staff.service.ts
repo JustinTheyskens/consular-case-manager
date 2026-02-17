@@ -1,5 +1,5 @@
 import StaffRepository from "../repositories/staff.repo.ts";
-import { IStaff, Availability, AvailabilityPeriod } from "../models/staff.model.ts";
+import { type IStaff, type AvailabilityPeriod } from "../models/staff.model.ts";
 
 const VALID_DAYS = [
     "sunday",

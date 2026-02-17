@@ -1,4 +1,4 @@
-import { Staff, IStaff, Availability, AvailabilityPeriod } from "../models/staff.model.ts";
+import { Staff, type IStaff, type Availability, type AvailabilityPeriod } from "../models/staff.model.ts";
 
 export const StaffRepository = {
     findAll: () => Staff.find(),
