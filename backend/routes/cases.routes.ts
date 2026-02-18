@@ -1,12 +1,13 @@
 import express from "express";
 import { type Request, type Response } from "express";
-import CaseController, { type CaseParams } from "../controllers/cases.controller.ts";
+import CaseController, { type CaseParams, type CaseQuery } from "../controllers/cases.controller.ts";
+import { type ICase } from "../models/cases.model.ts";
 
 const router = express.Router();
 
 router
     .route("/")
-    .get(async (req: Request, res: Response) => {
+    .get(async (req: Request<null, ICase[], null, CaseQuery>, res: Response) => {
         CaseController.getAllCases(req, res);
     })
     .post(async (req: Request, res: Response) => {

@@ -6,11 +6,27 @@ import AppointmentRepository from "../repositories/appointments.repo.ts";
 import { startSession } from "mongoose";
 
 /**
- * Gets all cases in from the repository
+ * Gets all cases from the repository
  * @returns A promise containing all case files found
  */
 async function getAll() {
     return await CaseRepository.findAll();
+}
+
+/**
+ * Gets all cases from the repository assigned to the given staff member
+ * @returnsA promise containing all case files found
+ */
+async function getCasesByStaff(staff: string) {
+    return await CaseRepository.findCasesByStaff(staff);
+}
+
+/**
+ * Gets all cases from the repository belonging to the given citizen
+ * @returns A promise containing all case files found
+ */
+async function getCasesByCitizen(citizen: string) {
+    return await CaseRepository.findCasesByCitizen(citizen);
 }
 
 /**
@@ -36,19 +52,19 @@ async function createCase(data: ICase) {
         await session.withTransaction(async () => {
             // First creates an appointment
             const { appointment } = data;
-            const appointmentDetails = appointment as IAppointment; 
+            const appointmentDetails = appointment as IAppointment;
 
             const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
 
             // Creates a case with the linked appointment
-            returnValue = await CaseRepository.createCase({ ...data, appointment: _id } as ICase); 
+            returnValue = await CaseRepository.createCase({ ...data, appointment: _id } as ICase);
         });
     } catch (error) {
         console.error(error);
         throw new Error("Case creation was attempted but was unsuccessful");
     } finally {
         await session.endSession();
-        
+
         return returnValue;
     }
 }
@@ -74,6 +90,8 @@ async function deleteCase(ref: number) {
 
 const CaseService = {
     getAll,
+    getCasesByStaff,
+    getCasesByCitizen,
     getCaseByReference,
     createCase,
     updateCase,

@@ -6,10 +6,38 @@ export interface CaseParams {
     ref: string;
 }
 
+export interface CaseQuery {
+    staff?: string,
+    citizen?: string
+}
+
 /**
- * Handles GET /api/v1/cases/
+ * Handles GET /cases/
  */
-async function getAllCases(_: Request, res: Response) {
+async function getAllCases(req: Request<null, ICase[], null, CaseQuery>, res: Response) {
+    try {
+        const { staff, citizen } = req.query;
+        let data: ICase[];
+
+        if (staff != null) {
+            data = await CaseService.getCasesByStaff(staff);
+        } else if (citizen != null) {
+            data = await CaseService.getCasesByCitizen(citizen);
+        } else {
+            data = await CaseService.getAll();
+        }
+
+        return res.status(200).json(data);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "Something went wrong!" });
+    }
+}
+
+/**
+ * Handles GET /cases?staff=
+ */
+async function getCasesByStaff(_: Request, res: Response) {
     try {
         const data = await CaseService.getAll();
         return res.status(200).json(data);
@@ -20,7 +48,20 @@ async function getAllCases(_: Request, res: Response) {
 }
 
 /**
- * Handles GET /api/v1/cases/:ref
+ * Handles GET /cases?citizen=
+ */
+async function getCasesByCitizen(_: Request, res: Response) {
+    try {
+        const data = await CaseService.getAll();
+        return res.status(200).json(data);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "Something went wrong!" });
+    }
+}
+
+/**
+ * Handles GET /cases/:ref
  */
 async function getCaseByReference(req: Request<CaseParams>, res: Response) {
     try {
@@ -39,7 +80,7 @@ async function getCaseByReference(req: Request<CaseParams>, res: Response) {
 }
 
 /**
- * Handles POST /api/v1/cases/
+ * Handles POST /cases/
  */
 async function createCase(req: Request<{}, ICase, ICase>, res: Response) {
     try {
@@ -54,7 +95,7 @@ async function createCase(req: Request<{}, ICase, ICase>, res: Response) {
 }
 
 /**
- * Handles PUT /api/v1/cases/:ref
+ * Handles PUT /cases/:ref
  */
 async function updateCase(req: Request<CaseParams, ICase, ICase>, res: Response) {
     try {
@@ -69,7 +110,7 @@ async function updateCase(req: Request<CaseParams, ICase, ICase>, res: Response)
 }
 
 /**
- * Handles DELETE /api/v1/cases/:ref
+ * Handles DELETE /cases/:ref
  */
 async function deleteCase(req: Request<CaseParams>, res: Response) {
     try {
@@ -85,6 +126,8 @@ async function deleteCase(req: Request<CaseParams>, res: Response) {
 
 const CaseController = {
     getAllCases,
+    getCasesByStaff,
+    getCasesByCitizen,
     getCaseByReference,
     createCase,
     updateCase,
