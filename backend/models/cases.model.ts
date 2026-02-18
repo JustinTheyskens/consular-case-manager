@@ -1,4 +1,5 @@
 import mongoose, { Schema, Types } from "mongoose";
+import { type IAppointment } from "../models/appointments.model.ts";
 
 const caseStatusTypes = ["scheduled", "in-review", "approved", "rejected", "completed"] as const;
 
@@ -7,7 +8,7 @@ type CaseStatus = (typeof caseStatusTypes)[number];
 export interface ICase extends mongoose.Document {
     reference: number;
     status: CaseStatus;
-    appointment: Types.ObjectId;
+    appointment: Types.ObjectId | IAppointment;
     assignedStaff: Types.ObjectId;
     citizen: Types.ObjectId;
     flagged: boolean;
