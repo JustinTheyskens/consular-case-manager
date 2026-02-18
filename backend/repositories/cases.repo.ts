@@ -9,6 +9,26 @@ function findAll() {
 }
 
 /**
+ * Finds and returns all populated cases files from the database assigned to the given staff member
+ * @returns A promise of all populated cases files in the database
+ */
+function findCasesByStaff(staff: string) {
+    return Case.find({ assignedStaff: staff })
+        .populate(["appointment", "assignedStaff", "citizen"])
+        .exec();
+}
+
+/**
+ * Finds and returns all populated cases files from the database belonging to the given citizen
+ * @returns A promise of all populated cases files in the database
+ */
+function findCasesByCitizen(citizen: string) {
+    return Case.find({ citizen: citizen })
+        .populate(["appointment", "assignedStaff", "citizen"])
+        .exec();
+}
+
+/**
  * Finds and populates a case file by its reference number
  * @param ref the reference number of the case file to retrieve
  * @return A promise with the populated case file
@@ -50,6 +70,8 @@ function deleteCase(ref: number) {
 
 const CaseRepository = {
     findAll,
+    findCasesByStaff,
+    findCasesByCitizen,
     findCaseByRef,
     createCase,
     updateCase,
