@@ -2,11 +2,15 @@ import { Button, TextField, Box } from "@mui/material";
 import { useState } from "react";
 
 interface CreateAccountFormProps {
-    onSubmit: (event: React.SyntheticEvent<HTMLFormElement>) => void;
+    onSubmit: (emailAddress: string, password: string, firstName: string, lastName: string) => void;
 }
 
 export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) {
     const [submitting, setSubmitting] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     //Disables the "Create Account" button while sumitting is in progress
     //If the code flows back into this form, the button is re-enabled.
@@ -14,9 +18,9 @@ export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) 
         event.preventDefault();
 
         setSubmitting(true);
-        onSubmit(event);
+        onSubmit(email, password, firstName, lastName);
 
-        //We generally shouldn't return back to here
+        //We generally shouldn't return back to here without a redirect happening
         //but if we do then we know there's an error and the button is re-enabled
         setSubmitting(false);
     }
@@ -28,11 +32,13 @@ export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) 
                 onSubmit={submitForm}
             >
                 <TextField
-                    id="username-field"
-                    label="Username"
+                    id="email-field"
+                    label="Email Address"
                     variant="outlined"
                     size="small"
                     sx={{ m: 2, width: 0.8 }}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
 
                 <TextField
@@ -42,6 +48,8 @@ export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) 
                     variant="outlined"
                     size="small"
                     sx={{ m: 2, width: 0.8 }}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
 
                 <TextField
@@ -50,6 +58,8 @@ export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) 
                     variant="outlined"
                     size="small"
                     sx={{ m: 2, width: 0.8 }}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                 />
 
                 <TextField
@@ -58,6 +68,8 @@ export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) 
                     variant="outlined"
                     size="small"
                     sx={{ m: 2, width: 0.8 }}
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                 />
 
                 <Button
