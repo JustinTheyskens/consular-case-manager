@@ -16,42 +16,44 @@ export const StaffDashboard = () => {
                 subtitle="Consular Services Overview"
             />
 
-            <Grid
-                container
-                spacing={3}
-            >
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <MetricCard
-                        label="Appointments Today"
-                        value={42}
-                        icon={<EventAvailableIcon />}
-                    />
-                </Grid>
+            <Box sx={{ px: 3 }}>
+                <Grid
+                    container
+                    spacing={3}
+                >
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <MetricCard
+                            label="Appointments Today"
+                            value={42}
+                            icon={<EventAvailableIcon />}
+                        />
+                    </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <MetricCard
-                        label="Available Slots"
-                        value={18}
-                        icon={<AccessTimeIcon />}
-                    />
-                </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <MetricCard
+                            label="Available Slots"
+                            value={18}
+                            icon={<AccessTimeIcon />}
+                        />
+                    </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <MetricCard
-                        label="Pending Cases"
-                        value={24}
-                        icon={<AssignmentIcon />}
-                    />
-                </Grid>
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <MetricCard
+                            label="Pending Cases"
+                            value={24}
+                            icon={<AssignmentIcon />}
+                        />
+                    </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <MetricCard
-                        label="Flagged Cases"
-                        value={3}
-                        icon={<WarningAmberIcon />}
-                    />
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <MetricCard
+                            label="Flagged Cases"
+                            value={3}
+                            icon={<WarningAmberIcon />}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Box>
         </Box>
     );
 };
