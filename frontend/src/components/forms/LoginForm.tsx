@@ -9,6 +9,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
     const [submitting, setSubmitting] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [validEmail, setValidEmail] = useState(true);
 
     //Disables the "Create Account" button while sumitting is in progress
     //If the code flows back into this form, the button is re-enabled.
@@ -35,8 +36,15 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                     variant="outlined"
                     size="small"
                     sx={{ m: 2, width: 0.8 }}
+                    type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                        setEmail(e.target.value);
+                        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                        setValidEmail(emailPattern.test(email));
+                    }}
+                    error={!validEmail}
+                    helperText={validEmail ? "" : "Please enter a valid email address."}
                 />
 
                 <TextField
