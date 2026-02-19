@@ -1,8 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import CssBaseline from "@mui/material/CssBaseline";
+import { PageHeader } from "./components/PageHeader";
+import { StaffDashboard } from "./layout/StaffDashboardLayout";
 
 export default function App() {
     return (
+        <>
+        <StaffDashboard></StaffDashboard>
         <BrowserRouter>
             <CssBaseline />
             <Routes>
@@ -32,5 +36,6 @@ export default function App() {
                 </Route>
             </Routes>
         </BrowserRouter>
+        </>
     );
 }
