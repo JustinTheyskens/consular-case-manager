@@ -13,6 +13,7 @@ export default function StaffCreateAccountPage() {
         firstName: string,
         lastName: string,
     ) {
+        //TODO: Replace fetch with RTK Query call
         const api_url = import.meta.env.VITE_API_URL;
 
         const request = {
