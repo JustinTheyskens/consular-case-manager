@@ -1,22 +1,37 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import CssBaseline from "@mui/material/CssBaseline";
-import { PageHeader } from "./components/PageHeader";
 import { StaffDashboard } from "./layout/StaffDashboardLayout";
+import UserLoginPage from './pages/UserLoginPage';
+import StaffLoginPage from './pages/StaffLoginPage';
+
+
+import { Outlet } from "react-router-dom";
+
+const HomeLayout = () => {
+    return (
+        <div>
+            <h1>Consular Case Manager</h1>
+            <Outlet />
+        </div>
+    );
+};
+
+
+
 
 export default function App() {
     return (
         <>
-        <StaffDashboard></StaffDashboard>
         <BrowserRouter>
             <CssBaseline />
             <Routes>
                 <Route
                     path="/"
-                    element={<div className="TODO--HOME-LAYOUT">Home layout</div>}
+                    element={<HomeLayout />}
                 >
                     <Route
                         path="user/login"
-                        element={<div className="TODO--USER-LOGIN">User Login</div>}
+                        element={<UserLoginPage />}
                     />
                     <Route
                         path="user/dashboard"
@@ -25,11 +40,11 @@ export default function App() {
 
                     <Route
                         path="staff/login"
-                        element={<div className="TODO--STAFF-LOGIN">Staff Login</div>}
+                        element={<StaffLoginPage />}
                     />
                     <Route
                         path="staff/dashboard"
-                        element={<div className="TODO--STAFF-DASHBOARD">Staff Dashboard</div>}
+                        element={<StaffDashboard />}
                     />
 
                     <Route path="dashboard"></Route>

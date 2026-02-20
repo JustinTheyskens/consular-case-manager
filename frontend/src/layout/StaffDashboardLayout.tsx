@@ -2,6 +2,7 @@ import Grid from "@mui/material/Grid";
 import { Box } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
+import { theme } from '../theme';
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
