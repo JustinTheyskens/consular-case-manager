@@ -1,11 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import CreateAccountForm from "./components/forms/CreateAccountForm.tsx";
+import { sessionStore } from "./store/session-store.tsx";
+import { Provider } from "react-redux";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <App />
-        <CreateAccountForm onSubmit={(email, password, firstName, lastName) => {}} />
+        <Provider store={sessionStore}>
+            <App />
+        </Provider>
     </StrictMode>,
 );
