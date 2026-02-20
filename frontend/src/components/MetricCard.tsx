@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 interface MetricCardProps {
     label: string;
-    value: number | string;
+    value?: number | string;
     icon?: ReactNode;
 }
 
