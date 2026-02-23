@@ -52,7 +52,7 @@ export default function CitizenCreateAccountPage() {
     return (
         <>
             {accountCreated ? (
-                <Navigate to="/citizen/dashboard" />
+                <Navigate to="/user/dashboard" />
             ) : (
                 <CreateAccountForm onSubmit={onCreateAccountSubmission} />
             )}

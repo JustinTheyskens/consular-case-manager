@@ -44,7 +44,7 @@ export default function CreateCitizenAccountPage() {
     return (
         <>
             {loggedIn ? (
-                <Navigate to="/citizen/dashboard" />
+                <Navigate to="/user/dashboard" />
             ) : (
                 <LoginForm onSubmit={onLoginSubmission} />
             )}
