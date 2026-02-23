@@ -22,8 +22,7 @@ export default function UserLoginPage() {
                 <Typography
                     sx={{ p: 2 }}
                     variant="h1"
-                    color="primary.main"
-                >
+                    color="primary.main">
                     {label}
                 </Typography>           
                 <LoginForm onSubmit={handleUserLogin} />

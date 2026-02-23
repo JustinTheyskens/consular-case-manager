@@ -13,7 +13,7 @@ import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 
-// Appointment type options
+// appointment types
 const appointmentTypes = [
     {
         label: "Passport Renewal",
@@ -41,7 +41,7 @@ const appointmentTypes = [
     },
 ];
 
-// Placeholder upcoming appointment
+// dummy appointment
 const upcomingAppointment = {
     type: "Passport Renewal",
     date: "March 12, 2026",
@@ -137,6 +137,91 @@ export const UserDashboard = () => {
                                     value={2}
                                     icon={<EditCalendarIcon />}
                                 />
+                            </Grid>
+                        </Grid>
+
+                        <Grid container spacing={3}>
+                            {/* Book New Appointment */}
+                            <Grid size={{ xs: 12, md: 7 }}>
+                                <Card elevation={1}>
+                                    <CardContent>
+                                        <Typography variant="h6" fontWeight={600} gutterBottom>
+                                            Book an Appointment
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                            Select an appointment type to check availability and schedule.
+                                        </Typography>
+                                        <Grid container spacing={2}>
+                                            {appointmentTypes.map((apt) => (
+                                                <Grid key={apt.label} size={{ xs: 12, sm: 6 }}>
+                                                    <AppointmentTypeCard {...apt} />
+                                                </Grid>
+                                            ))}
+                                        </Grid>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+
+                            {/* Upcoming Appointment + Manage */}
+                            <Grid size={{ xs: 12, md: 5 }}>
+                                <Grid container spacing={3} direction="column">
+                                    {/* Upcoming */}
+                                    <Grid size={12}>
+                                        <Card elevation={1}>
+                                            <CardContent>
+                                                <Typography variant="h6" fontWeight={600} gutterBottom>
+                                                    Upcoming Appointment
+                                                </Typography>
+                                                <Divider sx={{ mb: 2 }} />
+                                                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                                                    <Typography variant="body2" color="text.secondary">Type</Typography>
+                                                    <Typography variant="body2" fontWeight={500}>{upcomingAppointment.type}</Typography>
+                                                </Box>
+                                                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                                                    <Typography variant="body2" color="text.secondary">Date</Typography>
+                                                    <Typography variant="body2" fontWeight={500}>{upcomingAppointment.date}</Typography>
+                                                </Box>
+                                                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                                                    <Typography variant="body2" color="text.secondary">Time</Typography>
+                                                    <Typography variant="body2" fontWeight={500}>{upcomingAppointment.time}</Typography>
+                                                </Box>
+                                                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+                                                    <Typography variant="body2" color="text.secondary">Reference</Typography>
+                                                    <Typography variant="body2" fontWeight={500} sx={{ fontFamily: "monospace" }}>
+                                                        {upcomingAppointment.reference}
+                                                    </Typography>
+                                                </Box>
+                                                <Chip
+                                                    label={upcomingAppointment.status}
+                                                    color="success"
+                                                    size="small"
+                                                />
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+
+                                    {/* Manage */}
+                                    <Grid size={12}>
+                                        <Card elevation={1}>
+                                            <CardContent>
+                                                <Typography variant="h6" fontWeight={600} gutterBottom>
+                                                    Manage Appointment
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                                    Use your reference number and email to modify or cancel an existing appointment.
+                                                </Typography>
+                                                <Box sx={{ display: "flex", gap: 1, flexDirection: "column" }}>
+                                                    <Button variant="outlined" fullWidth>
+                                                        Modify Appointment
+                                                    </Button>
+                                                    <Button variant="outlined" color="error" fullWidth>
+                                                        Cancel Appointment
+                                                    </Button>
+                                                </Box>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Box>
