@@ -1,8 +1,9 @@
 import { useDispatch } from "react-redux";
 import { setSession } from "../../store/session-store.tsx";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import LoginForm from "../../components/forms/LoginForm.tsx";
+import { Typography } from "@mui/material";
 
 export default function CreateCitizenAccountPage() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -46,7 +47,16 @@ export default function CreateCitizenAccountPage() {
             {loggedIn ? (
                 <Navigate to="/user/dashboard" />
             ) : (
-                <LoginForm onSubmit={onLoginSubmission} />
+                <>
+                    <LoginForm onSubmit={onLoginSubmission} />
+                    <Typography
+                        variant="caption"
+                        sx={{ display: "block", textAlign: "center" }}
+                    >
+                        Don't have an account?&nbsp;
+                        <Link to="/user/login/create">Create one.</Link>
+                    </Typography>
+                </>
             )}
         </>
     );
