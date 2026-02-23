@@ -20,7 +20,7 @@ async function getCitizenById(id: string) {
 
 async function createCitizen(newCitizen: ICitizen) {
     try {
-        await Citizen.create(newCitizen);
+        return await Citizen.create(newCitizen);
     } catch (error) {
         //TODO 500 error
         console.log(error);
