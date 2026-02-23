@@ -2,10 +2,13 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import CssBaseline from "@mui/material/CssBaseline";
 import { StaffDashboard } from "./layout/StaffDashboardLayout";
 import UserLoginPage from "./pages/UserLoginPage";
-import StaffLoginPage from "./pages/StaffLoginPage";
 import { useNavigate } from "react-router";
 import { HomeLayout } from "./layout/HomeLayout";
 import { UserDashboard } from "./layout/CitizenDashboardLayout";
+import CitizenLoginLayout from "./layout/CitizenLoginLayout.tsx";
+import CitizenCreateAccountLayout from "./layout/CitizenCreateAccountLayout";
+import StaffLoginLayout from "./layout/StaffLoginLayout.tsx";
+import StaffCreateAccountLayout from "./layout/StaffCreateAccountLayout.tsx";
 
 export default function App() {
     return (
@@ -22,16 +25,24 @@ export default function App() {
                     </Route>
                     <Route
                         path="user/login"
-                        element={<UserLoginPage />}
+                        element={<CitizenLoginLayout />}
+                    />
+                    <Route
+                        path="user/login/create"
+                        element={<CitizenCreateAccountLayout />}
                     />
                     <Route
                         path="user/dashboard"
-                        element={<UserDashboard/>}
+                        element={<UserDashboard />}
                     />
 
                     <Route
                         path="staff/login"
-                        element={<StaffLoginPage />}
+                        element={<StaffLoginLayout />}
+                    />
+                    <Route
+                        path="staff/login/create"
+                        element={<StaffCreateAccountLayout />}
                     />
                     <Route
                         path="staff/dashboard"
