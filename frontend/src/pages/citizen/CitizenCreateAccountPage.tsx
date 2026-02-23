@@ -1,6 +1,6 @@
 import CreateAccountForm from "../../components/forms/CreateAccountForm.tsx";
 import { useDispatch } from "react-redux";
-import { setSession } from "../../store/session-store.tsx";
+import { setSession } from "../../store/SessionSlice.ts";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
