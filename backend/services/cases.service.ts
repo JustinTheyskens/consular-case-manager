@@ -46,26 +46,22 @@ async function getCaseByReference(ref: number) {
 async function createCase(data: ICase) {
     // Begins mongoose transaction for integrity (atomically transfer items)
     const session = await startSession();
-    let returnValue: ICase | null = null;
 
     try {
-        await session.withTransaction(async () => {
+        return await session.withTransaction(async () => {
             // First creates an appointment
             const { appointment } = data;
             const appointmentDetails = appointment as IAppointment;
 
             const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
 
-            // Creates a case with the linked appointment
-            returnValue = await CaseRepository.createCase({ ...data, appointment: _id } as ICase);
+            return await CaseRepository.createCase({ ...data, appointment: _id } as ICase);
         });
     } catch (error) {
         console.error(error);
         throw new Error("Case creation was attempted but was unsuccessful");
     } finally {
         await session.endSession();
-
-        return returnValue;
     }
 }
 
