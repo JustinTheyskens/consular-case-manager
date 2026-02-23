@@ -19,22 +19,23 @@ function createLogin(data: ILogin) {
 }
 
 /**
- * Updates a login with given email
- * @param email The email of the login to update
+ * Updates a login with given user ID
+ * @param userId The user ID of the login to update
  * @param newData The new login data to replace the old
  * @returns A promise with the updated login
  */
-async function updateLogin(email: string, newData: ILogin) {
-    return Login.findOneAndUpdate({ email: email }, newData, { returnDocument: "after" })
+async function updateLogin(userId: string, newData: ILogin) {
+    return Login.findOneAndUpdate({ ref: userId }, newData, { returnDocument: "after" })
         .exec();
 }
 
 /**
- * Deletes a case file with given email
+ * Deletes a login with given userId
+ * @param userId The user ID of the login to delete
  * @returns A promise with the deleted login
  */
-function deleteLogin(email: string) {
-    return Login.findOneAndDelete({ email: email }).exec();
+function deleteLogin(userId: string) {
+    return Login.findOneAndDelete({ ref: userId }).exec();
 }
 
 const LoginRepository = {
