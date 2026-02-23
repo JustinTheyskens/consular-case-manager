@@ -1,41 +1,46 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import CssBaseline from "@mui/material/CssBaseline";
-import { PageHeader } from "./components/PageHeader";
 import { StaffDashboard } from "./layout/StaffDashboardLayout";
+import UserLoginPage from "./pages/UserLoginPage";
+import StaffLoginPage from "./pages/StaffLoginPage";
+import { useNavigate } from "react-router";
+import { HomeLayout } from "./layout/HomeLayout";
+import { UserDashboard } from "./layout/CitizenDashboardLayout";
 
 export default function App() {
     return (
         <>
-        <StaffDashboard></StaffDashboard>
-        <BrowserRouter>
-            <CssBaseline />
-            <Routes>
-                <Route
-                    path="/"
-                    element={<div className="TODO--HOME-LAYOUT">Home layout</div>}
-                >
+            {/* <StaffDashboard/> */}
+            <BrowserRouter>
+                <CssBaseline />
+                <Routes>
+                    <Route
+                        path="/"
+                        element={<HomeLayout />}
+                    >
+                        {" "}
+                    </Route>
                     <Route
                         path="user/login"
-                        element={<div className="TODO--USER-LOGIN">User Login</div>}
+                        element={<UserLoginPage />}
                     />
                     <Route
                         path="user/dashboard"
-                        element={<div className="TODO--USER-DASHBOARD">User Dashboard</div>}
+                        element={<UserDashboard/>}
                     />
 
                     <Route
                         path="staff/login"
-                        element={<div className="TODO--STAFF-LOGIN">Staff Login</div>}
+                        element={<StaffLoginPage />}
                     />
                     <Route
                         path="staff/dashboard"
-                        element={<div className="TODO--STAFF-DASHBOARD">Staff Dashboard</div>}
+                        element={<StaffDashboard />}
                     />
 
                     <Route path="dashboard"></Route>
-                </Route>
-            </Routes>
-        </BrowserRouter>
+                </Routes>
+            </BrowserRouter>
         </>
     );
 }
