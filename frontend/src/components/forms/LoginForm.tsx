@@ -29,13 +29,14 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
             <Box
                 component="form"
                 onSubmit={submitForm}
+                sx={{ display: "flex", flexDirection: "column", justifyContent: "center", my: 2 }}
             >
                 <TextField
                     id="email-field"
                     label="Email Address"
                     variant="outlined"
                     size="small"
-                    sx={{ m: 2, width: 0.8 }}
+                    sx={{ m: 2 }}
                     type="email"
                     value={email}
                     onChange={(e) => {
@@ -53,7 +54,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                     label="Password"
                     variant="outlined"
                     size="small"
-                    sx={{ m: 2, width: 0.8 }}
+                    sx={{ m: 2 }}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
@@ -62,7 +63,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                     type="submit"
                     disabled={submitting}
                     variant="contained"
-                    sx={{ m: 2, width: 0.8 }}
+                    sx={{ m: 2 }}
                 >
                     Login
                 </Button>
