@@ -74,9 +74,8 @@ export const UserDashboard = () => {
                     {/* Greeting */}
                     <Box
                         sx={{
-                            px: 3,
-                            pb: 3,
-                            borderBottom: "1px solid",
+                            px: 8,
+                            pb: 6,
                             borderColor: "divider",
                             backgroundColor: "background.paper",
                         }}
@@ -98,11 +97,12 @@ export const UserDashboard = () => {
                         </Typography>
                     </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
+
                         {/* Summary Metrics */}
                         <Grid
                             container
                             spacing={3}
-                            sx={{ mb: 4 }}
+                            sx={{ mb: 8 }}
                         >
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
@@ -183,7 +183,7 @@ export const UserDashboard = () => {
                                 >
                                     {/* Upcoming */}
                                     <Grid size={12}>
-                                        <Card elevation={1}>
+                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -285,7 +285,7 @@ export const UserDashboard = () => {
 
                                     {/* Manage */}
                                     <Grid size={12}>
-                                        <Card elevation={1}>
+                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"

@@ -16,7 +16,7 @@ export const AppointmentCard = ({
         sx={{
             height: "100%",
             cursor: "pointer",
-            border: "2px solid transparent",
+            border: "2px solid lightgray",
             transition: "all 0.2s ease",
             "&:hover": {
                 borderColor: color,

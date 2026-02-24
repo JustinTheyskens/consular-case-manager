@@ -17,7 +17,7 @@ export const LoginCard = ({ label, icon, onClick }: LoginCardProps) => {
                 width: "100%",
                 height: "100%",
                 cursor: onClick ? "pointer" : "default",
-                border: "2px solid transparent",
+                border: "2px solid lightgray",
                 transition: "box-shadow 0.2s ease",
                 "&:hover": {
                 borderColor: color,
