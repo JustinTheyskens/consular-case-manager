@@ -1,17 +1,4 @@
-import { PageHeader } from "../components/PageHeader";
-import { MetricCard } from "../components/MetricCard";
-import { theme } from "../theme";
-
-import {
-    Box,
-    ThemeProvider,
-    Card,
-    CardContent,
-    Typography,
-    Button,
-    Chip,
-    Divider,
-} from "@mui/material";
+import { Box, Card, CardContent, Typography } from "@mui/material";
 
 export const AppointmentCard = ({
     label,
