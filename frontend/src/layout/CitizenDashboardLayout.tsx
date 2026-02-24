@@ -29,25 +29,25 @@ const appointmentTypes = [
         label: "Passport Renewal",
         icon: <AutorenewIcon sx={{ fontSize: 36 }} />,
         description: "Renew an existing passport",
-        color: "#1976d2",
+        color: "#1976d2", // Blue
     },
     {
         label: "First-Time Passport",
         icon: <AddCardIcon sx={{ fontSize: 36 }} />,
         description: "Apply for your first passport",
-        color: "#2e7d32",
+        color: "#2e7d32", // Green
     },
     {
         label: "Emergency Travel Document",
         icon: <FlightTakeoffIcon sx={{ fontSize: 36 }} />,
         description: "Urgent travel within 72 hours",
-        color: "#ed6c02",
+        color: "#ed6c02", // Orange
     },
     {
         label: "Lost or Stolen Passport",
         icon: <ReportProblemIcon sx={{ fontSize: 36 }} />,
         description: "Report and replace a lost passport",
-        color: "#d32f2f",
+        color: "#d32f2f", // Red
     },
 ];
 
@@ -60,7 +60,7 @@ const upcomingAppointment = {
     status: "Confirmed",
 };
 
-
+const name = "Justin";
 
 export const UserDashboard = () => {
     return (
@@ -71,9 +71,33 @@ export const UserDashboard = () => {
                         title="Consular Case Manager"
                         subtitle="Passport appointments and case tracking"
                     />
+                    {/* Greeting */}
+                    <Box
+                        sx={{
+                            px: 3,
+                            pb: 3,
+                            borderBottom: "1px solid",
+                            borderColor: "divider",
+                            backgroundColor: "background.paper",
+                        }}
+                    >
+                        <Typography
+                            variant="h5"
+                            fontWeight={600}
+                            sx={{ color: "text.primary" }}
+                        >
+                            Welcome, {name}
+                        </Typography>
 
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5 }}
+                        >
+                            User Dashboard
+                        </Typography>
+                    </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
-
                         {/* Summary Metrics */}
                         <Grid
                             container
