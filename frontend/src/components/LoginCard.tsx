@@ -8,17 +8,22 @@ interface LoginCardProps {
 }
 
 export const LoginCard = ({ label, icon, onClick }: LoginCardProps) => {
+    const color = '#000080'
     return (
         <Card
-            elevation={2}
+            elevation={1}
             onClick={onClick}
             sx={{
                 width: "100%",
                 height: "100%",
                 cursor: onClick ? "pointer" : "default",
+                border: "2px solid lightgray",
                 transition: "box-shadow 0.2s ease",
-                "&:hover": onClick ? { elevation: 2, boxShadow: 6 } : {},
-                border: '2px solid', borderColor: 'secondary.main' 
+                "&:hover": {
+                borderColor: color,
+                boxShadow: `0 4px 20px ${color}33`,
+                transform: "scale(1.02)",
+            },
             }}
         >
             <CardContent
