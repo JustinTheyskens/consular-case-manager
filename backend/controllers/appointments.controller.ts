@@ -7,7 +7,7 @@ export interface AppointmentParams {
 }
 
 /**
- * Handles PUT /api/v1/appointments/:id
+ * Handles PUT /appointments/:id
  */
 async function updateAppointment(
     req: Request<AppointmentParams, IAppointment, IAppointment>,

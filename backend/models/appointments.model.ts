@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const appointmentTypes = [
+export const appointmentTypes = [
     "passport-renewal",
     "passport-first",
     "passport-emergency",
@@ -11,7 +11,7 @@ export type AppointmentType = (typeof appointmentTypes)[number];
 
 export interface IAppointment extends mongoose.Document {
     type: AppointmentType;
-    time: string;
+    time: Date;
 }
 
 const appointmentSchema = new Schema<IAppointment>({
@@ -23,7 +23,7 @@ const appointmentSchema = new Schema<IAppointment>({
 
     time: {
         required: true,
-        type: String,
+        type: Date,
     },
 });
 

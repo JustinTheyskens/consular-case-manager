@@ -12,9 +12,9 @@ export interface CaseQuery {
 }
 
 /**
- * Handles GET /cases/
+ * Handles GET /cases
  */
-async function getAllCases(req: Request<null, ICase[], null, CaseQuery>, res: Response) {
+async function getCases(req: Request<null, ICase[], null, CaseQuery>, res: Response) {
     try {
         const { staff, citizen } = req.query;
         let data: ICase[];
@@ -27,32 +27,6 @@ async function getAllCases(req: Request<null, ICase[], null, CaseQuery>, res: Re
             data = await CaseService.getAll();
         }
 
-        return res.status(200).json(data);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: "Something went wrong!" });
-    }
-}
-
-/**
- * Handles GET /cases?staff=
- */
-async function getCasesByStaff(_: Request, res: Response) {
-    try {
-        const data = await CaseService.getAll();
-        return res.status(200).json(data);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: "Something went wrong!" });
-    }
-}
-
-/**
- * Handles GET /cases?citizen=
- */
-async function getCasesByCitizen(_: Request, res: Response) {
-    try {
-        const data = await CaseService.getAll();
         return res.status(200).json(data);
     } catch (error) {
         console.error(error);
@@ -125,9 +99,7 @@ async function deleteCase(req: Request<CaseParams>, res: Response) {
 }
 
 const CaseController = {
-    getAllCases,
-    getCasesByStaff,
-    getCasesByCitizen,
+    getCases,
     getCaseByReference,
     createCase,
     updateCase,

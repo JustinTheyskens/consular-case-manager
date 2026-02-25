@@ -8,7 +8,7 @@ const router = express.Router();
 router
     .route("/")
     .get(async (req: Request<null, ICase[], null, CaseQuery>, res: Response) => {
-        CaseController.getAllCases(req, res);
+        CaseController.getCases(req, res);
     })
     .post(async (req: Request, res: Response) => {
         CaseController.createCase(req, res);
