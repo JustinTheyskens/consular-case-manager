@@ -1,8 +1,6 @@
 import {
     Staff,
     type IStaff,
-    type Availability,
-    type AvailabilityPeriod,
 } from "../models/staff.model.ts";
 
 export const StaffRepository = {
@@ -12,17 +10,6 @@ export const StaffRepository = {
     update: (id: String, data: IStaff) =>
         Staff.findByIdAndUpdate(id, data, { returnDocument: "after" }),
     delete: (id: String) => Staff.findByIdAndDelete(id),
-    updateAvailabilityDay: (
-        staffId: String,
-        day: keyof Availability,
-        periods: AvailabilityPeriod[],
-    ) => {
-        return Staff.findByIdAndUpdate(
-            staffId,
-            { $set: { [`availability.${day}`]: periods } },
-            { new: true },
-        );
-    },
 };
 
 export default StaffRepository;

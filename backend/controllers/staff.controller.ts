@@ -1,6 +1,5 @@
 import { StaffService, type IStaffAccount } from "../services/staff.service.ts";
 import { type Request, type Response } from "express";
-import type { IStaff } from "../models/staff.model.ts";
 
 export const StaffController = {
     getAll: async (req: Request, res: Response) => {
@@ -58,27 +57,27 @@ export const StaffController = {
             res.status(500).json({ message: `Error encountered: ${(error as Error).message}` });
         }
     },
-    updateAvailabilityDay: async (req: Request, res: Response) => {
-        try {
-            const staffId = String(req.params.id);
-            const day = String(req.params.day);
-            const periods = req.body; // AvailabilityPeriod[]
+    // updateAvailabilityDay: async (req: Request, res: Response) => {
+    //     try {
+    //         const staffId = String(req.params.id);
+    //         const day = String(req.params.day);
+    //         const periods = req.body; // AvailabilityPeriod[]
 
-            if (!staffId) {
-                return res.status(400).json({ message: "Invalid staff ID" });
-            }
+    //         if (!staffId) {
+    //             return res.status(400).json({ message: "Invalid staff ID" });
+    //         }
 
-            const updated = await StaffService.updateAvailabilityDay(staffId, day, periods);
+    //         const updated = await StaffService.updateAvailabilityDay(staffId, day, periods);
 
-            if (!updated) {
-                return res.status(404).json({ message: "Staff not found" });
-            }
+    //         if (!updated) {
+    //             return res.status(404).json({ message: "Staff not found" });
+    //         }
 
-            return res.status(200).json(updated);
-        } catch (err) {
-            return res.status(500).json({
-                message: `Error updating availability: ${(err as Error).message}`,
-            });
-        }
-    },
+    //         return res.status(200).json(updated);
+    //     } catch (err) {
+    //         return res.status(500).json({
+    //             message: `Error updating availability: ${(err as Error).message}`,
+    //         });
+    //     }
+    // },
 };

@@ -1,6 +1,6 @@
 import { startSession } from "mongoose";
 
-import { type IStaff, type AvailabilityPeriod } from "../models/staff.model.ts";
+import { type IStaff } from "../models/staff.model.ts";
 import { type ILogin } from "../models/logins.model.ts";
 import StaffRepository from "../repositories/staff.repo.ts";
 import LoginRepository from "../repositories/logins.repo.ts";
@@ -8,31 +8,6 @@ import LoginRepository from "../repositories/logins.repo.ts";
 export interface IStaffAccount extends IStaff {
     email: string;
     password: string;
-}
-
-const VALID_DAYS = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-] as const;
-
-type Day = (typeof VALID_DAYS)[number];
-
-// Check for overlapping time periods
-function hasOverlappingPeriods(periods: AvailabilityPeriod[]): boolean {
-    const sorted = [...periods].sort((a, b) => a.startTime.localeCompare(b.startTime));
-
-    for (let i = 1; i < sorted.length; i++) {
-        if (sorted[i].startTime < sorted[i - 1].endTime) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 export const StaffService = {
@@ -133,16 +108,6 @@ export const StaffService = {
             update.password = updatedStaff.password;
         }
 
-        if (!updatedStaff.availability) {
-            throw new Error("No availability provided");
-        }
-
-        const updatedAvailabity: Record<string, unknown> = {};
-
-        for (const [day, periods] of Object.entries(updatedStaff.availability)) {
-            updatedAvailabity[`availability.${day}`] = periods;
-        }
-
         return StaffRepository.update(id, updatedStaff);
     },
     // updateAvailability: async (staffId: number, updatedStaff: IStaff) => {
@@ -164,21 +129,21 @@ export const StaffService = {
 
     //     return StaffRepository.update(staffId, updatedStaff);
     // },
-    updateAvailabilityDay: async (id: String, day: string, periods: AvailabilityPeriod[]) => {
-        if (!VALID_DAYS.includes(day as Day)) {
-            throw new Error("Invalid day");
-        }
+    // updateAvailabilityDay: async (id: String, day: string, periods: AvailabilityPeriod[]) => {
+    //     if (!VALID_DAYS.includes(day as Day)) {
+    //         throw new Error("Invalid day");
+    //     }
 
-        for (const period of periods) {
-            if (period.capacity <= 0) {
-                throw new Error("Capacity must be greater than 0");
-            }
-        }
+    //     for (const period of periods) {
+    //         if (period.capacity <= 0) {
+    //             throw new Error("Capacity must be greater than 0");
+    //         }
+    //     }
 
-        if (hasOverlappingPeriods(periods)) {
-            throw new Error("Availability periods may not overlap");
-        }
+    //     if (hasOverlappingPeriods(periods)) {
+    //         throw new Error("Availability periods may not overlap");
+    //     }
 
-        return StaffRepository.updateAvailabilityDay(id, day as Day, periods);
-    },
+    //     return StaffRepository.updateAvailabilityDay(id, day as Day, periods);
+    // },
 };
