@@ -1,5 +1,14 @@
-import StaffRepository from "../repositories/staff.repo.ts";
+import { startSession } from "mongoose";
+
 import { type IStaff, type AvailabilityPeriod } from "../models/staff.model.ts";
+import { type ILogin } from "../models/logins.model.ts";
+import StaffRepository from "../repositories/staff.repo.ts";
+import LoginRepository from "../repositories/logins.repo.ts";
+
+export interface IStaffAccount extends IStaff {
+    email: string;
+    password: string;
+}
 
 const VALID_DAYS = [
     "sunday",
@@ -26,24 +35,78 @@ function hasOverlappingPeriods(periods: AvailabilityPeriod[]): boolean {
     return false;
 }
 
-type StaffInfoUpdates = Partial<Pick<IStaff, "firstName" | "lastName" | "email" | "password">>;
-
 export const StaffService = {
     getAll: async () => {
         const staff = await StaffRepository.findAll();
         return staff;
     },
-    getById: async (id: String) => {
+    getById: async (id: string) => {
         return await StaffRepository.findById(id);
     },
-    create: async (data: IStaff) => {
-        return await StaffRepository.create(data);
+    create: async (data: IStaffAccount) => {
+        // Begins mongoose transaction for integrity (create both a login and staff document)
+        const session = await startSession();
+
+        try {
+            return await session.withTransaction(async () => {
+                const staff = (await StaffRepository.create(data)) as IStaff;
+
+                const { _id } = staff;
+                const { email, password } = data;
+
+                await LoginRepository.createLogin({
+                    email,
+                    password,
+                    type: "staff",
+                    ref: _id,
+                } as ILogin);
+
+                return staff;
+            });
+        } catch (error) {
+            console.error(error);
+            throw new Error("Staff creation was attempted but was unsuccessful");
+        } finally {
+            session.endSession();
+        }
     },
-    update: async (id: String, data: IStaff) => {
-        return await StaffRepository.update(id, data);
+    update: async (id: string, data: IStaffAccount) => {
+        // Begins mongoose transaction for integrity (update both a login and staff document)
+        const session = await startSession();
+
+        try {
+            return await session.withTransaction(async () => {
+                const staff = (await StaffRepository.update(id, data)) as IStaff;
+
+                const { email, password } = data;
+
+                await LoginRepository.updateLogin(id, { email, password } as ILogin);
+
+                return staff;
+            });
+        } catch (error) {
+            console.error(error);
+            throw new Error("Staff update was attempted but was unsuccessful");
+        } finally {
+            session.endSession();
+        }
     },
-    delete: async (id: String) => {
-        return await StaffRepository.delete(id);
+    delete: async (id: string) => {
+        // Begins mongoose transaction for integrity (update both a login and staff document)
+        const session = await startSession();
+
+        try {
+            return await session.withTransaction(async () => {
+                await LoginRepository.deleteLogin(id);
+
+                return await StaffRepository.delete(id);
+            });
+        } catch (error) {
+            console.error(error);
+            throw new Error("Staff update was attempted but was unsuccessful");
+        } finally {
+            session.endSession();
+        }
     },
     updateInfo: async (id: String, updatedStaff: IStaff) => {
         const staff = await StaffRepository.findById(id);

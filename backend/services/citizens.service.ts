@@ -1,5 +1,14 @@
 import { type ICitizen } from "../models/citizens.model.ts";
+import { type ILogin } from "../models/logins.model.ts";
 import citizenRepo from "../repositories/citizens.repository.ts";
+import LoginRepository from "../repositories/logins.repo.ts";
+
+import { startSession } from "mongoose";
+
+export interface ICitizenAccount extends ICitizen {
+    email: string;
+    password: string;
+}
 
 async function getAllCitizens() {
     return await citizenRepo.getAllCitizens();
@@ -9,16 +18,71 @@ async function getCitizenById(id: string) {
     return await citizenRepo.getCitizenById(id);
 }
 
-async function createCitizen(newCitizen: ICitizen) {
-    return await citizenRepo.createCitizen(newCitizen);
+async function createCitizen(newCitizen: ICitizenAccount) {
+    // Begins mongoose transaction for integrity (create both a login and citizen document)
+    const session = await startSession();
+
+    try {
+        return await session.withTransaction(async () => {
+            const citizen = (await citizenRepo.createCitizen(newCitizen)) as ICitizen;
+
+            const { _id } = citizen;
+            const { email, password } = newCitizen;
+
+            await LoginRepository.createLogin({
+                email,
+                password,
+                type: "citizen",
+                ref: _id,
+            } as ILogin);
+
+            return citizen;
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error("Citizen creation was attempted but was unsuccessful");
+    } finally {
+        session.endSession();
+    }
 }
 
-async function updateCitizen(id: string, updatedCitizen: ICitizen) {
-    return await citizenRepo.updateCitizen(id, updatedCitizen);
+async function updateCitizen(id: string, updatedCitizen: ICitizenAccount) {
+    // Begins mongoose transaction for integrity (update both a login and citizen document)
+    const session = await startSession();
+
+    try {
+        return await session.withTransaction(async () => {
+            const citizen = (await citizenRepo.updateCitizen(id, updatedCitizen)) as ICitizen;
+
+            const { email, password } = updatedCitizen;
+
+            await LoginRepository.updateLogin(id, { email, password } as ILogin);
+
+            return citizen;
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error("Citizen update was attempted but was unsuccessful");
+    } finally {
+        session.endSession();
+    }
 }
 
 async function deleteCitizen(id: string) {
-    return await citizenRepo.deleteCitizen(id);
+    // Begins mongoose transaction for integrity (delete both the citizen and associated login document)
+    const session = await startSession();
+
+    try {
+        return await session.withTransaction(async () => {
+            await LoginRepository.deleteLogin(id);
+            return await citizenRepo.deleteCitizen(id);
+        });
+    } catch (error) {
+        console.error(error);
+        throw new Error("Citizen deletion was attempted but was unsuccessful");
+    } finally {
+        session.endSession();
+    }
 }
 
 export default { getAllCitizens, getCitizenById, createCitizen, updateCitizen, deleteCitizen };
