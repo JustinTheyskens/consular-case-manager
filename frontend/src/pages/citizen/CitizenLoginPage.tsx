@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { setSession } from "../../store/session-store.tsx";
+import { setSession } from "../../store/SessionSlice.ts";
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import LoginForm from "../../components/forms/LoginForm.tsx";

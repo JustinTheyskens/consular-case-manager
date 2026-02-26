@@ -1,8 +1,8 @@
-import { createSlice, type PayloadAction, configureStore } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export type LoginType = "citizen" | "staff";
 
-type SessionState = {
+export type SessionState = {
     userId: string | null;
     loginType: LoginType | null;
 };
@@ -27,11 +27,5 @@ const sessionSlice = createSlice({
     },
 });
 
-export const sessionStore = configureStore({
-    reducer: {
-        session: sessionSlice.reducer,
-    },
-});
-
 export const { setSession, clearSession } = sessionSlice.actions;
-export type RootState = ReturnType<typeof sessionStore.getState>;
+export default sessionSlice.reducer;
