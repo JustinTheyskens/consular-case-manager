@@ -10,12 +10,54 @@ function findAll() {
 
 /**
  * Finds and returns all populated cases files from the database assigned to the given staff member
+ * @param staff The staff member to look up the cases for
  * @returns A promise of all populated cases files in the database
  */
 function findCasesByStaff(staff: string) {
     return Case.find({ assignedStaff: staff })
         .populate(["appointment", "assignedStaff", "citizen"])
         .exec();
+}
+
+/**
+ * Finds and returns all populated cases files from the database assigned to the given staff member
+ * @param staff The staff member to look up the cases for
+ * @param start The start of the period to lookup
+ * @param end The end of the period to lookup
+ * @returns A promise of all populated cases files in the database
+ */
+function findCasesByTimeAndStaff(staff: string, start: Date, end: Date) {
+    return Case.aggregate<{ time: Date }>([
+        {
+            $match: {
+                assignedStaff: staff,
+            },
+        },
+        {
+            $lookup: {
+                from: "appointments",
+                localField: "appointment",
+                foreignField: "_id",
+                as: "appointmentInfo",
+            },
+        },
+        {
+            $unwind: "$appointmentInfo",
+        },
+        {
+            $match: {
+                "$appointmentInfo.time": {
+                    $gte: start,
+                    $lt: end,
+                },
+            },
+        },
+        {
+            $project: {
+                time: "$appointmentInfo.time",
+            },
+        },
+    ]).exec();
 }
 
 /**
@@ -71,6 +113,7 @@ function deleteCase(ref: number) {
 const CaseRepository = {
     findAll,
     findCasesByStaff,
+    findCasesByTimeAndStaff,
     findCasesByCitizen,
     findCaseByRef,
     createCase,
