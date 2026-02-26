@@ -11,6 +11,7 @@ export interface ICase extends mongoose.Document {
     appointment: Types.ObjectId | IAppointment;
     assignedStaff: Types.ObjectId;
     citizen: Types.ObjectId;
+    checkedIn: boolean;
     flagged: boolean;
     notes?: string;
 }
@@ -44,6 +45,12 @@ const caseSchema = new Schema<ICase>({
         required: true,
         type: Types.ObjectId,
         ref: "Citizen",
+    },
+
+    checkedIn: {
+        required: true,
+        type: Boolean,
+        default: false,
     },
 
     flagged: {
