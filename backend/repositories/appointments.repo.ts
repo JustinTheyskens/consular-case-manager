@@ -2,6 +2,14 @@ import { Types } from "mongoose";
 import { Appointment, type IAppointment } from "../models/appointments.model.ts";
 
 /**
+ * Finds and returns all appointments from the database
+ * @returns A promise of all appointments in the database
+ */
+function findAll() {
+    return Appointment.find().exec();
+}
+
+/**
  * Finds all appointments past a given datetime
  * @param date The datetime to find appointments for
  * @returns A sorted promise with all future appointments
@@ -44,19 +52,19 @@ function createAppointment(data: IAppointment) {
 }
 
 /**
- * Updates an appointment with given id
- * @param _id The id of the Appointment file to update
- * @param newData The new Appointment file data to replace the old
- * @returns A promise with the updated appointment file
+ * Deletes an appointment with given id
+ * @param _id The id of the Appointment document to update
+ * @returns A promise with the delete appointment
  */
-async function updateAppointment(_id: string, newData: IAppointment) {
-    return Appointment.findByIdAndUpdate(_id, newData, { returnDocument: "after" }).exec();
+function deleteAppointment(_id: string) {
+    return Appointment.findOneAndDelete({ _id: _id }).exec();
 }
 
 const AppointmentRepository = {
+    findAll,
     findFutureAppointments,
     createAppointment,
-    updateAppointment,
+    deleteAppointment,
 };
 
 export default AppointmentRepository;
