@@ -81,7 +81,44 @@ async function createCase(data: ICase) {
  * @returns A promise containing the updated case file
  */
 async function updateCase(ref: number, data: ICase) {
-    return await CaseRepository.updateCase(ref, data);
+    const { appointment: newAppointment, reference } = data;
+    const { time: newTime, type: newType } = newAppointment as IAppointment;
+
+    const { appointment: oldAppointment } = (await CaseRepository.findCaseByRef(
+        reference,
+    )) as ICase;
+    const { _id: oldId, time: oldTime, type: oldType } = oldAppointment as IAppointment;
+
+    // Appointments are the same - skip new appointment creation
+    if (newTime.getTime() === oldTime.getTime() && newType === oldType) {
+        return await CaseRepository.updateCase(ref, data);
+    }
+
+    // Otherwise, appointment needs to be remade and reassigned
+    const session = await startSession();
+
+    try {
+        return await session.withTransaction(async () => {
+            // Creates a new appointment with the new specifications
+            const appointmentDetails = newAppointment as IAppointment;
+            
+            const staff = await assignAppointmentStaff(appointmentDetails);
+            const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
+
+            await AppointmentRepository.deleteAppointment(oldId.toString());
+
+            return await CaseRepository.updateCase(ref, {
+                ...data,
+                appointment: _id,
+                assignedStaff: staff,
+            } as ICase);
+        });
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await session.endSession();
+    }
 }
 
 /**
@@ -109,7 +146,7 @@ async function assignAppointmentStaff(appointment: IAppointment) {
         type,
         dayOfWeek,
         timeOfDay,
-        (interval - 1) * 1_000 * 60
+        (interval - 1) * 1_000 * 60,
     );
 
     const staffAvailabilities: [Types.ObjectId, number, number][] = [];
@@ -161,9 +198,9 @@ async function assignAppointmentStaff(appointment: IAppointment) {
 
 /**
  * Anchors a start and end time to a given datetime
- * @param startTime 
- * @param endTime 
- * @param anchor 
+ * @param startTime
+ * @param endTime
+ * @param anchor
  * @returns A tuple of two datetimes as the start and end of the period
  */
 function getPeriods(startTime: number, endTime: number, anchor: Date) {
