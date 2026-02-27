@@ -93,7 +93,7 @@ export default function CreateAccountForm({ onSubmit, errorMessage }: CreateAcco
 
                 {errorMessage ? (
                     <Box>
-                        <Alert>{errorMessage}</Alert>
+                        <Alert severity="error">{errorMessage}</Alert>
                     </Box>
                 ) : (
                     <></>

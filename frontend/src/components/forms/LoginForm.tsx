@@ -71,7 +71,7 @@ export default function LoginForm({ onSubmit, errorMessage }: LoginFormProps) {
 
                 {errorMessage ? (
                     <Box>
-                        <Alert>{errorMessage}</Alert>
+                        <Alert severity="error">{errorMessage}</Alert>
                     </Box>
                 ) : (
                     <></>
