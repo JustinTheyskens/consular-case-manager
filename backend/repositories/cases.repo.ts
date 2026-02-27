@@ -86,7 +86,7 @@ function findCaseByRef(ref: number) {
  * @param data The data of the case to create
  * @returns A promise with the created case
  */
-function createCase(data: ICase) {
+function createCase(data: Partial<ICase>) {
     return Case.create(data);
 }
 

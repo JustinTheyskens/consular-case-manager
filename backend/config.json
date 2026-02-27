@@ -1,5 +1,6 @@
 {
     "interval": 30,
     "maxLookup": 14,
-    "minWait": 24
+    "minWait": 24,
+    "refLength": 12
 }
