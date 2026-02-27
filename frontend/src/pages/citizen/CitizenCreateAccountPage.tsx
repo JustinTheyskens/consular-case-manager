@@ -8,6 +8,7 @@ import { Navigate } from "react-router-dom";
 export default function CitizenCreateAccountPage() {
     const dispatch = useDispatch();
     const [accountCreated, setAccountCreated] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const [createCitizen] = useCreateCitizenMutation();
 
@@ -37,8 +38,7 @@ export default function CitizenCreateAccountPage() {
             //REDIRECT USER TO APPROPRIATE LOGIN PAGE
             setAccountCreated(true);
         } catch (err) {
-            console.log("Failed to create Citizen");
-            console.log(err);
+            setErrorMessage("Failed to create account. Please try again.");
         }
     }
 
@@ -47,7 +47,10 @@ export default function CitizenCreateAccountPage() {
             {accountCreated ? (
                 <Navigate to="/user/dashboard" />
             ) : (
-                <CreateAccountForm onSubmit={onCreateAccountSubmission} />
+                <CreateAccountForm
+                    onSubmit={onCreateAccountSubmission}
+                    errorMessage={errorMessage}
+                />
             )}
         </>
     );

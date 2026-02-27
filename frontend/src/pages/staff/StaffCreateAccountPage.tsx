@@ -8,6 +8,7 @@ import { useCreateStaffMutation } from "../../api/endpoints/StaffAPI.ts";
 export default function StaffCreateAccountPage() {
     const dispatch = useDispatch();
     const [accountCreated, setAccountCreated] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [createStaff] = useCreateStaffMutation();
 
     async function onCreateAccountSubmission(
@@ -36,8 +37,7 @@ export default function StaffCreateAccountPage() {
             //REDIRECT USER TO APPROPRIATE LOGIN PAGE
             setAccountCreated(true);
         } catch (err) {
-            console.log("Failed to create Staff");
-            console.log(err);
+            setErrorMessage("Failed to create account. Please try again.");
         }
     }
 
@@ -46,7 +46,10 @@ export default function StaffCreateAccountPage() {
             {accountCreated ? (
                 <Navigate to="/staff/dashboard" />
             ) : (
-                <CreateAccountForm onSubmit={onCreateAccountSubmission} />
+                <CreateAccountForm
+                    onSubmit={onCreateAccountSubmission}
+                    errorMessage={errorMessage}
+                />
             )}
         </>
     );

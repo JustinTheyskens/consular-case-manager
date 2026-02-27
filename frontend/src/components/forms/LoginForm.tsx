@@ -1,11 +1,12 @@
-import { Button, TextField, Box } from "@mui/material";
+import { Button, TextField, Box, Alert } from "@mui/material";
 import { useState } from "react";
 
 interface LoginFormProps {
     onSubmit: (emailAddress: string, password: string) => void;
+    errorMessage: string;
 }
 
-export default function LoginForm({ onSubmit }: LoginFormProps) {
+export default function LoginForm({ onSubmit, errorMessage }: LoginFormProps) {
     const [submitting, setSubmitting] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -67,6 +68,14 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                 >
                     Login
                 </Button>
+
+                {errorMessage ? (
+                    <Box>
+                        <Alert>{errorMessage}</Alert>
+                    </Box>
+                ) : (
+                    <></>
+                )}
             </Box>
         </>
     );

@@ -8,6 +8,7 @@ import { useSendLoginMutation } from "../../api/endpoints/LoginAPI.ts";
 
 export default function CreateStaffAccountPage() {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const dispatch = useDispatch();
     const [sendLogin] = useSendLoginMutation();
 
@@ -28,8 +29,7 @@ export default function CreateStaffAccountPage() {
             );
             setLoggedIn(true);
         } catch (err) {
-            console.log("Failed to log in.");
-            console.log(err);
+            setErrorMessage("Failed to log in. Please try again.");
         }
     }
 
@@ -39,7 +39,10 @@ export default function CreateStaffAccountPage() {
                 <Navigate to="/staff/dashboard" />
             ) : (
                 <>
-                    <LoginForm onSubmit={onLoginSubmission} />{" "}
+                    <LoginForm
+                        onSubmit={onLoginSubmission}
+                        errorMessage={errorMessage}
+                    />
                     <Typography
                         variant="caption"
                         sx={{ display: "block", textAlign: "center" }}

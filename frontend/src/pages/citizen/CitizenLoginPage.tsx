@@ -9,6 +9,7 @@ import { useSendLoginMutation } from "../../api/endpoints/LoginAPI.ts";
 export default function CitizenLoginPage() {
     const dispatch = useDispatch();
     const [loggedIn, setLoggedIn] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [sendLogin] = useSendLoginMutation();
 
     async function onLoginSubmission(email: string, password: string) {
@@ -28,8 +29,7 @@ export default function CitizenLoginPage() {
             );
             setLoggedIn(true);
         } catch (err) {
-            console.log("Failed to log in.");
-            console.log(err);
+            setErrorMessage("Failed to log in. Please try again.");
         }
     }
 
@@ -39,7 +39,10 @@ export default function CitizenLoginPage() {
                 <Navigate to="/user/dashboard" />
             ) : (
                 <>
-                    <LoginForm onSubmit={onLoginSubmission} />
+                    <LoginForm
+                        onSubmit={onLoginSubmission}
+                        errorMessage={errorMessage}
+                    />
                     <Typography
                         variant="caption"
                         sx={{ display: "block", textAlign: "center" }}
