@@ -4,42 +4,33 @@ import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import LoginForm from "../../components/forms/LoginForm.tsx";
 import { Typography } from "@mui/material";
+import { useSendLoginMutation } from "../../api/endpoints/LoginAPI.ts";
 
-export default function CreateCitizenAccountPage() {
+export default function CitizenLoginPage() {
+    const dispatch = useDispatch();
     const [loggedIn, setLoggedIn] = useState(false);
+    const [sendLogin] = useSendLoginMutation();
 
     async function onLoginSubmission(email: string, password: string) {
-        //TODO: Replace fetch with RTK Query call
-        const api_url = import.meta.env.VITE_API_URL;
-
-        const request = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        try {
+            //RTK Query POST call to CitizensAPI
+            const response = await sendLogin({
                 email,
                 password,
-            }),
-        };
-        const response = await fetch(api_url, request);
+            }).unwrap();
 
-        if (!response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+            //Stores the userID and login type in the session
+            dispatch(
+                setSession({
+                    userId: response["userId"],
+                    loginType: "citizen",
+                }),
+            );
+            setLoggedIn(true);
+        } catch (err) {
+            console.log("Failed to log in.");
+            console.log(err);
         }
-
-        const createdUserInfo = await response.json();
-
-        const dispatch = useDispatch();
-
-        dispatch(
-            setSession({
-                userId: createdUserInfo.userId,
-                loginType: "citizen",
-            }),
-        );
-
-        setLoggedIn(true);
     }
 
     return (

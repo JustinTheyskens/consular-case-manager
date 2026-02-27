@@ -5,6 +5,7 @@ export type Staff = {
     email: string;
     firstName: string;
     lastName: string;
+    password: string;
 };
 
 export type CreateStaffRequest = Omit<Staff, "_id">;

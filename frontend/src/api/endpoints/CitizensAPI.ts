@@ -5,6 +5,7 @@ export type Citizen = {
     email: string;
     firstName: string;
     lastName: string;
+    password: string;
 };
 
 export type CreateCitizenRequest = Omit<Citizen, "_id">;

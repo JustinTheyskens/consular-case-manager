@@ -3,9 +3,12 @@ import { useDispatch } from "react-redux";
 import { setSession } from "../../store/SessionSlice.ts";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useCreateStaffMutation } from "../../api/endpoints/StaffAPI.ts";
 
 export default function StaffCreateAccountPage() {
+    const dispatch = useDispatch();
     const [accountCreated, setAccountCreated] = useState(false);
+    const [createStaff] = useCreateStaffMutation();
 
     async function onCreateAccountSubmission(
         email: string,
@@ -13,40 +16,29 @@ export default function StaffCreateAccountPage() {
         firstName: string,
         lastName: string,
     ) {
-        //TODO: Replace fetch with RTK Query call
-        const api_url = import.meta.env.VITE_API_URL;
-
-        const request = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        try {
+            //RTK Query POST call to StaffAPI
+            const response = await createStaff({
                 email,
                 password,
                 firstName,
                 lastName,
-            }),
-        };
-        const response = await fetch(api_url, request);
+            }).unwrap();
 
-        if (!response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+            //Stores the userID and login type in the session
+            dispatch(
+                setSession({
+                    userId: response["_id"],
+                    loginType: "staff",
+                }),
+            );
+
+            //REDIRECT USER TO APPROPRIATE LOGIN PAGE
+            setAccountCreated(true);
+        } catch (err) {
+            console.log("Failed to create Staff");
+            console.log(err);
         }
-
-        const createdUserInfo = await response.json();
-
-        const dispatch = useDispatch();
-
-        dispatch(
-            setSession({
-                userId: createdUserInfo.userId,
-                loginType: "staff",
-            }),
-        );
-
-        //REDIRECT USER TO APPROPRIATE LOGIN PAGE
-        setAccountCreated(true);
     }
 
     return (
