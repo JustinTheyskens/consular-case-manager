@@ -1,4 +1,6 @@
-import { Box, Card, CardContent, Typography } from "@mui/material";
+import { Box, Card, CardContent, Typography, CardActionArea } from "@mui/material";
+
+const handleOnClick = () => {};
 
 export const AppointmentCard = ({
     label,
@@ -10,6 +12,7 @@ export const AppointmentCard = ({
     icon: React.ReactNode;
     description: string;
     color: string;
+    onClick?: () => void;
 }) => (
     <Card
         elevation={1}
@@ -24,6 +27,10 @@ export const AppointmentCard = ({
                 transform: "scale(1.02)",
             },
         }}
+    >
+        <CardActionArea
+      onClick={handleOnClick}
+      sx={{ height: "100%" }}
     >
         <CardContent
             sx={{
@@ -50,5 +57,6 @@ export const AppointmentCard = ({
                 {description}
             </Typography>
         </CardContent>
+        </CardActionArea>
     </Card>
 );
