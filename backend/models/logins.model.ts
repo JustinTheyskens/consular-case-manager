@@ -10,6 +10,7 @@ export interface ILogin extends mongoose.Document {
 const loginSchema = new Schema<ILogin>({
     email: {
         required: true,
+        unique: true,
         type: String,
     },
 
