@@ -12,9 +12,9 @@ export type LoginResponse = {
 export const loginAPI = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // POST /login
-        // Accepts {email, password}
+        // Accepts LoginRequest
         // Returns LoginResponse
-        sendLogin: builder.mutation<LoginRequest, LoginResponse>({
+        sendLogin: builder.mutation<LoginResponse, LoginRequest>({
             query: (body) => ({ url: "/login", method: "POST", body }),
         }),
     }),

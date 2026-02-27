@@ -1,11 +1,16 @@
 import CreateAccountForm from "../../components/forms/CreateAccountForm.tsx";
 import { useDispatch } from "react-redux";
 import { setSession } from "../../store/SessionSlice.ts";
+import { useCreateCitizenMutation } from "../../api/endpoints/CitizensAPI.ts";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 export default function CitizenCreateAccountPage() {
+    const dispatch = useDispatch();
     const [accountCreated, setAccountCreated] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const [createCitizen] = useCreateCitizenMutation();
 
     async function onCreateAccountSubmission(
         email: string,
@@ -13,40 +18,28 @@ export default function CitizenCreateAccountPage() {
         firstName: string,
         lastName: string,
     ) {
-        //TODO: Replace fetch with RTK Query call
-        const api_url = import.meta.env.VITE_API_URL;
-
-        const request = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        try {
+            //RTK Query POST call to CitizensAPI
+            const response = await createCitizen({
                 email,
                 password,
                 firstName,
                 lastName,
-            }),
-        };
-        const response = await fetch(api_url, request);
+            }).unwrap();
 
-        if (!response.ok) {
-            throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+            //Stores the userID and login type in the session
+            dispatch(
+                setSession({
+                    userId: response["_id"],
+                    loginType: "citizen",
+                }),
+            );
+
+            //REDIRECT USER TO APPROPRIATE LOGIN PAGE
+            setAccountCreated(true);
+        } catch (err) {
+            setErrorMessage("Failed to create account. Please try again.");
         }
-
-        const createdUserInfo = await response.json();
-
-        const dispatch = useDispatch();
-
-        dispatch(
-            setSession({
-                userId: createdUserInfo.userId,
-                loginType: "citizen",
-            }),
-        );
-
-        //REDIRECT USER TO APPROPRIATE LOGIN PAGE
-        setAccountCreated(true);
     }
 
     return (
@@ -54,7 +47,10 @@ export default function CitizenCreateAccountPage() {
             {accountCreated ? (
                 <Navigate to="/user/dashboard" />
             ) : (
-                <CreateAccountForm onSubmit={onCreateAccountSubmission} />
+                <CreateAccountForm
+                    onSubmit={onCreateAccountSubmission}
+                    errorMessage={errorMessage}
+                />
             )}
         </>
     );

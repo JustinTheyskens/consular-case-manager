@@ -1,11 +1,12 @@
-import { Button, TextField, Box } from "@mui/material";
+import { Button, TextField, Box, Typography, Alert } from "@mui/material";
 import { useState } from "react";
 
 interface CreateAccountFormProps {
     onSubmit: (emailAddress: string, password: string, firstName: string, lastName: string) => void;
+    errorMessage: string;
 }
 
-export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) {
+export default function CreateAccountForm({ onSubmit, errorMessage }: CreateAccountFormProps) {
     const [submitting, setSubmitting] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -89,6 +90,14 @@ export default function CreateAccountForm({ onSubmit }: CreateAccountFormProps) 
                 >
                     Create Account
                 </Button>
+
+                {errorMessage ? (
+                    <Box>
+                        <Alert severity="error">{errorMessage}</Alert>
+                    </Box>
+                ) : (
+                    <></>
+                )}
             </Box>
         </>
     );
