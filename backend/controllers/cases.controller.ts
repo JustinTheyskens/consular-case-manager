@@ -1,5 +1,5 @@
 import { type Request, type Response } from "express";
-import CaseService from "../services/cases.service.ts";
+import CaseService, { type NewCaseInfo } from "../services/cases.service.ts";
 import { type ICase } from "../models/cases.model.ts";
 
 export interface CaseParams {
@@ -56,7 +56,7 @@ async function getCaseByReference(req: Request<CaseParams>, res: Response) {
 /**
  * Handles POST /cases/
  */
-async function createCase(req: Request<{}, ICase, ICase>, res: Response) {
+async function createCase(req: Request<{}, ICase, NewCaseInfo>, res: Response) {
     try {
         const data = req.body;
 

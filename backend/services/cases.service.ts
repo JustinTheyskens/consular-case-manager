@@ -7,6 +7,11 @@ import config from "../config.json" with { type: "json" };
 
 import { startSession, Types } from "mongoose";
 
+export interface NewCaseInfo {
+    appointment: IAppointment;
+    citizen: string;
+}
+
 /**
  * Gets all cases from the repository
  * @returns A promise containing all case files found
@@ -47,24 +52,27 @@ async function getCaseByReference(ref: number) {
  * @param data The data to populate the case file with
  * @returns A promise containing the new case file
  */
-async function createCase(data: ICase) {
+async function createCase(data: NewCaseInfo) {
     // Begins mongoose transaction for integrity (atomically transfer items)
     const session = await startSession();
 
     try {
         return await session.withTransaction(async () => {
+            const { refLength } = config;
+
             // First creates an appointment
-            const { appointment } = data;
+            const { appointment, citizen } = data;
             const appointmentDetails = appointment as IAppointment;
 
             const staff = await assignAppointmentStaff(appointmentDetails);
             const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
 
             return await CaseRepository.createCase({
-                ...data,
+                citizen: new Types.ObjectId(citizen),
                 appointment: _id,
                 assignedStaff: staff,
-            } as ICase);
+                reference: Math.floor(Math.random() * Math.pow(10, refLength + 1)) + 1,
+            });
         });
     } catch (error) {
         console.error(error);
@@ -101,7 +109,7 @@ async function updateCase(ref: number, data: ICase) {
         return await session.withTransaction(async () => {
             // Creates a new appointment with the new specifications
             const appointmentDetails = newAppointment as IAppointment;
-            
+
             const staff = await assignAppointmentStaff(appointmentDetails);
             const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
 

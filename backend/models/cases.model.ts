@@ -25,6 +25,7 @@ const caseSchema = new Schema<ICase>({
 
     status: {
         required: true,
+        default: "scheduled",
         type: String,
         enum: caseStatusTypes,
     },
@@ -49,18 +50,19 @@ const caseSchema = new Schema<ICase>({
 
     checkedIn: {
         required: true,
-        type: Boolean,
         default: false,
+        type: Boolean,
     },
 
     flagged: {
         required: true,
-        type: Boolean,
         default: false,
+        type: Boolean,
     },
 
     notes: {
         required: false,
+        default: "",
         type: String,
     },
 });
