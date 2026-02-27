@@ -2,14 +2,8 @@ import { baseApi } from "../BaseAPI.ts";
 
 export type Appointment = {
     _id: string;
-    reference: number;
-    status: string;
-    appointment: Appointment;
-    assignedStaff: string;
-    citizen: string;
-    checkedIn: boolean;
-    flagged: boolean;
-    notes?: string;
+    type: string;
+    time: Date;
 };
 
 export type UpdateAppointmentRequest = Partial<Omit<Appointment, "_id">> & { _id: string };
