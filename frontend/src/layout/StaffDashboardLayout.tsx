@@ -1,9 +1,21 @@
 import Grid from "@mui/material/Grid";
-import { Box, ThemeProvider, Card, CardContent, InputLabel,
-Typography, Divider, TextField, MenuItem, Select, FormControl, Button } from "@mui/material";
+import {
+    Box,
+    ThemeProvider,
+    Card,
+    CardContent,
+    InputLabel,
+    Typography,
+    Divider,
+    TextField,
+    MenuItem,
+    Select,
+    FormControl,
+    Button,
+} from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
-import { theme } from '../theme';
+import { theme } from "../theme";
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -13,9 +25,41 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState } from "react";
 
- // Scheduled, In Review, Approved, Rejected, and Completed
+// Scheduled, In Review, Approved, Rejected, and Completed
 const statusOptions = ["All", "In Review", "Approved", "Rejected", "Completed", "Cancelled"];
 const typeOptions = ["All", "Renewal", "First-Time", "Emergency", "Lost or Stolen"];
+
+const NoteModal = ({
+    reference,
+    existingNotes,
+    onSave,
+    onClose,
+}: {
+    reference: string;
+    existingNotes: string;
+    onSave: (note: string) => void;
+    onClose: () => void;
+}) => {
+    const [notes, setNotes] = useState(existingNotes);
+    return (
+        <Card
+            elevation={3}
+            sx={{ mt: 1, mb: 1, border: "1px solid", borderColor: "primary.main" }}
+        >
+            <CardContent>
+                <TextField
+                    multiline
+                    rows={3}
+                    fullWidth
+                    placeholder="Add note..."
+                    value={notes}
+                    onChange={(n) => setNotes(n.target.value)}
+                    sx={{ mb: 2 }}
+                />
+            </CardContent>
+        </Card>
+    );
+};
 
 const dummyData = [
     {
@@ -103,32 +147,62 @@ export const StaffDashboard = () => {
 
                     <Box sx={{ px: 3 }}>
                         {/* ── Metric Cards ── */}
-                        <Grid container spacing={3} sx={{ mb: 4 }}>
+                        <Grid
+                            container
+                            spacing={3}
+                            sx={{ mb: 4 }}
+                        >
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard label="Appointments Today" value={42} icon={<EventAvailableIcon />} />
+                                <MetricCard
+                                    label="Appointments Today"
+                                    value={42}
+                                    icon={<EventAvailableIcon />}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard label="Available Slots" value={18} icon={<AccessTimeIcon />} />
+                                <MetricCard
+                                    label="Available Slots"
+                                    value={18}
+                                    icon={<AccessTimeIcon />}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard label="Pending Cases" value={24} icon={<AssignmentIcon />} />
+                                <MetricCard
+                                    label="Pending Cases"
+                                    value={24}
+                                    icon={<AssignmentIcon />}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard label="Flagged Cases" value={3} icon={<WarningAmberIcon />} />
+                                <MetricCard
+                                    label="Flagged Cases"
+                                    value={3}
+                                    icon={<WarningAmberIcon />}
+                                />
                             </Grid>
                         </Grid>
 
                         {/* Search & Filters */}
-                        <Card elevation={1} sx={{ mb: 3 }}>
+                        <Card
+                            elevation={1}
+                            sx={{ mb: 3 }}
+                        >
                             <CardContent>
                                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                                     <FilterListIcon color="action" />
-                                    <Typography variant="subtitle1" fontWeight={600}>
+                                    <Typography
+                                        variant="subtitle1"
+                                        fontWeight={600}
+                                    >
                                         Search & Filter
                                     </Typography>
                                 </Box>
                                 <Divider sx={{ mb: 2 }} />
-                                <Grid container spacing={2} alignItems="center">
+                                <Grid
+                                    container
+                                    spacing={2}
+                                    alignItems="center"
+                                >
                                     <Grid size={{ xs: 12, sm: 5 }}>
                                         <TextField
                                             fullWidth
@@ -138,13 +212,19 @@ export const StaffDashboard = () => {
                                             onChange={(e) => setSearch(e.target.value)}
                                             InputProps={{
                                                 startAdornment: (
-                                                    <SearchIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} />
+                                                    <SearchIcon
+                                                        fontSize="small"
+                                                        sx={{ mr: 1, color: "text.secondary" }}
+                                                    />
                                                 ),
                                             }}
                                         />
                                     </Grid>
                                     <Grid size={{ xs: 12, sm: 3 }}>
-                                        <FormControl fullWidth size="small">
+                                        <FormControl
+                                            fullWidth
+                                            size="small"
+                                        >
                                             <InputLabel>Status</InputLabel>
                                             <Select
                                                 value={statusFilter}
@@ -152,13 +232,21 @@ export const StaffDashboard = () => {
                                                 onChange={(e) => setStatusFilter(e.target.value)}
                                             >
                                                 {statusOptions.map((s) => (
-                                                    <MenuItem key={s} value={s}>{s}</MenuItem>
+                                                    <MenuItem
+                                                        key={s}
+                                                        value={s}
+                                                    >
+                                                        {s}
+                                                    </MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>
                                     </Grid>
                                     <Grid size={{ xs: 12, sm: 3 }}>
-                                        <FormControl fullWidth size="small">
+                                        <FormControl
+                                            fullWidth
+                                            size="small"
+                                        >
                                             <InputLabel>Type</InputLabel>
                                             <Select
                                                 value={typeFilter}
@@ -166,7 +254,12 @@ export const StaffDashboard = () => {
                                                 onChange={(e) => setTypeFilter(e.target.value)}
                                             >
                                                 {typeOptions.map((t) => (
-                                                    <MenuItem key={t} value={t}>{t}</MenuItem>
+                                                    <MenuItem
+                                                        key={t}
+                                                        value={t}
+                                                    >
+                                                        {t}
+                                                    </MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>
@@ -175,7 +268,11 @@ export const StaffDashboard = () => {
                                         <Button
                                             size="small"
                                             variant="outlined"
-                                            onClick={() => { setSearch(""); setStatusFilter("All"); setTypeFilter("All"); }}
+                                            onClick={() => {
+                                                setSearch("");
+                                                setStatusFilter("All");
+                                                setTypeFilter("All");
+                                            }}
                                         >
                                             Clear
                                         </Button>
@@ -184,8 +281,12 @@ export const StaffDashboard = () => {
                             </CardContent>
                         </Card>
 
-
-
+                        <NoteModal
+                            reference=""
+                            existingNotes=""
+                            onSave={() => {}}
+                            onClose={() => {}}
+                        />
                     </Box>
                 </Box>
             </ThemeProvider>
