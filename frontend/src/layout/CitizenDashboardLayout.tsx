@@ -22,9 +22,18 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import { useState, type ReactElement } from "react";
+import CreateAppointmentModal from "../components/modals/CreateAppointmentModal";
+
+export interface AppointmentType {
+    label: string;
+    icon: ReactElement;
+    description: string;
+    color: string;
+}
 
 // appointment types
-const appointmentTypes = [
+const appointmentTypes: AppointmentType[] = [
     {
         label: "Passport Renewal",
         icon: <AutorenewIcon sx={{ fontSize: 36 }} />,
@@ -63,6 +72,9 @@ const upcomingAppointment = {
 const name = "Justin";
 
 export const UserDashboard = () => {
+    const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentType | null>(null);
+
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -97,7 +109,6 @@ export const UserDashboard = () => {
                         </Typography>
                     </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
-
                         {/* Summary Metrics */}
                         <Grid
                             container
@@ -166,7 +177,13 @@ export const UserDashboard = () => {
                                                     key={apt.label}
                                                     size={{ xs: 12, sm: 6 }}
                                                 >
-                                                    <AppointmentCard {...apt} />
+                                                    <AppointmentCard
+                                                        {...apt}
+                                                        onClick={() => {
+                                                            setSelectedAppointment(apt);
+                                                            setShowAppointmentDialog(true);
+                                                        }}
+                                                    />
                                                 </Grid>
                                             ))}
                                         </Grid>
@@ -183,7 +200,10 @@ export const UserDashboard = () => {
                                 >
                                     {/* Upcoming */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -285,7 +305,10 @@ export const UserDashboard = () => {
 
                                     {/* Manage */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -331,6 +354,11 @@ export const UserDashboard = () => {
                         </Grid>
                     </Box>
                 </Box>
+
+                <CreateAppointmentModal
+                    appointmentType={selectedAppointment}
+                    isOpen={showAppointmentDialog}
+                />
             </ThemeProvider>
         </Box>
     );
