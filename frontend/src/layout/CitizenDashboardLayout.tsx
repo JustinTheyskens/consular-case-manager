@@ -30,6 +30,7 @@ export interface AppointmentType {
     icon: ReactElement;
     description: string;
     color: string;
+    type: string;
 }
 
 // appointment types
@@ -39,24 +40,28 @@ const appointmentTypes: AppointmentType[] = [
         icon: <AutorenewIcon sx={{ fontSize: 36 }} />,
         description: "Renew an existing passport",
         color: "#1976d2", // Blue
+        type: "passport-renewal",
     },
     {
         label: "First-Time Passport",
         icon: <AddCardIcon sx={{ fontSize: 36 }} />,
         description: "Apply for your first passport",
         color: "#2e7d32", // Green
+        type: "passport-first",
     },
     {
         label: "Emergency Travel Document",
         icon: <FlightTakeoffIcon sx={{ fontSize: 36 }} />,
         description: "Urgent travel within 72 hours",
         color: "#ed6c02", // Orange
+        type: "passport-emergency",
     },
     {
         label: "Lost or Stolen Passport",
         icon: <ReportProblemIcon sx={{ fontSize: 36 }} />,
         description: "Report and replace a lost passport",
         color: "#d32f2f", // Red
+        type: "passport-lost",
     },
 ];
 
@@ -356,7 +361,7 @@ export const UserDashboard = () => {
                 </Box>
 
                 <CreateAppointmentModal
-                    appointmentType={selectedAppointment}
+                    appointment={selectedAppointment}
                     isOpen={showAppointmentDialog}
                 />
             </ThemeProvider>
