@@ -31,7 +31,7 @@ import { theme } from "../theme";
 import SaveIcon from "@mui/icons-material/Save";
 import FlagIcon from "@mui/icons-material/Flag";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -111,7 +111,7 @@ const dummyData = [
         id: 1,
         reference: "CCM-2026-48291",
         applicant: "Maria Santos",
-        type: "Passport Renewal",
+        type: "Renewal",
         date: "Feb 23, 2026",
         time: "9:00 AM",
         status: "Confirmed",
@@ -122,7 +122,7 @@ const dummyData = [
         id: 2,
         reference: "CCM-2026-48302",
         applicant: "James O'Brien",
-        type: "First-Time Passport",
+        type: "First-Time",
         date: "Feb 23, 2026",
         time: "10:30 AM",
         status: "In Review",
@@ -133,7 +133,7 @@ const dummyData = [
         id: 3,
         reference: "CCM-2026-48317",
         applicant: "Aisha Kamara",
-        type: "Emergency Travel Document",
+        type: "Emergency",
         date: "Feb 23, 2026",
         time: "11:00 AM",
         status: "Scheduled",
@@ -144,7 +144,7 @@ const dummyData = [
         id: 4,
         reference: "CCM-2026-48330",
         applicant: "David Chen",
-        type: "Lost or Stolen Passport",
+        type: "Lost or Stolen",
         date: "Feb 23, 2026",
         time: "1:00 PM",
         status: "Confirmed",
@@ -155,7 +155,7 @@ const dummyData = [
         id: 5,
         reference: "CCM-2026-48345",
         applicant: "Fatima Al-Hassan",
-        type: "Passport Renewal",
+        type: "Renewal",
         date: "Feb 23, 2026",
         time: "2:30 PM",
         status: "Completed",
@@ -166,7 +166,7 @@ const dummyData = [
         id: 6,
         reference: "CCM-2026-48360",
         applicant: "Tom Gallagher",
-        type: "First-Time Passport",
+        type: "First-Time",
         date: "Feb 23, 2026",
         time: "3:00 PM",
         status: "In Review",
@@ -525,12 +525,24 @@ export const StaffDashboard = () => {
                                                                 </Tooltip>
                                                                 <Tooltip title="Update Status">
                                                                     <IconButton
-                                                                    size="small"
-                                                                    onClick={() => setActiveStatusEditId(activeStatusEditId == apt.id ? null : apt.id)}
-                                                                    color={activeStatusEditId == apt.id ? "primary" : "default"}>
-                                                                        <EditIcon fontSize="small"/>
+                                                                        size="small"
+                                                                        onClick={() =>
+                                                                            setActiveStatusEditId(
+                                                                                activeStatusEditId ==
+                                                                                    apt.id
+                                                                                    ? null
+                                                                                    : apt.id,
+                                                                            )
+                                                                        }
+                                                                        color={
+                                                                            activeStatusEditId ==
+                                                                            apt.id
+                                                                                ? "primary"
+                                                                                : "default"
+                                                                        }
+                                                                    >
+                                                                        <EditIcon fontSize="small" />
                                                                     </IconButton>
-
                                                                 </Tooltip>
                                                             </Box>
                                                         </TableCell>
