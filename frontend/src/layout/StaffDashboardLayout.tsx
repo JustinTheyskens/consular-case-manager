@@ -12,10 +12,14 @@ import {
     Select,
     FormControl,
     Button,
+    CardActionArea,
+    IconButton,
+    Icon,
 } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
 import { theme } from "../theme";
+import SaveIcon from "@mui/icons-material/Save";
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -29,6 +33,15 @@ import { useState } from "react";
 const statusOptions = ["All", "In Review", "Approved", "Rejected", "Completed", "Cancelled"];
 const typeOptions = ["All", "Renewal", "First-Time", "Emergency", "Lost or Stolen"];
 
+const statusColors: Record<string, "default" | "warning" | "info" | "success" | "error"> = {
+    Approved: "success",
+    "In Review": "info",
+    Rejected: "warning",
+    Completed: "default",
+    Cancelled: "error",
+};
+
+/* Notepad */
 const NoteModal = ({
     reference,
     existingNotes,
@@ -50,17 +63,28 @@ const NoteModal = ({
                 <TextField
                     multiline
                     rows={3}
-                    fullWidth
+                    //fullWidth
                     placeholder="Add note..."
                     value={notes}
                     onChange={(n) => setNotes(n.target.value)}
                     sx={{ mb: 2 }}
                 />
+                <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={() => {
+                        onSave(notes);
+                        onClose();
+                    }}
+                >
+                    <SaveIcon />
+                </IconButton>
             </CardContent>
         </Card>
     );
 };
 
+/* Hard coded data */
 const dummyData = [
     {
         id: 1,
@@ -130,11 +154,42 @@ const dummyData = [
     },
 ];
 
+/* Main Dashboard */
 export const StaffDashboard = () => {
-    const [appointments, setAppointments] = useState();
+    const [appointments, setAppointments] = useState(dummyData);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [typeFilter, setTypeFilter] = useState("All");
+    const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
+
+    const filtered = appointments.filter((a) => {
+        const matchedSearch =
+            a.reference.toLowerCase().includes(search.toLocaleLowerCase()) ||
+            a.applicant.toLocaleLowerCase().includes(search.toLocaleLowerCase());
+
+        const matchedStatus = statusFilter == "All" || a.status == statusFilter;
+        const matchedType = typeFilter == "All" || a.type == typeFilter;
+
+        return matchedSearch && matchedStatus && matchedType;
+    });
+
+    const flaggedCount = appointments.filter((a) => a.flagged).length;
+    const reviewCount = appointments.filter((a) => a.status == "In Review").length;
+    const completedCount = appointments.filter((a) => a.status == "Completed").length;
+
+    const toggleFlag = (id: number) => {
+        setAppointments((prev) =>
+            prev.map((a) => (a.id == id ? { ...a, flagged: !a.flagged } : a)),
+        );
+    };
+
+    const updateNote = (id: number, note: string) => {
+        setAppointments((prev) => prev.map((a) => (a.id == id ? { ...a, notes: note } : a)));
+    };
+
+    const updateStatus = (id: number, status: string) => {
+        setAppointments((prev) => prev.map((a) => (a.id == id ? { ...a, status } : a)));
+    };
 
     return (
         <Box>
@@ -280,7 +335,27 @@ export const StaffDashboard = () => {
                                 </Grid>
                             </CardContent>
                         </Card>
+                        {/* Appointment Table */}
+                        <Card>
+                            <CardContent>
+                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                                    <Typography
+                                        variant="subtitle1"
+                                        fontWeight={600}
+                                    >
+                                        Today's Schedule
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                    >
+                                        Schedule Goes Here
+                                    </Typography>
+                                </Box>
+                            </CardContent>
+                        </Card>
 
+                        {/* Notepad - testing */}
                         <NoteModal
                             reference=""
                             existingNotes=""
