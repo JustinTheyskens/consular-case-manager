@@ -56,9 +56,9 @@ async function getAvailablyTimes(
         if (startTime != null) {
             const date = new Date(Number(startTime));
 
-            returnValue = AvailabilityService.getAllAvailableTimes(appointmentType, date);
+            returnValue = await AvailabilityService.getAllAvailableTimes(appointmentType, date);
         } else {
-            returnValue = AvailabilityService.getAllAvailableTimes(appointmentType);
+            returnValue = await AvailabilityService.getAllAvailableTimes(appointmentType);
         }
         res.status(200).json(returnValue);
     } catch (error) {
