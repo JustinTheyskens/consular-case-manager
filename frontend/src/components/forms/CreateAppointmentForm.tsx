@@ -38,40 +38,35 @@ export default function CreateAppointmentForm({
     function shouldDisableDay(day: PickerValidDate) {
         //TODO: Any given day slot should be disabled if it is not included in the return from api/availabilities/times
 
-        console.log("Day Checking");
-        console.log(availabilities);
-
         //Guard against falsey results, empty arrays, or empty objects
-        if (!availabilities || !Array.isArray(availabilities) || availabilities.length === 0)
+        if (!availabilities || !Array.isArray(availabilities) || availabilities.length === 0) {
+            console.log("No availabilities, disabling all days");
             return true;
+        }
 
         const now = dayjs();
         //Two weeks + 1 day to account for not being able to schedule "today"
         const twoWeeksOut = now.add(15, "day");
 
-        console.log("availabilities:", availabilities);
-
-        for (const availability of availabilities) {
-            if (
-                day.isBefore(twoWeeksOut) &&
-                day.isAfter(now) &&
-                day.day() == availability.dayOfWeek
-            ) {
-                console.log("Not a valid weekday");
-                console.log("disabling day: " + day.toString());
+        console.log("Start Print");
+        for (const timestamp in availabilities) {
+            const asDate = dayjs(timestamp);
+            console.log(asDate.toString());
+            //Only enable days that are within the next two weeks and match the day of the week of any availability timestamp
+            if (day.isBefore(twoWeeksOut) && day.isAfter(now) && day.day() == asDate.day()) {
                 return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     function shouldDisableTime(time: PickerValidDate, view: TimeView) {
         if (!availabilities) return true;
-        if (view === "minutes") {
-            console.log("Time PickerValidDate");
-            console.log(time.toString());
-        }
+        // if (view === "minutes") {
+        //     console.log("Time PickerValidDate");
+        //     console.log(time.toString());
+        // }
 
         //TODO: Any given time slot should be disabled if it is not included in the return from api/availabilities/times
         return false;
@@ -86,7 +81,7 @@ export default function CreateAppointmentForm({
             >
                 <LocalizationProvider
                     dateAdapter={AdapterDayjs}
-                    adapterLocale="de"
+                    adapterLocale="en"
                 >
                     <DesktopDateTimePicker
                         value={selectedDateTime}
