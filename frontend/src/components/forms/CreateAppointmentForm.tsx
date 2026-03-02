@@ -11,15 +11,17 @@ import { useGetTimesQuery } from "../../api/endpoints/AvailabilityAPI";
 interface CreateAppointmentFormProps {
     onSubmit: (selectedDateTime: PickerValue | undefined) => void;
     errorMessage: string;
+    appointmentType: string | undefined;
 }
 
 export default function CreateAppointmentForm({
     onSubmit,
     errorMessage,
+    appointmentType,
 }: CreateAppointmentFormProps) {
     const [submitting, setSubmitting] = useState(false);
     const [selectedDateTime, setSelectedDateTime] = useState<PickerValue>(null);
-    const { data: availabilities } = useGetTimesQuery();
+    const { data: availabilities } = useGetTimesQuery(appointmentType);
 
     function submitForm(event: React.SyntheticEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -35,11 +37,19 @@ export default function CreateAppointmentForm({
 
     function shouldDisableDay(day: PickerValidDate) {
         //TODO: Any given day slot should be disabled if it is not included in the return from api/availabilities/times
-        if (!availabilities) return true;
+
+        console.log("Day Checking");
+        console.log(availabilities);
+
+        //Guard against falsey results, empty arrays, or empty objects
+        if (!availabilities || !Array.isArray(availabilities) || availabilities.length === 0)
+            return true;
 
         const now = dayjs();
         //Two weeks + 1 day to account for not being able to schedule "today"
         const twoWeeksOut = now.add(15, "day");
+
+        console.log("availabilities:", availabilities);
 
         for (const availability of availabilities) {
             if (

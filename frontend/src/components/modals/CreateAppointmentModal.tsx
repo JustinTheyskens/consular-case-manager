@@ -8,12 +8,12 @@ interface CreateAppointmentDialogProps {
     isOpen: boolean;
     //We always set an appointment type before opening the model
     //But it is null by default
-    appointmentType: AppointmentType | null;
+    appointment: AppointmentType | undefined;
 }
 
 export default function CreateAppointmentModal({
     isOpen,
-    appointmentType,
+    appointment,
 }: CreateAppointmentDialogProps) {
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -25,10 +25,11 @@ export default function CreateAppointmentModal({
     return (
         <>
             <Dialog open={isOpen}>
-                <DialogTitle>{`Craete appointment for ${appointmentType?.label}`}</DialogTitle>
+                <DialogTitle>{`Create appointment for ${appointment?.label}`}</DialogTitle>
                 <CreateAppointmentForm
                     onSubmit={onDialogSubmit}
                     errorMessage={errorMessage}
+                    appointmentType={appointment?.type}
                 />
             </Dialog>
         </>
