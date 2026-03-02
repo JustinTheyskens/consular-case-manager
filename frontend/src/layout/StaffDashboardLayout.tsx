@@ -29,8 +29,9 @@ import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
 import { theme } from "../theme";
 import SaveIcon from "@mui/icons-material/Save";
-import FlagIcon from '@mui/icons-material/Flag';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import FlagIcon from "@mui/icons-material/Flag";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
+import EditIcon from '@mui/icons-material/Edit';
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -41,9 +42,16 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState } from "react";
 import { StatusEditor } from "../components/StatusEditor";
 
-
 // Scheduled, In Review, Approved, Rejected, and Completed
-const statusOptions = ["All", "In Review", "Approved", "Rejected", "Completed", "Cancelled"];
+const statusOptions = [
+    "All",
+    "Scheduled",
+    "In Review",
+    "Approved",
+    "Rejected",
+    "Completed",
+    "Cancelled",
+];
 const typeOptions = ["All", "Renewal", "First-Time", "Emergency", "Lost or Stolen"];
 
 const statusColors: Record<string, "default" | "warning" | "info" | "success" | "error"> = {
@@ -76,7 +84,7 @@ const NoteModal = ({
                 <TextField
                     multiline
                     rows={3}
-                    //fullWidth
+                    fullWidth
                     placeholder="Add note..."
                     value={notes}
                     onChange={(n) => setNotes(n.target.value)}
@@ -117,7 +125,7 @@ const dummyData = [
         type: "First-Time Passport",
         date: "Feb 23, 2026",
         time: "10:30 AM",
-        status: "Pending Review",
+        status: "In Review",
         flagged: true,
         notes: "Missing birth certificate copy",
     },
@@ -128,7 +136,7 @@ const dummyData = [
         type: "Emergency Travel Document",
         date: "Feb 23, 2026",
         time: "11:00 AM",
-        status: "In Progress",
+        status: "Scheduled",
         flagged: false,
         notes: "",
     },
@@ -161,7 +169,7 @@ const dummyData = [
         type: "First-Time Passport",
         date: "Feb 23, 2026",
         time: "3:00 PM",
-        status: "Pending Review",
+        status: "In Review",
         flagged: true,
         notes: "Requires supervisor sign-off",
     },
@@ -461,27 +469,91 @@ export const StaffDashboard = () => {
                                                             </Typography>
                                                         </TableCell>
                                                         <TableCell align="center">
-                                                            <Box sx={{display: "flex", gap:0.5, justifyContent: "center"}}>
-                                                            <Tooltip title={apt.flagged ? "Remove Flag" : "FLag or Follow Up"}>
-                                                                <IconButton size="small" onClick={() => toggleFlag(apt.id)} color={apt.flagged ? "warning" : "default"}>
-                                                                    <Badge color="warning" variant="dot" invisible={!apt.flagged}>
-                                                                        <FlagIcon fontSize="small" />
-                                                                    </Badge>  
-                                                                </IconButton>
+                                                            <Box
+                                                                sx={{
+                                                                    display: "flex",
+                                                                    gap: 0.5,
+                                                                    justifyContent: "center",
+                                                                }}
+                                                            >
+                                                                <Tooltip
+                                                                    title={
+                                                                        apt.flagged
+                                                                            ? "Remove Flag"
+                                                                            : "FLag or Follow Up"
+                                                                    }
+                                                                >
+                                                                    <IconButton
+                                                                        size="small"
+                                                                        onClick={() =>
+                                                                            toggleFlag(apt.id)
+                                                                        }
+                                                                        color={
+                                                                            apt.flagged
+                                                                                ? "warning"
+                                                                                : "default"
+                                                                        }
+                                                                    >
+                                                                        <Badge
+                                                                            color="warning"
+                                                                            variant="dot"
+                                                                            invisible={!apt.flagged}
+                                                                        >
+                                                                            <FlagIcon fontSize="small" />
+                                                                        </Badge>
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                <Tooltip title="Add / Edit Note">
+                                                                    <IconButton
+                                                                        size="small"
+                                                                        onClick={() =>
+                                                                            setActiveNoteId(
+                                                                                activeNoteId ==
+                                                                                    apt.id
+                                                                                    ? null
+                                                                                    : apt.id,
+                                                                            )
+                                                                        }
+                                                                        color={
+                                                                            activeNoteId == apt.id
+                                                                                ? "primary"
+                                                                                : "default"
+                                                                        }
+                                                                    >
+                                                                        <NoteAddIcon fontSize="small" />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                <Tooltip title="Update Status">
+                                                                    <IconButton
+                                                                    size="small"
+                                                                    onClick={() => setActiveStatusEditId(activeStatusEditId == apt.id ? null : apt.id)}
+                                                                    color={activeStatusEditId == apt.id ? "primary" : "default"}>
+                                                                        <EditIcon fontSize="small"/>
+                                                                    </IconButton>
 
-                                                            </Tooltip> 
-                                                            <Tooltip title="Add / Edit Note">
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => setActiveNoteId(activeNoteId == apt.id ? null : apt.id)}
-                                                                color={activeNoteId == apt.id ? "primary" : "default"}>
-                                                                    <NoteAddIcon fontSize="small"/>
-                                                                </IconButton>
-                                                            </Tooltip>                                                       
+                                                                </Tooltip>
                                                             </Box>
-                                
                                                         </TableCell>
                                                     </TableRow>
+                                                    {activeNoteId == apt.id && (
+                                                        <TableRow key={`note-${apt.id}`}>
+                                                            <TableCell
+                                                                colSpan={7}
+                                                                sx={{ py: 0, px: 2 }}
+                                                            >
+                                                                <NoteModal
+                                                                    reference={apt.reference}
+                                                                    existingNotes={apt.notes}
+                                                                    onSave={(note) =>
+                                                                        updateNote(apt.id, note)
+                                                                    }
+                                                                    onClose={() =>
+                                                                        setActiveNoteId(null)
+                                                                    }
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
                                                 </>
                                             ))}
                                         </TableBody>
@@ -489,14 +561,6 @@ export const StaffDashboard = () => {
                                 </TableContainer>
                             </CardContent>
                         </Card>
-
-                        {/* Notepad - testing */}
-                        <NoteModal
-                            reference=""
-                            existingNotes=""
-                            onSave={() => {}}
-                            onClose={() => {}}
-                        />
                     </Box>
                 </Box>
             </ThemeProvider>
