@@ -1,5 +1,5 @@
 import { baseApi } from "../BaseAPI.ts";
-import type { Appointment } from "./Appointments.ts";
+import type { Appointment } from "./AppointmentsAPI.ts";
 
 export type Case = {
     _id: string;
