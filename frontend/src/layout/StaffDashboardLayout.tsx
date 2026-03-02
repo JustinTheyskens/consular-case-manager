@@ -20,11 +20,17 @@ import {
     TableHead,
     TableRow,
     TableCell,
+    TableBody,
+    Chip,
+    Tooltip,
+    Badge,
 } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
 import { theme } from "../theme";
 import SaveIcon from "@mui/icons-material/Save";
+import FlagIcon from '@mui/icons-material/Flag';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -33,6 +39,8 @@ import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState } from "react";
+import { StatusEditor } from "../components/StatusEditor";
+
 
 // Scheduled, In Review, Approved, Rejected, and Completed
 const statusOptions = ["All", "In Review", "Approved", "Rejected", "Completed", "Cancelled"];
@@ -166,6 +174,7 @@ export const StaffDashboard = () => {
     const [statusFilter, setStatusFilter] = useState("All");
     const [typeFilter, setTypeFilter] = useState("All");
     const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
+    const [activeStatusEditId, setActiveStatusEditId] = useState<number | null>(null);
 
     const filtered = appointments.filter((a) => {
         const matchedSearch =
@@ -358,23 +367,126 @@ export const StaffDashboard = () => {
                                         {filtered.length} of {appointments.length} appointments
                                     </Typography>
                                 </Box>
-                                <Divider sx={{mb: 2}}/>
-                                    <TableContainer>
-                                        <Table size="small">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell><strong>Time</strong></TableCell>
-                                                    <TableCell><strong>Reference</strong></TableCell>
-                                                    <TableCell><strong>Applicant</strong></TableCell>
-                                                    <TableCell><strong>Type</strong></TableCell>
-                                                    <TableCell><strong>Time</strong></TableCell>
-                                                    <TableCell><strong>Status</strong></TableCell>
-                                                    <TableCell><strong>Notes</strong></TableCell>
-                                                    <TableCell align="center"><strong>Actions</strong></TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                        </Table>
-                                    </TableContainer>
+                                <Divider sx={{ mb: 2 }} />
+                                <TableContainer>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <strong>Time</strong>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <strong>Reference</strong>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <strong>Applicant</strong>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <strong>Type</strong>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <strong>Status</strong>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <strong>Notes</strong>
+                                                </TableCell>
+                                                <TableCell align="center">
+                                                    <strong>Actions</strong>
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {filtered.map((apt) => (
+                                                <>
+                                                    <TableRow
+                                                        key={apt.id}
+                                                        sx={{
+                                                            backgroundColor: apt.flagged
+                                                                ? "rgba(255, 152, 0, 0.06)"
+                                                                : "inherit",
+                                                            "&:hover": {
+                                                                backgroundColor: "action.hover",
+                                                            },
+                                                        }}
+                                                    >
+                                                        <TableCell>{apt.time}</TableCell>
+                                                        <TableCell>{apt.reference}</TableCell>
+                                                        <TableCell>{apt.applicant}</TableCell>
+                                                        <TableCell>{apt.type}</TableCell>
+                                                        {/* If actively editing, 
+                                                        dropdown menu, 
+                                                        else, 
+                                                        chip */}
+                                                        <TableCell>
+                                                            {activeStatusEditId == apt.id ? (
+                                                                <StatusEditor
+                                                                    current={apt.status}
+                                                                    onSave={(s) =>
+                                                                        updateStatus(apt.id, s)
+                                                                    }
+                                                                    onClose={() =>
+                                                                        setActiveStatusEditId(null)
+                                                                    }
+                                                                />
+                                                            ) : (
+                                                                <Chip
+                                                                    label={apt.status}
+                                                                    color={
+                                                                        statusColors[apt.status] ??
+                                                                        "default"
+                                                                    }
+                                                                    size="small"
+                                                                />
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography
+                                                                variant="body2"
+                                                                color={
+                                                                    apt.notes
+                                                                        ? "text.primary"
+                                                                        : "text.disabled"
+                                                                }
+                                                                sx={{
+                                                                    fontStyle: apt.notes
+                                                                        ? "normal"
+                                                                        : "italic",
+                                                                    maxWidth: 160,
+                                                                    overflow: "hidden",
+                                                                    textOverflow: "ellipsis",
+                                                                    whiteSpace: "nowrap",
+                                                                }}
+                                                            >
+                                                                {apt.notes || "no notes"}
+                                                            </Typography>
+                                                        </TableCell>
+                                                        <TableCell align="center">
+                                                            <Box sx={{display: "flex", gap:0.5, justifyContent: "center"}}>
+                                                            <Tooltip title={apt.flagged ? "Remove Flag" : "FLag or Follow Up"}>
+                                                                <IconButton size="small" onClick={() => toggleFlag(apt.id)} color={apt.flagged ? "warning" : "default"}>
+                                                                    <Badge color="warning" variant="dot" invisible={!apt.flagged}>
+                                                                        <FlagIcon fontSize="small" />
+                                                                    </Badge>  
+                                                                </IconButton>
+
+                                                            </Tooltip> 
+                                                            <Tooltip title="Add / Edit Note">
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => setActiveNoteId(activeNoteId == apt.id ? null : apt.id)}
+                                                                color={activeNoteId == apt.id ? "primary" : "default"}>
+                                                                    <NoteAddIcon fontSize="small"/>
+                                                                </IconButton>
+                                                            </Tooltip>                                                       
+                                                            </Box>
+                                
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </CardContent>
                         </Card>
 
