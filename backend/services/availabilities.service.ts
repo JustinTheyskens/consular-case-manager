@@ -56,17 +56,17 @@ async function getAllAvailableTimes(
     for (const availability of availabilities) {
         const { startTime, endTime, dayOfWeek } = availability;
         const startDate = new Date(times[0]);
-
+        
         const periodStart = findNextPeriod(startDate, startTime, dayOfWeek);
         const periodEnd = findNextPeriod(
             startDate,
             endTime,
             dayOfWeek + (startTime < endTime ? 0 : 1),
         );
-
+        
         prioQueue.push([periodStart, periodEnd, availability]);
     }
-
+    
     // Gets all appointments that could impact current availability
     const appointments = await AppointmentRepository.findFutureAppointments(
         new Date(times[0] - DAY),
