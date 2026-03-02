@@ -141,3 +141,12 @@ vite.config.ts.timestamp-*
 
 .gitignore
 .prettierrc
+
+
+# C# binaries
+
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+[Bb]in/
