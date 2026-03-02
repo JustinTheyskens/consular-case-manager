@@ -1,0 +1,4 @@
+<Solution>
+    <Project Path="API/API.csproj" />
+    <Project Path="E2E/E2E.csproj" />
+</Solution>
