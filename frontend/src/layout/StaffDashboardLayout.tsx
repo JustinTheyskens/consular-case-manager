@@ -15,6 +15,11 @@ import {
     CardActionArea,
     IconButton,
     Icon,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
 } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
@@ -337,6 +342,7 @@ export const StaffDashboard = () => {
                         </Card>
                         {/* Appointment Table */}
                         <Card>
+                            {/* Header */}
                             <CardContent>
                                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                                     <Typography
@@ -349,9 +355,26 @@ export const StaffDashboard = () => {
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        Schedule Goes Here
+                                        {filtered.length} of {appointments.length} appointments
                                     </Typography>
                                 </Box>
+                                <Divider sx={{mb: 2}}/>
+                                    <TableContainer>
+                                        <Table size="small">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell><strong>Time</strong></TableCell>
+                                                    <TableCell><strong>Reference</strong></TableCell>
+                                                    <TableCell><strong>Applicant</strong></TableCell>
+                                                    <TableCell><strong>Type</strong></TableCell>
+                                                    <TableCell><strong>Time</strong></TableCell>
+                                                    <TableCell><strong>Status</strong></TableCell>
+                                                    <TableCell><strong>Notes</strong></TableCell>
+                                                    <TableCell align="center"><strong>Actions</strong></TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                        </Table>
+                                    </TableContainer>
                             </CardContent>
                         </Card>
 
