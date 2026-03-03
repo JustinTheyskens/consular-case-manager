@@ -28,8 +28,8 @@ public class SmokeTests
     [TearDown]
     public void TearDown()
     {
-        //driver.Quit();
-        driver.Dispose();
+        driver?.Quit();
+        driver?.Dispose();
     }
 
     [Test]
@@ -43,6 +43,16 @@ public class SmokeTests
 
         //Assert.That(driver.FindElement(By.Xpath("//*[@id='root']/div/div/div[1]/h1")).Displayed);
                  
+    }
+
+    [Test]
+    public void HomePage_Can_Navigate_To_StaffLogin()
+    {
+        driver.Navigate().GoToUrl(BaseUrl);
+
+        driver.FindElement(By.CssSelector("[data-testid='staff-login-btn']")).Click();
+        //driver.FindElement(By.CssSelector("[data-testid='AdminPanelSettingsIcon']")).Click();
+        Assert.That(driver.Url, Does.Contain("/staff/login"));
     }
 
     // [Test]
@@ -62,7 +72,7 @@ public class SmokeTests
     public void StaffUser_Can_Acess_Dashboard()
     {
         driver.Navigate().GoToUrl(BaseUrl + "/staff/dashboard");
-        var header = driver.FindElement(By.CssSelector("[data-testid='todays-schedule'"));
+        var header = driver.FindElement(By.CssSelector("[data-testid='todays-schedule']"));
         Assert.That(header.Text, Is.Not.Empty);
     }
 }

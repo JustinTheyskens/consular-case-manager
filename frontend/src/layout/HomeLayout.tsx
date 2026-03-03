@@ -43,7 +43,8 @@ export const HomeLayout = () => {
                                 }}
                             >
                                 <LoginCard
-                                onClick={() => navigate("/staff/login")}
+                                    data-testid="staff-login-btn"
+                                    onClick={() => navigate("/staff/login")}
                                     label="Staff Login"
                                     icon={<AdminPanelSettingsIcon sx={{ fontSize: 64 }} />}
                                 />
@@ -62,6 +63,7 @@ export const HomeLayout = () => {
                                 }}
                             >
                                 <LoginCard
+                                    data-testid="user-login-btn"
                                     onClick={() => navigate("/user/login")}
                                     label="User Login"
                                     icon={<PersonIcon sx={{ fontSize: 64 }} />}
