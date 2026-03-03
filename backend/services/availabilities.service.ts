@@ -72,34 +72,38 @@ async function getAllAvailableTimes(
         new Date(times[0] - DAY),
     );
 
+    console.log(appointments);
+
     // Map grouping appointments by staff
-    const staffAppointments = new Map<Types.ObjectId, Set<number>>();
+    const staffAppointments = new Map<string, Set<number>>();
 
     appointments.forEach((appointment) => {
         const { staff, time } = appointment;
 
+        const staffId = staff.toString();
         // Add appointment to a staff map
-        if (staffAppointments.get(staff) == null) {
-            staffAppointments.set(staff, new Set());
+        if (staffAppointments.get(staffId) == null) {
+            staffAppointments.set(staffId, new Set());
         }
-        staffAppointments.get(staff)?.add(time.getTime());
+        staffAppointments.get(staffId)?.add(time.getTime());
     });
 
     // Preprocesses availability periods until the the last candidate
     // interval is reached
-    const processedAvailabilities: [Date, Date, Types.ObjectId][] = [];
+    const processedAvailabilities: [Date, Date, string][] = [];
     const lastInterval = times[times.length - 1];
 
     while (prioQueue.peek() && prioQueue.peek()![0].getTime() <= lastInterval) {
         const [periodStart, periodEnd, availability] = prioQueue.pop()!;
         const { staff, capacity } = availability;
+        const staffId = staff.toString();
 
         // Process the current availability period if the capacity is not already full
         if (
-            getPeriodCapacity(periodStart, periodEnd, staffAppointments.get(staff) ?? new Set()) <
+            getPeriodCapacity(periodStart, periodEnd, staffAppointments.get(staffId) ?? new Set()) <
             capacity
         ) {
-            processedAvailabilities.push([periodStart, periodEnd, staff]);
+            processedAvailabilities.push([periodStart, periodEnd, staffId]);
         }
 
         // Requeue availability for next week
@@ -108,6 +112,9 @@ async function getAllAvailableTimes(
 
         prioQueue.push([nextPeriodStart, nextPeriodEnd, availability]);
     }
+
+    console.log(prioQueue);
+    console.log(staffAppointments);
 
     // Return all times such that
     // there is one open availability for the time
