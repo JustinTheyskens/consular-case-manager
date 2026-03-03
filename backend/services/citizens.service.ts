@@ -1,6 +1,6 @@
 import { type ICitizen } from "../models/citizens.model.ts";
 import { type ILogin } from "../models/logins.model.ts";
-import citizenRepo from "../repositories/citizens.repository.ts";
+import citizenRepo from "../repositories/citizens.repo.ts";
 import LoginRepository from "../repositories/logins.repo.ts";
 
 import { startSession } from "mongoose";
@@ -24,17 +24,20 @@ async function createCitizen(newCitizen: ICitizenAccount) {
 
     try {
         return await session.withTransaction(async () => {
-            const citizen = (await citizenRepo.createCitizen(newCitizen)) as ICitizen;
+            const [citizen] = (await citizenRepo.createCitizen(newCitizen, session)) as ICitizen[];
 
             const { _id } = citizen;
             const { email, password } = newCitizen;
 
-            await LoginRepository.createLogin({
-                email,
-                password,
-                type: "citizen",
-                ref: _id,
-            } as ILogin);
+            await LoginRepository.createLogin(
+                {
+                    email,
+                    password,
+                    type: "citizen",
+                    ref: _id,
+                } as ILogin,
+                session,
+            );
 
             return citizen;
         });
@@ -52,11 +55,15 @@ async function updateCitizen(id: string, updatedCitizen: ICitizenAccount) {
 
     try {
         return await session.withTransaction(async () => {
-            const citizen = (await citizenRepo.updateCitizen(id, updatedCitizen)) as ICitizen;
+            const citizen = (await citizenRepo.updateCitizen(
+                id,
+                updatedCitizen,
+                session,
+            )) as ICitizen;
 
             const { email, password } = updatedCitizen;
 
-            await LoginRepository.updateLogin(id, { email, password } as ILogin);
+            await LoginRepository.updateLogin(id, { email, password } as ILogin, session);
 
             return citizen;
         });
@@ -74,8 +81,8 @@ async function deleteCitizen(id: string) {
 
     try {
         return await session.withTransaction(async () => {
-            await LoginRepository.deleteLogin(id);
-            return await citizenRepo.deleteCitizen(id);
+            await LoginRepository.deleteLogin(id, session);
+            return await citizenRepo.deleteCitizen(id, session);
         });
     } catch (error) {
         console.error(error);
