@@ -75,4 +75,22 @@ public class SmokeTests
         var header = driver.FindElement(By.CssSelector("[data-testid='todays-schedule']"));
         Assert.That(header.Text, Is.Not.Empty);
     }
+
+    [Test]
+    public void HomePage_Can_Navigate_To_UserLogin()
+    {
+        driver.Navigate().GoToUrl(BaseUrl);
+
+        driver.FindElement(By.CssSelector("[data-testid='user-login-btn']")).Click();
+        //driver.FindElement(By.CssSelector("[data-testid='AdminPanelSettingsIcon']")).Click();
+        Assert.That(driver.Url, Does.Contain("/user/login"));
+    }
+
+    [Test]
+    public void CitizenUser_Can_Acess_Dashboard()
+    {
+        driver.Navigate().GoToUrl(BaseUrl + "/user/dashboard");
+        var header = driver.FindElement(By.CssSelector("[data-testid='user-dashboard']"));
+        Assert.That(header.Text, Is.Not.Empty);
+    }
 }

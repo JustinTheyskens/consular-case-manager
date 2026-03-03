@@ -89,6 +89,7 @@ export const UserDashboard = () => {
                         </Typography>
 
                         <Typography
+                            data-testid="user-dashboard"
                             variant="body2"
                             color="text.secondary"
                             sx={{ mt: 0.5 }}
@@ -97,7 +98,6 @@ export const UserDashboard = () => {
                         </Typography>
                     </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
-
                         {/* Summary Metrics */}
                         <Grid
                             container
@@ -183,7 +183,10 @@ export const UserDashboard = () => {
                                 >
                                     {/* Upcoming */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -285,7 +288,10 @@ export const UserDashboard = () => {
 
                                     {/* Manage */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
