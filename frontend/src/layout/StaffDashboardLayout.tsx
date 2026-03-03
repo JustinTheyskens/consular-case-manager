@@ -244,7 +244,7 @@ export const StaffDashboard = () => {
             {/** Directs to System Analytics  */}
             <Button
               component={Link}
-              to="/staff/dashboardMetrics"
+              to="/staff/dashboard/metrics"
               variant="outlined"
               sx={{
                 borderColor: "primary.contrastText",

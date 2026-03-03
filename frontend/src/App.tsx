@@ -38,7 +38,7 @@ export default function App() {
 
           {/** Team 2 Additional requirements dashboard Metrics section */}
           <Route
-            path="staff/dashboardMetrics"
+            path="staff/dashboard/metrics"
             element={<StaffDashboardMetrics />}
           />
         </Routes>
