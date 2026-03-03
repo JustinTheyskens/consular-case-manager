@@ -35,7 +35,7 @@ function findFutureAppointments(date: Date) {
         {
             $project: {
                 time: 1,
-                staff: "case.assignedStaff",
+                staff: "$case.assignedStaff",
             },
         },
     ])
