@@ -25,7 +25,7 @@ export default function UserLoginPage() {
                     color="primary.main">
                     {label}
                 </Typography>           
-                <LoginForm onSubmit={handleUserLogin} />
+                <LoginForm onSubmit={handleUserLogin} errorMessage={"error"} />
         </Box>
     </ThemeProvider>
 );

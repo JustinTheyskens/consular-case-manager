@@ -358,7 +358,7 @@ export const StaffDashboard = () => {
                             </CardContent>
                         </Card>
                         {/* Appointment Table */}
-                        <Card>
+                        <Card data-testid="todays-schedule">
                             {/* Header */}
                             <CardContent>
                                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>

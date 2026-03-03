@@ -27,7 +27,7 @@ export default function StaffLoginPage() {
                     color="primary.main">
                     {label}
                 </Typography>
-                <LoginForm onSubmit={handleLogin} />
+                <LoginForm onSubmit={handleLogin} errorMessage={""} />
             </Box>
         </ThemeProvider>
     );
