@@ -59,6 +59,7 @@ function findAvailabilitiesByAppointmentTypeAndTime(
                 endTime: {
                     $gte: time + interval,
                 },
+                $expr: { $gt: ["startTime", "endTime"] },
             },
         ],
     });
@@ -102,6 +103,7 @@ function findOverlap(
             {
                 dayOfWeek: (dayOfWeek + 6) % 7,
                 endTime: { $gte: startTime },
+                $expr: { $gt: ["$startTime", "$endTime"] },
             },
         ],
     }).exec();
