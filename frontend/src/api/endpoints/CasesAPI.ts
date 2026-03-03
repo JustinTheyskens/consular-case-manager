@@ -13,7 +13,10 @@ export type Case = {
     notes?: string;
 };
 
-export type CreateCaseRequest = Omit<Case, "_id">;
+export type CreateCaseRequest = {
+    appointment: Appointment;
+    citizen: string;
+};
 export type UpdateCaseRequest = Partial<Omit<Case, "reference">> & { reference: string };
 
 export const casesApi = baseApi.injectEndpoints({

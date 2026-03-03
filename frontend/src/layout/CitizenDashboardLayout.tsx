@@ -78,7 +78,9 @@ const name = "Justin";
 
 export const UserDashboard = () => {
     const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
-    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentType | null>(null);
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentType>(
+        appointmentTypes[0],
+    );
 
     return (
         <Box>
