@@ -1,5 +1,7 @@
 import { Case, type ICase } from "../models/cases.model.ts";
 
+import { type ClientSession } from "mongoose";
+
 /**
  * Finds and returns all populated cases files from the database
  * @returns A promise of all populated cases files in the database
@@ -84,30 +86,35 @@ function findCaseByRef(ref: number) {
 /**
  * Creates a new case file with given data
  * @param data The data of the case to create
+ * @param session The transactional session to use
  * @returns A promise with the created case
  */
-function createCase(data: Partial<ICase>) {
-    return Case.create(data);
+function createCase(data: Partial<ICase>, session: ClientSession) {
+    return Case.create([data], { session: session });
 }
 
 /**
  * Updates a case file with given reference number
  * @param ref The reference number of the case file to update
  * @param newData The new case file data to replace the old
+ * @param session The transactional session to use
  * @returns A promise with the updated case file
  */
-async function updateCase(ref: number, newData: ICase) {
+async function updateCase(ref: number, newData: ICase, session?: ClientSession) {
     return Case.findOneAndUpdate({ reference: ref }, newData, { returnDocument: "after" })
+        .session(session ?? null)
         .populate(["appointment", "assignedStaff", "citizen"])
         .exec();
 }
 
 /**
  * Deletes a case file with given reference number
+ * @param ref The reference number of the case file to delete
+ * @param session The transactional session to use
  * @returns A promise with the deleted case file
  */
-function deleteCase(ref: number) {
-    return Case.findOneAndDelete({ reference: ref }).exec();
+function deleteCase(ref: number, session: ClientSession) {
+    return Case.findOneAndDelete({ reference: ref }).session(session).exec();
 }
 
 const CaseRepository = {

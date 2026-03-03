@@ -24,7 +24,7 @@ export const StaffService = {
 
         try {
             return await session.withTransaction(async () => {
-                const staff = (await StaffRepository.create(data)) as IStaff;
+                const [staff] = (await StaffRepository.create(data, session)) as IStaff[];
 
                 const { _id } = staff;
                 const { email, password } = data;
@@ -34,7 +34,7 @@ export const StaffService = {
                     password,
                     type: "staff",
                     ref: _id,
-                } as ILogin);
+                } as ILogin, session);
 
                 return staff;
             });
@@ -51,11 +51,11 @@ export const StaffService = {
 
         try {
             return await session.withTransaction(async () => {
-                const staff = (await StaffRepository.update(id, data)) as IStaff;
+                const staff = (await StaffRepository.update(id, data, session)) as IStaff;
 
                 const { email, password } = data;
 
-                await LoginRepository.updateLogin(id, { email, password } as ILogin);
+                await LoginRepository.updateLogin(id, { email, password } as ILogin, session);
 
                 return staff;
             });
@@ -72,9 +72,9 @@ export const StaffService = {
 
         try {
             return await session.withTransaction(async () => {
-                await LoginRepository.deleteLogin(id);
+                await LoginRepository.deleteLogin(id, session);
 
-                return await StaffRepository.delete(id);
+                return await StaffRepository.delete(id, session);
             });
         } catch (error) {
             console.error(error);
@@ -98,14 +98,6 @@ export const StaffService = {
 
         if (updatedStaff.lastName !== undefined) {
             update.lastName = updatedStaff.lastName;
-        }
-
-        if (updatedStaff.email !== undefined) {
-            update.email = updatedStaff.email;
-        }
-
-        if (updatedStaff.password !== undefined) {
-            update.password = updatedStaff.password;
         }
 
         return StaffRepository.update(id, updatedStaff);
