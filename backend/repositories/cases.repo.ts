@@ -1,6 +1,6 @@
 import { Case, type ICase } from "../models/cases.model.ts";
 
-import { type ClientSession } from "mongoose";
+import { type ClientSession, Types } from "mongoose";
 
 /**
  * Finds and returns all populated cases files from the database
@@ -32,7 +32,7 @@ function findCasesByTimeAndStaff(staff: string, start: Date, end: Date) {
     return Case.aggregate<{ time: Date }>([
         {
             $match: {
-                assignedStaff: staff,
+                assignedStaff: new Types.ObjectId(staff),
             },
         },
         {
@@ -48,7 +48,7 @@ function findCasesByTimeAndStaff(staff: string, start: Date, end: Date) {
         },
         {
             $match: {
-                "$appointmentInfo.time": {
+                "appointmentInfo.time": {
                     $gte: start,
                     $lt: end,
                 },
