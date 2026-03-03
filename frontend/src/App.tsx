@@ -9,6 +9,7 @@ import CitizenLoginLayout from "./layout/CitizenLoginLayout.tsx";
 import CitizenCreateAccountLayout from "./layout/CitizenCreateAccountLayout";
 import StaffLoginLayout from "./layout/StaffLoginLayout.tsx";
 import StaffCreateAccountLayout from "./layout/StaffCreateAccountLayout.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 export default function App() {
     return (
@@ -31,10 +32,14 @@ export default function App() {
                         path="user/login/create"
                         element={<CitizenCreateAccountLayout />}
                     />
-                    <Route
-                        path="user/dashboard"
-                        element={<UserDashboard />}
-                    />
+
+                    {/** Enforces the user is logged in as a citizen since the dashboard relies on a citizen ID */}
+                    <Route element={<ProtectedRoute expectedUserType="citizen" />}>
+                        <Route
+                            path="user/dashboard"
+                            element={<UserDashboard />}
+                        />
+                    </Route>
 
                     <Route
                         path="staff/login"
@@ -44,10 +49,13 @@ export default function App() {
                         path="staff/login/create"
                         element={<StaffCreateAccountLayout />}
                     />
-                    <Route
-                        path="staff/dashboard"
-                        element={<StaffDashboard />}
-                    />
+                    {/** Enforces the user is logged in as a staff since the dashboard relies on a staff ID */}
+                    <Route element={<ProtectedRoute expectedUserType="staff" />}>
+                        <Route
+                            path="staff/dashboard"
+                            element={<StaffDashboard />}
+                        />
+                    </Route>
 
                     <Route path="dashboard"></Route>
                 </Routes>

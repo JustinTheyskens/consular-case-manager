@@ -16,12 +16,14 @@ const clientTimeZone = dayjs.tz.guess();
 
 interface CreateAppointmentFormProps {
     onSubmit: (selectedDateTime: PickerValue | undefined) => void;
+    onCancel?: () => void;
     errorMessage: string;
     appointmentType: string | undefined;
 }
 
 export default function CreateAppointmentForm({
     onSubmit,
+    onCancel,
     errorMessage,
     appointmentType,
 }: CreateAppointmentFormProps) {
@@ -67,8 +69,6 @@ export default function CreateAppointmentForm({
 
         onSubmit(selectedDateTime);
 
-        //We should only reach this in case of some kind of error
-        //In which case, we want to make the button clickable again
         setSubmitting(false);
     }
 
@@ -96,7 +96,7 @@ export default function CreateAppointmentForm({
         if (view === "minutes") {
             // Enable this minute if there's an exact hour:minute match
             // Since we enforce 30 minute steps, this probably won't ever be relevant
-            // However this should allow us to change in the future should we want to support 15 minute steps or something like that
+            // However this should allow us to change in the future should we want to support variable-duraction appointments
             return !timesForDay.has(`${time.hour()}:${time.minute()}`);
         }
 
@@ -124,6 +124,7 @@ export default function CreateAppointmentForm({
                         shouldDisableDate={shouldDisableDay}
                         shouldDisableTime={shouldDisableTime}
                         ampm={false}
+                        sx={{ m: 2 }}
                     />
                 </LocalizationProvider>
 
@@ -134,6 +135,16 @@ export default function CreateAppointmentForm({
                     sx={{ m: 2 }}
                 >
                     Submit
+                </Button>
+
+                <Button
+                    color="error"
+                    disabled={submitting}
+                    variant="contained"
+                    sx={{ m: 2 }}
+                    onClick={onCancel}
+                >
+                    Cancel
                 </Button>
 
                 {errorMessage ? (

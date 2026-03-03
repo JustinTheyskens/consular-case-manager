@@ -8,18 +8,25 @@ interface CreateAppointmentDialogProps {
     isOpen: boolean;
     //We always set an appointment type before opening the model
     //But it is null by default
-    appointment: AppointmentType | undefined;
+    appointment: AppointmentType | null;
+    closeModal: () => void;
 }
 
 export default function CreateAppointmentModal({
     isOpen,
     appointment,
+    closeModal,
 }: CreateAppointmentDialogProps) {
     const [errorMessage, setErrorMessage] = useState("");
 
     function onDialogSubmit(selectedDateTime: PickerValue | undefined) {
         console.log("Submitted DateTime");
         console.log(selectedDateTime);
+        closeModal();
+    }
+
+    function onDialogCancel() {
+        closeModal();
     }
 
     return (
@@ -30,6 +37,7 @@ export default function CreateAppointmentModal({
                     onSubmit={onDialogSubmit}
                     errorMessage={errorMessage}
                     appointmentType={appointment?.type}
+                    onCancel={onDialogCancel}
                 />
             </Dialog>
         </>

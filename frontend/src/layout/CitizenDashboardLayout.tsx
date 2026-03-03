@@ -363,6 +363,7 @@ export const UserDashboard = () => {
                 <CreateAppointmentModal
                     appointment={selectedAppointment}
                     isOpen={showAppointmentDialog}
+                    closeModal={() => setShowAppointmentDialog(false)}
                 />
             </ThemeProvider>
         </Box>
