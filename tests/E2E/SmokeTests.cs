@@ -2,6 +2,7 @@ namespace E2E;
 
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 
     /// <summary>
     /// Contains smoke tests verifying that the Home page renders correctly.
@@ -51,21 +52,25 @@ public class SmokeTests
         driver.Navigate().GoToUrl(BaseUrl);
 
         driver.FindElement(By.CssSelector("[data-testid='staff-login-btn']")).Click();
-        //driver.FindElement(By.CssSelector("[data-testid='AdminPanelSettingsIcon']")).Click();
         Assert.That(driver.Url, Does.Contain("/staff/login"));
     }
 
-    // [Test]
-    // public void StaffUser_Can_Login_Successfully()
-    // {
-    //     driver.Navigate().GoToUrl(BaseUrl + "/staff/login");
+    [Test]
+    public void StaffUser_Can_Login_Successfully()
+    {
+        driver.Navigate().GoToUrl(BaseUrl + "/staff/login");
 
-    //     driver.FindElement(By.Id("email")).SendKeys("staff@test.com");
-    //     driver.FindElement(By.Id("password")).SendKeys("Password123!");
-    //     driver.FindElement(By.CssSelector("button[type='submit']")).Click();
+        driver.FindElement(By.Id("email-field")).SendKeys("justin@gmail.com");
+        driver.FindElement(By.Id("password-field")).SendKeys("abacabb");
+        driver.FindElement(By.CssSelector("button[type='submit']")).Click();
 
-    //     Assert.That(driver.Url, Does.Contain("/dashboard"));
-    // }
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+
+        wait.Until(d => d.Url.Contains("/staff/dashboard"));
+
+
+        Assert.That(driver.Url, Does.Contain("/dashboard"));
+    }
     
 
     [Test]
@@ -82,7 +87,6 @@ public class SmokeTests
         driver.Navigate().GoToUrl(BaseUrl);
 
         driver.FindElement(By.CssSelector("[data-testid='user-login-btn']")).Click();
-        //driver.FindElement(By.CssSelector("[data-testid='AdminPanelSettingsIcon']")).Click();
         Assert.That(driver.Url, Does.Contain("/user/login"));
     }
 
