@@ -10,48 +10,39 @@ import CitizenCreateAccountLayout from "./layout/CitizenCreateAccountLayout";
 import StaffLoginLayout from "./layout/StaffLoginLayout.tsx";
 import StaffCreateAccountLayout from "./layout/StaffCreateAccountLayout.tsx";
 
+import StaffDashboardMetrics from "./layout/StaffDashboardMetrics.tsx";
+
 export default function App() {
-    return (
-        <>
-            {/* <StaffDashboard/> */}
-            <BrowserRouter>
-                <CssBaseline />
-                <Routes>
-                    <Route
-                        path="/"
-                        element={<HomeLayout />}
-                    >
-                        {" "}
-                    </Route>
-                    <Route
-                        path="user/login"
-                        element={<CitizenLoginLayout />}
-                    />
-                    <Route
-                        path="user/login/create"
-                        element={<CitizenCreateAccountLayout />}
-                    />
-                    <Route
-                        path="user/dashboard"
-                        element={<UserDashboard />}
-                    />
+  return (
+    <>
+      {/* <StaffDashboard/> */}
+      <BrowserRouter>
+        <CssBaseline />
+        <Routes>
+          <Route path="/" element={<HomeLayout />}>
+            {" "}
+          </Route>
+          <Route path="user/login" element={<CitizenLoginLayout />} />
+          <Route
+            path="user/login/create"
+            element={<CitizenCreateAccountLayout />}
+          />
+          <Route path="user/dashboard" element={<UserDashboard />} />
 
-                    <Route
-                        path="staff/login"
-                        element={<StaffLoginLayout />}
-                    />
-                    <Route
-                        path="staff/login/create"
-                        element={<StaffCreateAccountLayout />}
-                    />
-                    <Route
-                        path="staff/dashboard"
-                        element={<StaffDashboard />}
-                    />
+          <Route path="staff/login" element={<StaffLoginLayout />} />
+          <Route
+            path="staff/login/create"
+            element={<StaffCreateAccountLayout />}
+          />
+          <Route path="staff/dashboard" element={<StaffDashboard />} />
 
-                    <Route path="dashboard"></Route>
-                </Routes>
-            </BrowserRouter>
-        </>
-    );
+          {/** Team 2 Additional requirements dashboard Metrics section */}
+          <Route
+            path="staff/dashboardMetrics"
+            element={<StaffDashboardMetrics />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
 }
