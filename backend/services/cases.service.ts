@@ -1,5 +1,5 @@
 import { type ICase } from "../models/cases.model.ts";
-import { type IAppointment } from "../models/appointments.model.ts";
+import { type IAppointment, type AppointmentType } from "../models/appointments.model.ts";
 import CaseRepository from "../repositories/cases.repo.ts";
 import AvailabilityRepository from "../repositories/availabilities.repo.ts";
 import AppointmentRepository from "../repositories/appointments.repo.ts";
@@ -7,8 +7,13 @@ import config from "../config.json" with { type: "json" };
 
 import { startSession, Types } from "mongoose";
 
+export interface NewAppointmentInfo {
+    time: string;
+    type: AppointmentType;
+}
+
 export interface NewCaseInfo {
-    appointment: IAppointment;
+    appointment: { time: string; type: AppointmentType };
     citizen: string;
 }
 
@@ -62,17 +67,24 @@ async function createCase(data: NewCaseInfo) {
 
             // First creates an appointment
             const { appointment, citizen } = data;
-            const appointmentDetails = appointment as IAppointment;
+            const { time, type } = appointment;
+            const appointmentDetails = { time: new Date(time), type } as IAppointment;
 
             const staff = await assignAppointmentStaff(appointmentDetails);
-            const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
+            const [{ _id }] = await AppointmentRepository.createAppointment(
+                appointmentDetails,
+                session,
+            );
 
-            return await CaseRepository.createCase({
-                citizen: new Types.ObjectId(citizen),
-                appointment: _id,
-                assignedStaff: staff,
-                reference: Math.floor(Math.random() * Math.pow(10, refLength + 1)) + 1,
-            });
+            return await CaseRepository.createCase(
+                {
+                    citizen: new Types.ObjectId(citizen),
+                    appointment: _id,
+                    assignedStaff: staff,
+                    reference: Math.floor(Math.random() * Math.pow(10, refLength + 1)) + 1,
+                },
+                session,
+            );
         });
     } catch (error) {
         console.error(error);
@@ -90,7 +102,9 @@ async function createCase(data: NewCaseInfo) {
  */
 async function updateCase(ref: number, data: ICase) {
     const { appointment: newAppointment, reference } = data;
-    const { time: newTime, type: newType } = newAppointment as IAppointment;
+    const { time: newTimeString, type: newType } = (newAppointment as unknown) as NewAppointmentInfo;
+
+    const newTime = new Date(newTimeString);
 
     const { appointment: oldAppointment } = (await CaseRepository.findCaseByRef(
         reference,
@@ -111,15 +125,22 @@ async function updateCase(ref: number, data: ICase) {
             const appointmentDetails = newAppointment as IAppointment;
 
             const staff = await assignAppointmentStaff(appointmentDetails);
-            const { _id } = await AppointmentRepository.createAppointment(appointmentDetails);
+            const [{ _id }] = await AppointmentRepository.createAppointment(
+                appointmentDetails,
+                session,
+            );
 
-            await AppointmentRepository.deleteAppointment(oldId.toString());
+            await AppointmentRepository.deleteAppointment(oldId.toString(), session);
 
-            return await CaseRepository.updateCase(ref, {
-                ...data,
-                appointment: _id,
-                assignedStaff: staff,
-            } as ICase);
+            return await CaseRepository.updateCase(
+                ref,
+                {
+                    ...data,
+                    appointment: _id,
+                    assignedStaff: staff,
+                } as ICase,
+                session,
+            );
         });
     } catch (error) {
         console.error(error);
@@ -135,7 +156,30 @@ async function updateCase(ref: number, data: ICase) {
  * @returns A promise containing the case file deleted
  */
 async function deleteCase(ref: number) {
-    return await CaseRepository.deleteCase(ref);
+    // Otherwise, appointment needs to be remade and reassigned
+    const session = await startSession();
+
+    try {
+        return await session.withTransaction(async () => {
+            const deletedCase = await CaseRepository.deleteCase(ref, session);
+
+            if (deletedCase != null) {
+                const { appointment } = deletedCase;
+
+                await AppointmentRepository.deleteAppointment(
+                    (appointment as Types.ObjectId).toString(),
+                    session,
+                );
+            }
+
+            return deletedCase;
+        });
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await session.endSession();
+    }
 }
 
 /**
@@ -147,14 +191,14 @@ async function assignAppointmentStaff(appointment: IAppointment) {
     const { interval } = config;
     const { type, time } = appointment;
     const dayOfWeek = time.getUTCDay();
-    const timeOfDay = time.getHours() * 60 + time.getMinutes();
+    const timeOfDay = time.getUTCHours() * 60 + time.getUTCMinutes();
 
     // Finds all availabilities that overlap with the desired appointment time
     const availabilities = await AvailabilityRepository.findAvailabilitiesByAppointmentTypeAndTime(
         type,
         dayOfWeek,
         timeOfDay,
-        (interval - 1) * 1_000 * 60,
+        interval - 1,
     );
 
     const staffAvailabilities: [Types.ObjectId, number, number][] = [];
@@ -206,9 +250,9 @@ async function assignAppointmentStaff(appointment: IAppointment) {
 
 /**
  * Anchors a start and end time to a given datetime
- * @param startTime
- * @param endTime
- * @param anchor
+ * @param startTime The number of minutes since midnight of the period start
+ * @param endTime The number of minutes since midnight of the period end
+ * @param anchor The date to anchor the period at
  * @returns A tuple of two datetimes as the start and end of the period
  */
 function getPeriods(startTime: number, endTime: number, anchor: Date) {

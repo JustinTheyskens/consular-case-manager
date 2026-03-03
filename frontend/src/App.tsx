@@ -11,6 +11,8 @@ import StaffLoginLayout from "./layout/StaffLoginLayout.tsx";
 import StaffCreateAccountLayout from "./layout/StaffCreateAccountLayout.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
+import StaffDashboardMetrics from "./layout/StaffDashboardMetrics.tsx";
+
 export default function App() {
     return (
         <>
@@ -57,7 +59,11 @@ export default function App() {
                         />
                     </Route>
 
-                    <Route path="dashboard"></Route>
+                    {/** Team 2 Additional requirements dashboard Metrics section */}
+                    <Route
+                        path="staff/dashboard/metrics"
+                        element={<StaffDashboardMetrics />}
+                    />
                 </Routes>
             </BrowserRouter>
         </>

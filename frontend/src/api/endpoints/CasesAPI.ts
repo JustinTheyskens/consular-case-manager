@@ -6,8 +6,21 @@ export type Case = {
     reference: number;
     status: string;
     appointment: Appointment;
-    assignedStaff: string;
-    citizen: string;
+    
+    assignedStaff?: {
+        _id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+    };
+
+    citizen?: {
+        _id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+    };
+    
     checkedIn: boolean;
     flagged: boolean;
     notes?: string;
