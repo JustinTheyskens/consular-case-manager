@@ -191,14 +191,14 @@ async function assignAppointmentStaff(appointment: IAppointment) {
     const { interval } = config;
     const { type, time } = appointment;
     const dayOfWeek = time.getUTCDay();
-    const timeOfDay = time.getHours() * 60 + time.getMinutes();
+    const timeOfDay = time.getUTCHours() * 60 + time.getUTCMinutes();
 
     // Finds all availabilities that overlap with the desired appointment time
     const availabilities = await AvailabilityRepository.findAvailabilitiesByAppointmentTypeAndTime(
         type,
         dayOfWeek,
         timeOfDay,
-        (interval - 1) * 1_000 * 60,
+        interval - 1,
     );
 
     const staffAvailabilities: [Types.ObjectId, number, number][] = [];
