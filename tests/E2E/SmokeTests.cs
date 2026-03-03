@@ -34,6 +34,7 @@ public class SmokeTests
     }
 
     [Test]
+    [Category("Smoke")]
     public void HomePage_LoadsSuccessfully()
     {
         driver.Navigate().GoToUrl(BaseUrl);
@@ -47,6 +48,7 @@ public class SmokeTests
     }
 
     [Test]
+    [Category("Smoke")]
     public void HomePage_Can_Navigate_To_StaffLogin()
     {
         driver.Navigate().GoToUrl(BaseUrl);
@@ -56,6 +58,7 @@ public class SmokeTests
     }
 
     [Test]
+    [Category("Smoke")]
     public void StaffUser_Can_Login_Successfully()
     {
         driver.Navigate().GoToUrl(BaseUrl + "/staff/login");
@@ -68,12 +71,12 @@ public class SmokeTests
 
         wait.Until(d => d.Url.Contains("/staff/dashboard"));
 
-
         Assert.That(driver.Url, Does.Contain("/dashboard"));
     }
     
 
     [Test]
+    [Category("Smoke")]
     public void StaffUser_Can_Acess_Dashboard()
     {
         driver.Navigate().GoToUrl(BaseUrl + "/staff/dashboard");
@@ -82,6 +85,7 @@ public class SmokeTests
     }
 
     [Test]
+    [Category("Smoke")]
     public void HomePage_Can_Navigate_To_UserLogin()
     {
         driver.Navigate().GoToUrl(BaseUrl);
@@ -90,7 +94,10 @@ public class SmokeTests
         Assert.That(driver.Url, Does.Contain("/user/login"));
     }
 
+    // TODO: Add test: CitizenUser_Can_Login_Successfully
+
     [Test]
+    [Category("Smoke")]
     public void CitizenUser_Can_Acess_Dashboard()
     {
         driver.Navigate().GoToUrl(BaseUrl + "/user/dashboard");
