@@ -30,7 +30,7 @@ export const availabilitiesApi = baseApi.injectEndpoints({
         }),
 
         // GET /availabilities/times
-        getTimes: builder.query<Availability[], string | undefined>({
+        getTimes: builder.query<number[], string | undefined>({
             query: (appointmentType) => ({
                 url: `/availabilities/times?appointmentType=${appointmentType}`,
                 method: "GET",

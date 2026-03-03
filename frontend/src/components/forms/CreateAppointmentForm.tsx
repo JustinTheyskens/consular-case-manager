@@ -1,12 +1,18 @@
 import { Button, Box, Alert } from "@mui/material";
 import { LocalizationProvider, type PickerValidDate, type TimeView } from "@mui/x-date-pickers";
 import { DesktopDateTimePicker } from "@mui/x-date-pickers/DesktopDateTimePicker";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "dayjs/locale/de";
 import type { PickerValue } from "@mui/x-date-pickers/internals";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import { useGetTimesQuery } from "../../api/endpoints/AvailabilityAPI";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const clientTimeZone = dayjs.tz.guess();
 
 interface CreateAppointmentFormProps {
     onSubmit: (selectedDateTime: PickerValue | undefined) => void;
@@ -23,6 +29,37 @@ export default function CreateAppointmentForm({
     const [selectedDateTime, setSelectedDateTime] = useState<PickerValue>(null);
     const { data: availabilities } = useGetTimesQuery(appointmentType);
 
+    // DateTimePicker events fire too often to handle this calculation directly in it's event functions
+    // So instead this is handled by useMemo for performance reasons
+    // DateTimePicker's event functions can then just use these pre-calculated values
+    const { enabledDays, availabilityLookup } = useMemo(() => {
+        if (!availabilities || !Array.isArray(availabilities) || availabilities.length === 0) {
+            return {
+                enabledDays: new Set<number>(),
+                availabilityLookup: new Map<number, Set<string>>(),
+            };
+        }
+
+        const days = new Set<number>();
+        const lookup = new Map<number, Set<string>>();
+
+        for (const timestamp of availabilities) {
+            const asDate = dayjs.utc(timestamp).tz(clientTimeZone);
+            const dayOfWeek = asDate.day();
+            days.add(dayOfWeek);
+
+            if (!lookup.has(dayOfWeek)) {
+                lookup.set(dayOfWeek, new Set());
+            }
+            lookup.get(dayOfWeek)!.add(`${asDate.hour()}:${asDate.minute()}`);
+        }
+
+        return { enabledDays: days, availabilityLookup: lookup };
+    }, [availabilities]);
+
+    const now = useMemo(() => dayjs(), [availabilities]);
+    const twoWeeksOut = useMemo(() => now.add(15, "day"), [now]);
+
     function submitForm(event: React.SyntheticEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -36,40 +73,34 @@ export default function CreateAppointmentForm({
     }
 
     function shouldDisableDay(day: PickerValidDate) {
-        //TODO: Any given day slot should be disabled if it is not included in the return from api/availabilities/times
+        if (enabledDays.size === 0) return true;
 
-        //Guard against falsey results, empty arrays, or empty objects
-        if (!availabilities || !Array.isArray(availabilities) || availabilities.length === 0) {
-            console.log("No availabilities, disabling all days");
-            return true;
-        }
-
-        const now = dayjs();
-        //Two weeks + 1 day to account for not being able to schedule "today"
-        const twoWeeksOut = now.add(15, "day");
-
-        console.log("Start Print");
-        for (const timestamp in availabilities) {
-            const asDate = dayjs(timestamp);
-            console.log(asDate.toString());
-            //Only enable days that are within the next two weeks and match the day of the week of any availability timestamp
-            if (day.isBefore(twoWeeksOut) && day.isAfter(now) && day.day() == asDate.day()) {
-                return false;
-            }
-        }
-
-        return true;
+        //Only enable days that are within the next two weeks and match the day of the week of any availability timestamp
+        return !(day.isBefore(twoWeeksOut) && day.isAfter(now) && enabledDays.has(day.day()));
     }
 
     function shouldDisableTime(time: PickerValidDate, view: TimeView) {
-        if (!availabilities) return true;
-        // if (view === "minutes") {
-        //     console.log("Time PickerValidDate");
-        //     console.log(time.toString());
-        // }
+        if (availabilityLookup.size === 0) return true;
 
-        //TODO: Any given time slot should be disabled if it is not included in the return from api/availabilities/times
-        return false;
+        const timesForDay = availabilityLookup.get(time.day());
+        if (!timesForDay) return true;
+
+        if (view === "hours") {
+            // Enable this hour if any availability on this day has this hour
+            for (const key of timesForDay) {
+                if (parseInt(key.split(":")[0]) === time.hour()) return false;
+            }
+            return true;
+        }
+
+        if (view === "minutes") {
+            // Enable this minute if there's an exact hour:minute match
+            // Since we enforce 30 minute steps, this probably won't ever be relevant
+            // However this should allow us to change in the future should we want to support 15 minute steps or something like that
+            return !timesForDay.has(`${time.hour()}:${time.minute()}`);
+        }
+
+        return true;
     }
 
     return (
