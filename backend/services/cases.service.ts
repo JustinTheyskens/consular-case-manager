@@ -1,5 +1,5 @@
 import { type ICase } from "../models/cases.model.ts";
-import { type IAppointment } from "../models/appointments.model.ts";
+import { type IAppointment, type AppointmentType } from "../models/appointments.model.ts";
 import CaseRepository from "../repositories/cases.repo.ts";
 import AvailabilityRepository from "../repositories/availabilities.repo.ts";
 import AppointmentRepository from "../repositories/appointments.repo.ts";
@@ -7,8 +7,13 @@ import config from "../config.json" with { type: "json" };
 
 import { startSession, Types } from "mongoose";
 
+export interface NewAppointmentInfo {
+    time: string;
+    type: AppointmentType;
+}
+
 export interface NewCaseInfo {
-    appointment: IAppointment;
+    appointment: { time: string; type: AppointmentType };
     citizen: string;
 }
 
@@ -62,7 +67,8 @@ async function createCase(data: NewCaseInfo) {
 
             // First creates an appointment
             const { appointment, citizen } = data;
-            const appointmentDetails = appointment as IAppointment;
+            const { time, type } = appointment;
+            const appointmentDetails = { time: new Date(time), type } as IAppointment;
 
             const staff = await assignAppointmentStaff(appointmentDetails);
             const [{ _id }] = await AppointmentRepository.createAppointment(
@@ -96,7 +102,9 @@ async function createCase(data: NewCaseInfo) {
  */
 async function updateCase(ref: number, data: ICase) {
     const { appointment: newAppointment, reference } = data;
-    const { time: newTime, type: newType } = newAppointment as IAppointment;
+    const { time: newTimeString, type: newType } = (newAppointment as unknown) as NewAppointmentInfo;
+
+    const newTime = new Date(newTimeString);
 
     const { appointment: oldAppointment } = (await CaseRepository.findCaseByRef(
         reference,
