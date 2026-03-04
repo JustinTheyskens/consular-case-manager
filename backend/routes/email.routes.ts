@@ -1,7 +1,7 @@
 import express from "express";
 import { type Request, type Response } from "express";
 import EmailController from "../controllers/email.controller.ts";
-import { EmailOptions } from "../config/email.ts";
+import { type EmailOptions } from "../config/email.ts";
 
 const router = express.Router();
 
