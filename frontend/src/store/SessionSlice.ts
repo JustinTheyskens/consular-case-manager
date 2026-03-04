@@ -5,6 +5,7 @@ export type LoginType = "citizen" | "staff";
 export type SessionState = {
     userId: string | null;
     loginType: LoginType | null;
+    name?: string | null;
 };
 
 const initialState: SessionState = {

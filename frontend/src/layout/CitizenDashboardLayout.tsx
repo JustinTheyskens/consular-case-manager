@@ -23,6 +23,15 @@ import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 
+import { useGetAppointmentTypesQuery } from "../api/endpoints/AppointmentsAPI";
+import { useGetUpcomingAppointmentQuery } from "../api/endpoints/AppointmentsAPI";
+import { useModifyAppointmentMutation } from "../api/endpoints/AppointmentsAPI";
+import { useCancelAppointmentMutation } from "../api/endpoints/AppointmentsAPI";
+
+import { useSelector, type UseSelector } from "react-redux";
+import type { RootState } from "@reduxjs/toolkit/query";
+import type { SessionState } from "../store/SessionSlice";
+
 // appointment types
 const appointmentTypes = [
     {
@@ -60,9 +69,36 @@ const upcomingAppointment = {
     status: "Confirmed",
 };
 
-const name = "Justin";
-
 export const UserDashboard = () => {
+    // get user id from session slice
+    const userId = useSelector((state: { session: SessionState }) => state.session.userId);
+    const name = useSelector((state: { session: SessionState }) => state.session.name ?? "guest");
+
+    // API hooks
+    // const {data: appointmentTypes, isLoading: typesLoading } =
+    //     useGetAppointmentTypesQuery();
+
+    const { data: upcomingAppointment, isLoading: upcomingLoading } =
+        useGetUpcomingAppointmentQuery(userId!, { skip: !userId });
+
+    const [modifyAppointment] = useModifyAppointmentMutation();
+    const [cancelAppointment] = useCancelAppointmentMutation();
+
+    const handleModify = async () => {
+        if (!upcomingAppointment?.userId)
+            return;
+        await modifyAppointment({
+            id: upcomingAppointment.userId,
+            changes: { date: "2026-03-20", time: "2:00 PM" },
+        })
+    }
+
+    const handleCanel = async() => {
+        if (!upcomingAppointment?.userId)
+            return;
+        await cancelAppointment(upcomingAppointment.userId);
+    }
+
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -97,7 +133,6 @@ export const UserDashboard = () => {
                         </Typography>
                     </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
-
                         {/* Summary Metrics */}
                         <Grid
                             container
@@ -183,7 +218,10 @@ export const UserDashboard = () => {
                                 >
                                     {/* Upcoming */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -285,7 +323,10 @@ export const UserDashboard = () => {
 
                                     {/* Manage */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -312,6 +353,8 @@ export const UserDashboard = () => {
                                                     <Button
                                                         variant="outlined"
                                                         fullWidth
+                                                        onClick={handleModify}
+                                                        disabled={!upcomingAppointment}
                                                     >
                                                         Modify Appointment
                                                     </Button>
@@ -319,6 +362,8 @@ export const UserDashboard = () => {
                                                         variant="outlined"
                                                         color="error"
                                                         fullWidth
+                                                        onClick={handleCanel}
+                                                        disabled={!upcomingAppointment}
                                                     >
                                                         Cancel Appointment
                                                     </Button>
