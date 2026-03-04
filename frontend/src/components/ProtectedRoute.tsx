@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ expectedUserType }: ProtectedRouteProps) {
-    const { userId, loginType } = useSelector((state: RootState) => state.session);
+    const { userId, loginType, emailAddress } = useSelector((state: RootState) => state.session);
     const dispatch = useDispatch();
 
     //At any given time, we are either a citizen or a staff
@@ -58,11 +58,6 @@ export default function ProtectedRoute({ expectedUserType }: ProtectedRouteProps
                 replace
             />
         );
-    }
-
-    // Wait for the query to actually run before making a decision
-    if (activeQuery.isLoading || activeQuery.isUninitialized) {
-        return <div>Loading...</div>;
     }
 
     // If the query failed or returned no data, send them back to the login page just in case.

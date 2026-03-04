@@ -34,6 +34,7 @@ export const availabilitiesApi = baseApi.injectEndpoints({
             query: (appointmentType) => ({
                 url: `/availabilities/times?appointmentType=${appointmentType}`,
                 method: "GET",
+                keepUnusedDataFor: 0,
             }),
             providesTags: (result, error, _id) => [{ type: "Availability" as const, _id }],
         }),

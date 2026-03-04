@@ -29,7 +29,10 @@ export default function CreateAppointmentForm({
 }: CreateAppointmentFormProps) {
     const [submitting, setSubmitting] = useState(false);
     const [selectedDateTime, setSelectedDateTime] = useState<PickerValue>(null);
-    const { data: availabilities } = useGetTimesQuery(appointmentType);
+    const { data: availabilities } = useGetTimesQuery(appointmentType, {
+        skip: !appointmentType,
+        refetchOnMountOrArgChange: true,
+    });
 
     // DateTimePicker events fire too often to handle this calculation directly in it's event functions
     // So instead this is handled by useMemo for performance reasons
@@ -37,30 +40,35 @@ export default function CreateAppointmentForm({
     const { enabledDays, availabilityLookup } = useMemo(() => {
         if (!availabilities || !Array.isArray(availabilities) || availabilities.length === 0) {
             return {
-                enabledDays: new Set<number>(),
-                availabilityLookup: new Map<number, Set<string>>(),
+                enabledDays: new Set<string>(),
+                availabilityLookup: new Map<string, Set<string>>(),
             };
         }
 
-        const days = new Set<number>();
-        const lookup = new Map<number, Set<string>>();
+        const days = new Set<string>();
+        const lookup = new Map<string, Set<string>>();
 
         for (const timestamp of availabilities) {
             const asDate = dayjs.utc(timestamp).tz(clientTimeZone);
-            const dayOfWeek = asDate.day();
-            days.add(dayOfWeek);
+            const dateKey = asDate.format("YYYY-MM-DD");
+            days.add(dateKey);
 
-            if (!lookup.has(dayOfWeek)) {
-                lookup.set(dayOfWeek, new Set());
+            if (!lookup.has(dateKey)) {
+                lookup.set(dateKey, new Set());
             }
-            lookup.get(dayOfWeek)!.add(`${asDate.hour()}:${asDate.minute()}`);
+            lookup.get(dateKey)!.add(`${asDate.hour()}:${asDate.minute()}`);
         }
 
         return { enabledDays: days, availabilityLookup: lookup };
     }, [availabilities]);
 
-    const now = useMemo(() => dayjs(), [availabilities]);
-    const twoWeeksOut = useMemo(() => now.add(15, "day"), [now]);
+    const firstAvailableDate = useMemo(() => {
+        //Just default to "now" if availabilities is empty
+        if (!availabilities || !Array.isArray(availabilities) || availabilities.length === 0) {
+            return dayjs().tz(clientTimeZone);
+        }
+        return dayjs.utc(availabilities[0]).tz(clientTimeZone);
+    }, [availabilities]);
 
     function submitForm(event: React.SyntheticEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -75,18 +83,18 @@ export default function CreateAppointmentForm({
     function shouldDisableDay(day: PickerValidDate) {
         if (enabledDays.size === 0) return true;
 
-        //Only enable days that are within the next two weeks and match the day of the week of any availability timestamp
-        return !(day.isBefore(twoWeeksOut) && day.isAfter(now) && enabledDays.has(day.day()));
+        const dateKey = day.format("YYYY-MM-DD");
+        return !enabledDays.has(dateKey);
     }
 
     function shouldDisableTime(time: PickerValidDate, view: TimeView) {
         if (availabilityLookup.size === 0) return true;
 
-        const timesForDay = availabilityLookup.get(time.day());
+        const dateKey = time.format("YYYY-MM-DD");
+        const timesForDay = availabilityLookup.get(dateKey);
         if (!timesForDay) return true;
 
         if (view === "hours") {
-            // Enable this hour if any availability on this day has this hour
             for (const key of timesForDay) {
                 if (parseInt(key.split(":")[0]) === time.hour()) return false;
             }
@@ -94,9 +102,6 @@ export default function CreateAppointmentForm({
         }
 
         if (view === "minutes") {
-            // Enable this minute if there's an exact hour:minute match
-            // Since we enforce 30 minute steps, this probably won't ever be relevant
-            // However this should allow us to change in the future should we want to support variable-duraction appointments
             return !timesForDay.has(`${time.hour()}:${time.minute()}`);
         }
 
@@ -123,6 +128,7 @@ export default function CreateAppointmentForm({
                         minutesStep={30}
                         shouldDisableDate={shouldDisableDay}
                         shouldDisableTime={shouldDisableTime}
+                        referenceDate={firstAvailableDate}
                         ampm={false}
                         sx={{ m: 2 }}
                     />

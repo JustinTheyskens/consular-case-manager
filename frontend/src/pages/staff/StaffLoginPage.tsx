@@ -7,49 +7,53 @@ import Typography from "@mui/material/Typography";
 import { useSendLoginMutation } from "../../api/endpoints/LoginAPI.ts";
 
 export default function CreateStaffAccountPage() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const dispatch = useDispatch();
-  const [sendLogin] = useSendLoginMutation();
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const dispatch = useDispatch();
+    const [sendLogin] = useSendLoginMutation();
 
-  async function onLoginSubmission(email: string, password: string) {
-    try {
-      //RTK Query POST call to StaffAPI
-      const response = await sendLogin({
-        email,
-        password,
-      }).unwrap();
+    async function onLoginSubmission(email: string, password: string) {
+        try {
+            //RTK Query POST call to StaffAPI
+            const response = await sendLogin({
+                email,
+                password,
+            }).unwrap();
 
-      //Stores the userID and login type in the session
-      dispatch(
-        setSession({
-          userId: response["userId"],
-          loginType: "staff",
-        }),
-      );
-      setLoggedIn(true);
-    } catch (err) {
-      console.log(err);
-      setErrorMessage("Failed to log in. Please try again.");
+            //Stores the userID and login type in the session
+            dispatch(
+                setSession({
+                    userId: response["userId"],
+                    loginType: "staff",
+                    emailAddress: email,
+                }),
+            );
+            setLoggedIn(true);
+        } catch (err) {
+            console.log(err);
+            setErrorMessage("Failed to log in. Please try again.");
+        }
     }
-  }
 
-  return (
-    <>
-      {loggedIn ? (
-        <Navigate to="/staff/dashboard" />
-      ) : (
+    return (
         <>
-          <LoginForm onSubmit={onLoginSubmission} errorMessage={errorMessage} />
-          <Typography
-            variant="caption"
-            sx={{ display: "block", textAlign: "center" }}
-          >
-            Don't have an account?&nbsp;
-            <Link to="/staff/login/create">Create one.</Link>
-          </Typography>
+            {loggedIn ? (
+                <Navigate to="/staff/dashboard" />
+            ) : (
+                <>
+                    <LoginForm
+                        onSubmit={onLoginSubmission}
+                        errorMessage={errorMessage}
+                    />
+                    <Typography
+                        variant="caption"
+                        sx={{ display: "block", textAlign: "center" }}
+                    >
+                        Don't have an account?&nbsp;
+                        <Link to="/staff/login/create">Create one.</Link>
+                    </Typography>
+                </>
+            )}
         </>
-      )}
-    </>
-  );
+    );
 }

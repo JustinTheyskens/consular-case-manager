@@ -1,26 +1,15 @@
 import { baseApi } from "../BaseAPI.ts";
 import type { Appointment } from "./AppointmentsAPI.ts";
+import type { Citizen } from "./CitizensAPI.ts";
+import type { Staff } from "./StaffAPI.ts";
 
 export type Case = {
     _id: string;
     reference: number;
     status: string;
     appointment: Appointment;
-    
-    assignedStaff?: {
-        _id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-    };
-
-    citizen?: {
-        _id: string;
-        email: string;
-        firstName: string;
-        lastName: string;
-    };
-    
+    assignedStaff: Staff;
+    citizen: Citizen;
     checkedIn: boolean;
     flagged: boolean;
     notes?: string;
@@ -55,7 +44,7 @@ export const casesApi = baseApi.injectEndpoints({
         // POST /cases
         createCase: builder.mutation<Case, CreateCaseRequest>({
             query: (body) => ({ url: "/cases", method: "POST", body }),
-            invalidatesTags: [{ type: "Case" as const, id: "LIST" }],
+            invalidatesTags: [{ type: "Case" as const, id: "LIST" }, , "Availability"],
         }),
 
         // PUT /cases/:ref
