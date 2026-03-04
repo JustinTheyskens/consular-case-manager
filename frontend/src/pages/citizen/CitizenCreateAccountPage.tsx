@@ -32,6 +32,7 @@ export default function CitizenCreateAccountPage() {
                 setSession({
                     userId: response["_id"],
                     loginType: "citizen",
+                    emailAddress: email,
                 }),
             );
 

@@ -22,32 +22,46 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import { useState, type ReactElement } from "react";
+import CreateAppointmentModal from "../components/modals/CreateAppointmentModal";
+
+export interface AppointmentType {
+    label: string;
+    icon: ReactElement;
+    description: string;
+    color: string;
+    type: string;
+}
 
 // appointment types
-const appointmentTypes = [
+const appointmentTypes: AppointmentType[] = [
     {
         label: "Passport Renewal",
         icon: <AutorenewIcon sx={{ fontSize: 36 }} />,
         description: "Renew an existing passport",
         color: "#1976d2", // Blue
+        type: "passport-renewal",
     },
     {
         label: "First-Time Passport",
         icon: <AddCardIcon sx={{ fontSize: 36 }} />,
         description: "Apply for your first passport",
         color: "#2e7d32", // Green
+        type: "passport-first",
     },
     {
         label: "Emergency Travel Document",
         icon: <FlightTakeoffIcon sx={{ fontSize: 36 }} />,
         description: "Urgent travel within 72 hours",
         color: "#ed6c02", // Orange
+        type: "passport-emergency",
     },
     {
         label: "Lost or Stolen Passport",
         icon: <ReportProblemIcon sx={{ fontSize: 36 }} />,
         description: "Report and replace a lost passport",
         color: "#d32f2f", // Red
+        type: "passport-lost",
     },
 ];
 
@@ -63,6 +77,11 @@ const upcomingAppointment = {
 const name = "Justin";
 
 export const UserDashboard = () => {
+    const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentType>(
+        appointmentTypes[0],
+    );
+
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -97,7 +116,6 @@ export const UserDashboard = () => {
                         </Typography>
                     </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
-
                         {/* Summary Metrics */}
                         <Grid
                             container
@@ -166,7 +184,13 @@ export const UserDashboard = () => {
                                                     key={apt.label}
                                                     size={{ xs: 12, sm: 6 }}
                                                 >
-                                                    <AppointmentCard {...apt} />
+                                                    <AppointmentCard
+                                                        {...apt}
+                                                        onClick={() => {
+                                                            setSelectedAppointment(apt);
+                                                            setShowAppointmentDialog(true);
+                                                        }}
+                                                    />
                                                 </Grid>
                                             ))}
                                         </Grid>
@@ -183,7 +207,10 @@ export const UserDashboard = () => {
                                 >
                                     {/* Upcoming */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -285,7 +312,10 @@ export const UserDashboard = () => {
 
                                     {/* Manage */}
                                     <Grid size={12}>
-                                        <Card elevation={1} sx={{border: "2px solid lightgray"}}>
+                                        <Card
+                                            elevation={1}
+                                            sx={{ border: "2px solid lightgray" }}
+                                        >
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
@@ -331,6 +361,12 @@ export const UserDashboard = () => {
                         </Grid>
                     </Box>
                 </Box>
+
+                <CreateAppointmentModal
+                    appointment={selectedAppointment}
+                    isOpen={showAppointmentDialog}
+                    closeModal={() => setShowAppointmentDialog(false)}
+                />
             </ThemeProvider>
         </Box>
     );

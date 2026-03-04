@@ -25,6 +25,7 @@ export default function CitizenLoginPage() {
                 setSession({
                     userId: response["userId"],
                     loginType: "citizen",
+                    emailAddress: email,
                 }),
             );
             setLoggedIn(true);
