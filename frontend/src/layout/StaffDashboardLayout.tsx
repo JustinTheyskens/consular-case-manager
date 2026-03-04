@@ -32,6 +32,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import FlagIcon from "@mui/icons-material/Flag";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import EditIcon from "@mui/icons-material/Edit";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -41,6 +42,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState } from "react";
 import { StatusEditor } from "../components/StatusEditor";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearSession } from "../store/SessionSlice";
 
 // Scheduled, In Review, Approved, Rejected, and Completed
 const statusOptions = [
@@ -195,6 +199,14 @@ export const StaffDashboard = () => {
         return matchedSearch && matchedStatus && matchedType;
     });
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(clearSession());
+        navigate("/staff/login");
+    };
+
     const flaggedCount = appointments.filter((a) => a.flagged).length;
     const reviewCount = appointments.filter((a) => a.status == "In Review").length;
     const completedCount = appointments.filter((a) => a.status == "Completed").length;
@@ -223,6 +235,17 @@ export const StaffDashboard = () => {
                     />
 
                     <Box sx={{ px: 3 }}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                            <Button
+                                data-testid="logout-btn"
+                                variant="outlined"
+                                color="primary"
+                                startIcon={<LogoutIcon />}
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </Button>
+                        </Box>
                         {/* ── Metric Cards ── */}
                         <Grid
                             container

@@ -13,6 +13,7 @@ import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
 import { theme } from "../theme";
 import { AppointmentCard } from "../components/AppointmentCard";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
@@ -22,6 +23,9 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import { useDispatch } from "react-redux";
+import { Navigate, useNavigate } from "react-router-dom";
+import { clearSession } from "../store/SessionSlice";
 
 // appointment types
 const appointmentTypes = [
@@ -53,7 +57,7 @@ const appointmentTypes = [
 
 // dummy appointment
 const upcomingAppointment = {
-    type: "Passport Renewal",
+    type: "Renewal",
     date: "March 12, 2026",
     time: "10:30 AM",
     reference: "CCM-2026-48291",
@@ -63,6 +67,14 @@ const upcomingAppointment = {
 const name = "Justin";
 
 export const UserDashboard = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(clearSession());
+        navigate("/user/login");
+    };
+
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -98,6 +110,17 @@ export const UserDashboard = () => {
                         </Typography>
                     </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
+                        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                            <Button
+                                data-testid="logout-btn"
+                                variant="outlined"
+                                color="primary"
+                                startIcon={<LogoutIcon />}
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </Button>
+                        </Box>
                         {/* Summary Metrics */}
                         <Grid
                             container
