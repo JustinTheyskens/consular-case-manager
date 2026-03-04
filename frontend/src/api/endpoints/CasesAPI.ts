@@ -19,13 +19,13 @@ export type CreateCaseRequest = {
     appointment: Appointment;
     citizen: string;
 };
-export type UpdateCaseRequest = Partial<Omit<Case, "reference">> & { reference: string };
+export type UpdateCaseRequest = Partial<Omit<Case, "reference">> & { reference: number };
 
 export const casesApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // GET /cases
-        getCases: builder.query<Case[], void>({
-            query: () => ({ url: "/cases", method: "GET" }),
+        getCases: builder.query<Case[], { staff?: string; citizen?: string } | void>({
+            query: (params) => ({ url: "/cases", method: "GET", params: params ?? undefined }),
             providesTags: (result) =>
                 result
                     ? [
