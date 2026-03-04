@@ -62,6 +62,9 @@ async function getAvailablyTimes(
         }
         res.status(200).json(returnValue);
     } catch (error) {
+        if (error instanceof RangeError) {
+            return res.status(400).send({ message: error.message });
+        }
         console.error(error);
         return res.status(500).send({ message: "Something went wrong!" });
     }
@@ -77,6 +80,9 @@ async function createAvailability(req: Request<{}, IAvailability, IAvailability>
         const document = await AvailabilityService.createAvailability(data);
         res.status(201).json(document);
     } catch (error) {
+        if (error instanceof RangeError) {
+            return res.status(400).send({ message: error.message });
+        }
         console.error(error);
         return res.status(500).send({ message: "Something went wrong!" });
     }
@@ -95,13 +101,16 @@ async function updateAvailability(
         const document = await AvailabilityService.updateAvailability(id, data);
         res.status(200).json(document);
     } catch (error) {
+        if (error instanceof RangeError) {
+            return res.status(400).send({ message: error.message });
+        }
         console.error(error);
         return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
 /**
- * Handles DELETE /availabilitys/:ref
+ * Handles DELETE /availabilities/:ref
  */
 async function deleteAvailability(req: Request<AvailabilityParams>, res: Response) {
     try {

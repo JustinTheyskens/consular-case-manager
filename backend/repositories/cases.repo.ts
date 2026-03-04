@@ -73,6 +73,43 @@ function findCasesByCitizen(citizen: string) {
 }
 
 /**
+ * Finds and returns all populated cases files from the database registered by a given citizen
+ * @param staff The citizen to look up the cases for
+ * @param start The start time of the appointment
+ * @returns A promise of all populated cases files in the database
+ */
+function findCaseByTimeAndCitizen(citizen: string, time: Date) {
+    return Case.aggregate<{ time: Date }>([
+        {
+            $match: {
+                citizen: new Types.ObjectId(citizen),
+            },
+        },
+        {
+            $lookup: {
+                from: "appointments",
+                localField: "appointment",
+                foreignField: "_id",
+                as: "appointmentInfo",
+            },
+        },
+        {
+            $unwind: "$appointmentInfo",
+        },
+        {
+            $match: {
+                "appointmentInfo.time": time,
+            },
+        },
+        {
+            $project: {
+                time: "$appointmentInfo.time",
+            },
+        },
+    ]).exec();
+}
+
+/**
  * Finds and populates a case file by its reference number
  * @param ref the reference number of the case file to retrieve
  * @return A promise with the populated case file
@@ -122,6 +159,7 @@ const CaseRepository = {
     findCasesByStaff,
     findCasesByTimeAndStaff,
     findCasesByCitizen,
+    findCaseByTimeAndCitizen,
     findCaseByRef,
     createCase,
     updateCase,

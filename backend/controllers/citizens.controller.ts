@@ -1,3 +1,4 @@
+import { MongooseError } from "mongoose";
 import citizenService, { type ICitizenAccount } from "../services/citizens.service.ts";
 import { type Request, type Response } from "express";
 
@@ -28,6 +29,11 @@ async function createCitizen(req: Request, res: Response) {
     } catch (error) {
         console.log("Error creating citizen.");
         console.log(error);
+        if (error instanceof RangeError) {
+            return res.status(400).send({ message: error.message });
+        } else if (error instanceof MongooseError) {
+            return res.status(500).send({ message: error.message });
+        }
         res.sendStatus(400);
     }
 }
@@ -39,6 +45,11 @@ async function updateCitizen(req: Request, res: Response, id: string) {
     } catch (error) {
         console.log("Error getting all citizens.");
         console.log(error);
+        if (error instanceof RangeError) {
+            return res.status(400).send({ message: error.message });
+        } else if (error instanceof MongooseError) {
+            return res.status(500).send({ message: error.message });
+        }
         res.sendStatus(404);
     }
 }
@@ -50,6 +61,9 @@ async function deleteCitizen(req: Request, res: Response, id: string) {
     } catch (error) {
         console.log("Error getting all citizens.");
         console.log(error);
+        if (error instanceof MongooseError) {
+            return res.status(500).send({ message: error.message });
+        }
         res.sendStatus(404);
     }
 }
