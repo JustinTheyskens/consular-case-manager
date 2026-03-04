@@ -17,19 +17,15 @@ import { AppointmentCard } from "../components/AppointmentCard";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
-import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 
-import { useGetAppointmentTypesQuery } from "../api/endpoints/AppointmentsAPI";
-import { useGetUpcomingAppointmentQuery } from "../api/endpoints/AppointmentsAPI";
 import { useModifyAppointmentMutation } from "../api/endpoints/AppointmentsAPI";
 import { useCancelAppointmentMutation } from "../api/endpoints/AppointmentsAPI";
 
 import { useSelector } from "react-redux";
-import type { RootState } from "../store/Store";
 import type { SessionState } from "../store/SessionSlice";
 import { useGetCasesByCitizenQuery } from "../api/endpoints/CasesAPI";
 
@@ -111,7 +107,11 @@ export const UserDashboard = () => {
                             justifyContent="right"
                             sx={{ mb: 8 }}
                         >
-                            <Grid pl={10} pt={2} size={{ xs: 12, sm: 6, md: 3 }}>
+                            <Grid
+                                pl={10}
+                                pt={2}
+                                size={{ xs: 12, sm: 6, md: 3 }}
+                            >
                                 {/* Greeting */}
                                 <Typography
                                     variant="h5"
@@ -130,7 +130,6 @@ export const UserDashboard = () => {
                                 </Typography>
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-
                                 <MetricCard
                                     label="Upcoming Appointments"
                                     value={upcoming}
