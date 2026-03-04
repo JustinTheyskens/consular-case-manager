@@ -5,6 +5,7 @@ import { clearSession } from "../store/SessionSlice";
 import type { RootState } from "../store/Store";
 import { useGetCitizenByIdQuery } from "../api/endpoints/CitizensAPI";
 import { useGetStaffByIdQuery } from "../api/endpoints/StaffAPI";
+import { Typography } from "@mui/material";
 
 interface ProtectedRouteProps {
     expectedUserType: "citizen" | "staff";
@@ -58,6 +59,12 @@ export default function ProtectedRoute({ expectedUserType }: ProtectedRouteProps
                 replace
             />
         );
+    }
+
+    // This is essentially invisible to the user
+    // But needs to be included, doesn't function correctly if there isn't some small loading state
+    if (activeQuery.isLoading || activeQuery.isUninitialized) {
+        return <Typography>Loading...</Typography>;
     }
 
     // If the query failed or returned no data, send them back to the login page just in case.
