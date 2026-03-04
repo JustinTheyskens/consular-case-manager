@@ -23,6 +23,16 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import { useState, type ReactElement } from "react";
+import CreateAppointmentModal from "../components/modals/CreateAppointmentModal";
+
+export interface AppointmentType {
+    label: string;
+    icon: ReactElement;
+    description: string;
+    color: string;
+    type: string;
+}
 
 import { useModifyAppointmentMutation } from "../api/endpoints/AppointmentsAPI";
 import { useCancelAppointmentMutation } from "../api/endpoints/AppointmentsAPI";
@@ -33,34 +43,34 @@ import { useGetCasesByCitizenQuery } from "../api/endpoints/CasesAPI";
 import { useState } from "react";
 
 // appointment types
-const appointmentTypes = [
+const appointmentTypes: AppointmentType[] = [
     {
         label: "Passport Renewal",
         icon: <AutorenewIcon sx={{ fontSize: 36 }} />,
         description: "Renew an existing passport",
         color: "#1976d2", // Blue
-        route: "/user/book/passport-renewal",
+        type: "passport-renewal",
     },
     {
         label: "First-Time Passport",
         icon: <AddCardIcon sx={{ fontSize: 36 }} />,
         description: "Apply for your first passport",
         color: "#2e7d32", // Green
-        route: "/user/book/passport-renewal",
+        type: "passport-first",
     },
     {
         label: "Emergency Travel Document",
         icon: <FlightTakeoffIcon sx={{ fontSize: 36 }} />,
         description: "Urgent travel within 72 hours",
         color: "#ed6c02", // Orange
-        route: "/user/book/passport-renewal",
+        type: "passport-emergency",
     },
     {
         label: "Lost or Stolen Passport",
         icon: <ReportProblemIcon sx={{ fontSize: 36 }} />,
         description: "Report and replace a lost passport",
         color: "#d32f2f", // Red
-        route: "/user/book/passport-renewal",
+        type: "passport-lost",
     },
 ];
 
@@ -103,6 +113,12 @@ export const UserDashboard = () => {
         setModalOpen(true);
     };
 
+export const UserDashboard = () => {
+    const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentType>(
+        appointmentTypes[0],
+    );
+  
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -198,7 +214,10 @@ export const UserDashboard = () => {
                                                 >
                                                     <AppointmentCard
                                                         {...apt}
-                                                        onClick={() => handleCardClick(apt.label)}
+                                                        onClick={() => {
+                                                            setSelectedAppointment(apt);
+                                                            setShowAppointmentDialog(true);
+                                                        }}
                                                     />
                                                 </Grid>
                                             ))}
@@ -404,39 +423,11 @@ export const UserDashboard = () => {
                         </Grid>
                     </Box>
                 </Box>
-
-                <Modal
-                    open={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                >
-                    <Box
-                        sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: 400,
-                            bgcolor: "background.paper",
-                            borderRadius: 2,
-                            boxShadow: 24,
-                            p: 4,
-                        }}
-                    >
-                        <Typography
-                            variant="h6"
-                            fontWeight={600}
-                            gutterBottom
-                        >
-                            {selectedType}
-                        </Typography>
-                        <Typography
-                            variant="body2"
-                            color="text.secondary"
-                        >
-                            Booking form coming soon.
-                        </Typography>
-                    </Box>
-                </Modal>
+                <CreateAppointmentModal
+                    appointment={selectedAppointment}
+                    isOpen={showAppointmentDialog}
+                    closeModal={() => setShowAppointmentDialog(false)}
+                />
             </ThemeProvider>
         </Box>
     );

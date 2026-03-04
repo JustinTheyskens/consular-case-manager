@@ -1,14 +1,15 @@
 import { type Request, type Response } from "express";
 import CaseService, { type NewCaseInfo } from "../services/cases.service.ts";
 import { type ICase } from "../models/cases.model.ts";
+import { MongooseError } from "mongoose";
 
 export interface CaseParams {
     ref: string;
 }
 
 export interface CaseQuery {
-    staff?: string,
-    citizen?: string
+    staff?: string;
+    citizen?: string;
 }
 
 /**
@@ -63,6 +64,11 @@ async function createCase(req: Request<{}, ICase, NewCaseInfo>, res: Response) {
         const document = await CaseService.createCase(data);
         res.status(201).json(document);
     } catch (error) {
+        if (error instanceof RangeError) {
+            return res.status(400).send({ message: error.message });
+        } else if (error instanceof MongooseError) {
+            return res.status(500).send({ message: error.message });
+        }
         console.error(error);
         return res.status(500).send({ message: "Something went wrong!" });
     }
@@ -78,6 +84,11 @@ async function updateCase(req: Request<CaseParams, ICase, ICase>, res: Response)
         const document = await CaseService.updateCase(Number(ref), data);
         res.status(200).json(document);
     } catch (error) {
+        if (error instanceof RangeError) {
+            return res.status(400).send({ message: error.message });
+        } else if (error instanceof MongooseError) {
+            return res.status(500).send({ message: error.message });
+        }
         console.error(error);
         return res.status(500).send({ message: "Something went wrong!" });
     }
@@ -93,6 +104,9 @@ async function deleteCase(req: Request<CaseParams>, res: Response) {
         await CaseService.deleteCase(Number(ref));
         res.sendStatus(204);
     } catch (error) {
+        if (error instanceof MongooseError) {
+            return res.status(500).send({ message: error.message });
+        }
         console.error(error);
         return res.status(500).send({ message: "Something went wrong!" });
     }

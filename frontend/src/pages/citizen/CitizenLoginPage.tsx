@@ -30,6 +30,8 @@ export default function CitizenLoginPage() {
                     userId: response["userId"],
                     loginType: "citizen",
                     name: `${citizen.firstName} ${citizen.lastName}`
+                    emailAddress: email,
+
                 }),
             );
             setLoggedIn(true);

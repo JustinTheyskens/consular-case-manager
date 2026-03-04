@@ -1,5 +1,7 @@
 import { Case, type ICase } from "../models/cases.model.ts";
 
+import { type ClientSession, Types } from "mongoose";
+
 /**
  * Finds and returns all populated cases files from the database
  * @returns A promise of all populated cases files in the database
@@ -30,7 +32,7 @@ function findCasesByTimeAndStaff(staff: string, start: Date, end: Date) {
     return Case.aggregate<{ time: Date }>([
         {
             $match: {
-                assignedStaff: staff,
+                assignedStaff: new Types.ObjectId(staff),
             },
         },
         {
@@ -46,7 +48,7 @@ function findCasesByTimeAndStaff(staff: string, start: Date, end: Date) {
         },
         {
             $match: {
-                "$appointmentInfo.time": {
+                "appointmentInfo.time": {
                     $gte: start,
                     $lt: end,
                 },
@@ -71,6 +73,43 @@ function findCasesByCitizen(citizen: string) {
 }
 
 /**
+ * Finds and returns all populated cases files from the database registered by a given citizen
+ * @param staff The citizen to look up the cases for
+ * @param start The start time of the appointment
+ * @returns A promise of all populated cases files in the database
+ */
+function findCaseByTimeAndCitizen(citizen: string, time: Date) {
+    return Case.aggregate<{ time: Date }>([
+        {
+            $match: {
+                citizen: new Types.ObjectId(citizen),
+            },
+        },
+        {
+            $lookup: {
+                from: "appointments",
+                localField: "appointment",
+                foreignField: "_id",
+                as: "appointmentInfo",
+            },
+        },
+        {
+            $unwind: "$appointmentInfo",
+        },
+        {
+            $match: {
+                "appointmentInfo.time": time,
+            },
+        },
+        {
+            $project: {
+                time: "$appointmentInfo.time",
+            },
+        },
+    ]).exec();
+}
+
+/**
  * Finds and populates a case file by its reference number
  * @param ref the reference number of the case file to retrieve
  * @return A promise with the populated case file
@@ -84,30 +123,35 @@ function findCaseByRef(ref: number) {
 /**
  * Creates a new case file with given data
  * @param data The data of the case to create
+ * @param session The transactional session to use
  * @returns A promise with the created case
  */
-function createCase(data: Partial<ICase>) {
-    return Case.create(data);
+function createCase(data: Partial<ICase>, session: ClientSession) {
+    return Case.create([data], { session: session });
 }
 
 /**
  * Updates a case file with given reference number
  * @param ref The reference number of the case file to update
  * @param newData The new case file data to replace the old
+ * @param session The transactional session to use
  * @returns A promise with the updated case file
  */
-async function updateCase(ref: number, newData: ICase) {
+async function updateCase(ref: number, newData: ICase, session?: ClientSession) {
     return Case.findOneAndUpdate({ reference: ref }, newData, { returnDocument: "after" })
+        .session(session ?? null)
         .populate(["appointment", "assignedStaff", "citizen"])
         .exec();
 }
 
 /**
  * Deletes a case file with given reference number
+ * @param ref The reference number of the case file to delete
+ * @param session The transactional session to use
  * @returns A promise with the deleted case file
  */
-function deleteCase(ref: number) {
-    return Case.findOneAndDelete({ reference: ref }).exec();
+function deleteCase(ref: number, session: ClientSession) {
+    return Case.findOneAndDelete({ reference: ref }).session(session).exec();
 }
 
 const CaseRepository = {
@@ -115,6 +159,7 @@ const CaseRepository = {
     findCasesByStaff,
     findCasesByTimeAndStaff,
     findCasesByCitizen,
+    findCaseByTimeAndCitizen,
     findCaseByRef,
     createCase,
     updateCase,

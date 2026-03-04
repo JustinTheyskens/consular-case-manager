@@ -1,3 +1,4 @@
+import { MongooseError } from "mongoose";
 import { StaffService, type IStaffAccount } from "../services/staff.service.ts";
 import { type Request, type Response } from "express";
 
@@ -33,6 +34,11 @@ export const StaffController = {
 
             return res.status(201).json(staff);
         } catch (error) {
+            if (error instanceof RangeError) {
+                return res.status(400).send({ message: error.message });
+            } else if (error instanceof MongooseError) {
+                return res.status(500).send({ message: error.message });
+            }
             res.status(400).json({ message: `Error encountered: ${(error as Error).message}` });
         }
     },
@@ -41,8 +47,13 @@ export const StaffController = {
             const id = String(req.params.id);
             const updatedStaff: IStaffAccount = req.body;
             res.status(201).send(await StaffService.update(id, updatedStaff));
-        } catch (err) {
-            return res.status(500).json({ message: (err as Error).message });
+        } catch (error) {
+            if (error instanceof RangeError) {
+                return res.status(400).send({ message: error.message });
+            } else if (error instanceof MongooseError) {
+                return res.status(500).send({ message: error.message });
+            }
+            return res.status(500).json({ message: (error as Error).message });
         }
     },
     delete: async (req: Request, res: Response) => {
@@ -54,6 +65,9 @@ export const StaffController = {
 
             return res.status(204).send();
         } catch (error) {
+            if (error instanceof MongooseError) {
+                return res.status(500).send({ message: error.message });
+            }
             res.status(500).json({ message: `Error encountered: ${(error as Error).message}` });
         }
     },
