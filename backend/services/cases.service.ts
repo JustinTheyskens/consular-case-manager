@@ -161,10 +161,10 @@ async function updateCase(ref: number, data: ICase) {
             );
         });
     } catch (error) {
-        console.error(error);
         if (error instanceof RangeError) {
             throw error;
         }
+        console.error(error);
         throw new MongooseError("Internal error: could not update case");
     } finally {
         await session.endSession();
