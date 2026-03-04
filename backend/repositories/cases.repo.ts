@@ -115,7 +115,7 @@ function findCaseByTimeAndCitizen(citizen: string, time: Date) {
  * @return A promise with the populated case file
  */
 function findCaseByRef(ref: number) {
-    return Case.findOne({ refencence: ref })
+    return Case.findOne({ reference: ref })
         .populate(["appointment", "assignedStaff", "citizen"])
         .exec();
 }
