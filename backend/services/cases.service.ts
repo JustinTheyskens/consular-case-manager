@@ -5,7 +5,7 @@ import AvailabilityRepository from "../repositories/availabilities.repo.ts";
 import AppointmentRepository from "../repositories/appointments.repo.ts";
 import config from "../config.json" with { type: "json" };
 
-import { startSession, Types } from "mongoose";
+import { MongooseError, startSession, Types } from "mongoose";
 
 export interface NewAppointmentInfo {
     time: string;
@@ -67,8 +67,16 @@ async function createCase(data: NewCaseInfo) {
 
             // First creates an appointment
             const { appointment, citizen } = data;
-            const { time, type } = appointment;
-            const appointmentDetails = { time: new Date(time), type } as IAppointment;
+            const { time: timeString, type } = appointment;
+            const time = new Date(timeString);
+            const appointmentDetails = { time, type } as IAppointment;
+
+            // Check if citizen already has appointment at that time
+            const [existingCase] = await CaseRepository.findCaseByTimeAndCitizen(citizen, time);
+            
+            if (existingCase != null) {
+                throw new RangeError("Existing appointment at scheduled time");
+            }
 
             const staff = await assignAppointmentStaff(appointmentDetails);
             const [{ _id }] = await AppointmentRepository.createAppointment(
@@ -88,7 +96,10 @@ async function createCase(data: NewCaseInfo) {
         });
     } catch (error) {
         console.error(error);
-        throw new Error("Case creation was attempted but was unsuccessful");
+        if (error instanceof RangeError) {
+            throw error;
+        }
+        throw new MongooseError("Internal error: could not create case");
     } finally {
         await session.endSession();
     }
@@ -102,7 +113,7 @@ async function createCase(data: NewCaseInfo) {
  */
 async function updateCase(ref: number, data: ICase) {
     const { appointment: newAppointment, reference } = data;
-    const { time: newTimeString, type: newType } = (newAppointment as unknown) as NewAppointmentInfo;
+    const { time: newTimeString, type: newType } = newAppointment as unknown as NewAppointmentInfo;
 
     const newTime = new Date(newTimeString);
 
@@ -144,7 +155,10 @@ async function updateCase(ref: number, data: ICase) {
         });
     } catch (error) {
         console.error(error);
-        throw error;
+        if (error instanceof RangeError) {
+            throw error;
+        }
+        throw new MongooseError("Internal error: could not update case");
     } finally {
         await session.endSession();
     }
@@ -176,7 +190,7 @@ async function deleteCase(ref: number) {
         });
     } catch (error) {
         console.error(error);
-        throw error;
+        throw new MongooseError("Internal error: could not delete case");
     } finally {
         await session.endSession();
     }
