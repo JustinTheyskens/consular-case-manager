@@ -13,11 +13,7 @@ import availabilitiesRouter from "./routes/availabilities.routes.ts";
 const app = express();
 const allowedOrigins = process.env.WHITELIST;
 
-app.use(
-    cors({
-        origin: allowedOrigins,
-    }),
-);
+app.use(cors());
 
 app.use(express.json());
 
