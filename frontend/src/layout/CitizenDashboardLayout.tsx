@@ -8,11 +8,13 @@ import {
     Button,
     Chip,
     Divider,
+    Modal,
 } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
 import { theme } from "../theme";
 import { AppointmentCard } from "../components/AppointmentCard";
+import { useNavigate } from "react-router-dom";
 
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
@@ -28,6 +30,7 @@ import { useCancelAppointmentMutation } from "../api/endpoints/AppointmentsAPI";
 import { useSelector } from "react-redux";
 import type { SessionState } from "../store/SessionSlice";
 import { useGetCasesByCitizenQuery } from "../api/endpoints/CasesAPI";
+import { useState } from "react";
 
 // appointment types
 const appointmentTypes = [
@@ -36,24 +39,28 @@ const appointmentTypes = [
         icon: <AutorenewIcon sx={{ fontSize: 36 }} />,
         description: "Renew an existing passport",
         color: "#1976d2", // Blue
+        route: "/user/book/passport-renewal",
     },
     {
         label: "First-Time Passport",
         icon: <AddCardIcon sx={{ fontSize: 36 }} />,
         description: "Apply for your first passport",
         color: "#2e7d32", // Green
+        route: "/user/book/passport-renewal",
     },
     {
         label: "Emergency Travel Document",
         icon: <FlightTakeoffIcon sx={{ fontSize: 36 }} />,
         description: "Urgent travel within 72 hours",
         color: "#ed6c02", // Orange
+        route: "/user/book/passport-renewal",
     },
     {
         label: "Lost or Stolen Passport",
         icon: <ReportProblemIcon sx={{ fontSize: 36 }} />,
         description: "Report and replace a lost passport",
         color: "#d32f2f", // Red
+        route: "/user/book/passport-renewal",
     },
 ];
 
@@ -63,9 +70,6 @@ export const UserDashboard = () => {
     const name = useSelector((state: { session: SessionState }) => state.session.name ?? "guest");
 
     // API hooks
-    // const {data: appointmentTypes, isLoading: typesLoading } =
-    //     useGetAppointmentTypesQuery();
-
     const { data: cases, isLoading: casesLoading } = useGetCasesByCitizenQuery(userId!, {
         skip: !userId,
     });
@@ -89,6 +93,14 @@ export const UserDashboard = () => {
     const handleCanel = async () => {
         if (!upcomingAppointment?._id) return;
         await cancelAppointment(upcomingAppointment._id);
+    };
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedType, setSelectedType] = useState<string | null>(null);
+
+    const handleCardClick = (label: string) => {
+        setSelectedType(label);
+        setModalOpen(true);
     };
 
     return (
@@ -184,7 +196,10 @@ export const UserDashboard = () => {
                                                     key={apt.label}
                                                     size={{ xs: 12, sm: 6 }}
                                                 >
-                                                    <AppointmentCard {...apt} />
+                                                    <AppointmentCard
+                                                        {...apt}
+                                                        onClick={() => handleCardClick(apt.label)}
+                                                    />
                                                 </Grid>
                                             ))}
                                         </Grid>
@@ -389,6 +404,39 @@ export const UserDashboard = () => {
                         </Grid>
                     </Box>
                 </Box>
+
+                <Modal
+                    open={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                >
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 400,
+                            bgcolor: "background.paper",
+                            borderRadius: 2,
+                            boxShadow: 24,
+                            p: 4,
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            fontWeight={600}
+                            gutterBottom
+                        >
+                            {selectedType}
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                        >
+                            Booking form coming soon.
+                        </Typography>
+                    </Box>
+                </Modal>
             </ThemeProvider>
         </Box>
     );
