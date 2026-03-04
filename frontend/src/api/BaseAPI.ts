@@ -7,6 +7,6 @@ export const baseApi = createApi({
     }),
     //TODO: ADD TAGS FOR ALL TYPES
   
-    tagTypes: ["Citizen", "Staff", "Case", "Appointment", "UpcomingAppointment"],
+    tagTypes: ["Citizen", "Staff", "Case", "Appointment", "UpcomingAppointment", "Availability"],
     endpoints: () => ({}),
 });

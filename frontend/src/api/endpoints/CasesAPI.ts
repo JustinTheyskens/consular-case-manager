@@ -44,7 +44,7 @@ export const casesApi = baseApi.injectEndpoints({
         // POST /cases
         createCase: builder.mutation<Case, CreateCaseRequest>({
             query: (body) => ({ url: "/cases", method: "POST", body }),
-            invalidatesTags: [{ type: "Case" as const, id: "LIST" }, , "Availability"],
+            invalidatesTags: [{ type: "Case" as const, id: "LIST" }],
         }),
 
         // PUT /cases/:ref
