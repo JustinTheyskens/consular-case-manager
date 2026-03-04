@@ -5,8 +5,7 @@ import { Login, type ILogin } from "../models/logins.model.ts";
  * @returns A promise of the account associated with the email and login
  */
 function findLoginByEmailAndPassword(email: string, password: string) {
-    return Login.findOne({ email: email, password: password })
-        .exec();
+    return Login.findOne({ email: email, password: password }).exec();
 }
 
 /**
@@ -25,8 +24,7 @@ function createLogin(data: ILogin) {
  * @returns A promise with the updated login
  */
 async function updateLogin(userId: string, newData: ILogin) {
-    return Login.findOneAndUpdate({ ref: userId }, newData, { returnDocument: "after" })
-        .exec();
+    return Login.findOneAndUpdate({ ref: userId }, newData, { returnDocument: "after" }).exec();
 }
 
 /**
@@ -42,7 +40,7 @@ const LoginRepository = {
     findLoginByEmailAndPassword,
     createLogin,
     updateLogin,
-    deleteLogin
+    deleteLogin,
 };
 
 export default LoginRepository;
