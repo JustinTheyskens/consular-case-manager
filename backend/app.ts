@@ -19,6 +19,7 @@ app.use(
     }),
 );
 
+app.use(logger);
 app.use(express.json());
 
 app.use("/cases", casesRouter);
@@ -27,7 +28,5 @@ app.use("/citizens", citizenRouter);
 app.use("/appointments", appointmentRouter);
 app.use("/login", loginRouter);
 app.use("/availabilities", availabilitiesRouter);
-
-app.use(logger);
 
 export default app;

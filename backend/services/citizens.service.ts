@@ -1,3 +1,4 @@
+import { MongooseError } from "mongoose";
 import { type ICitizen } from "../models/citizens.model.ts";
 import { type ILogin } from "../models/logins.model.ts";
 import citizenRepo from "../repositories/citizens.repo.ts";
@@ -41,9 +42,12 @@ async function createCitizen(newCitizen: ICitizenAccount) {
 
             return citizen;
         });
-    } catch (error) {
+    } catch (error: any) {
+        if (error.code === 11000) {
+            throw new RangeError("Email already exists");
+        }
         console.error(error);
-        throw new Error("Citizen creation was attempted but was unsuccessful");
+        throw new MongooseError("Internal error: could not create citizen");
     } finally {
         session.endSession();
     }
@@ -67,9 +71,12 @@ async function updateCitizen(id: string, updatedCitizen: ICitizenAccount) {
 
             return citizen;
         });
-    } catch (error) {
+    } catch (error: any) {
+        if (error.code === 11000) {
+            throw new RangeError("Email already exists");
+        }
         console.error(error);
-        throw new Error("Citizen update was attempted but was unsuccessful");
+        throw new MongooseError("Internal error: could not update citizen");
     } finally {
         session.endSession();
     }
@@ -86,7 +93,7 @@ async function deleteCitizen(id: string) {
         });
     } catch (error) {
         console.error(error);
-        throw new Error("Citizen deletion was attempted but was unsuccessful");
+        throw new MongooseError("Internal error: could not delete citizen");
     } finally {
         session.endSession();
     }

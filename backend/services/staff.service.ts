@@ -1,4 +1,4 @@
-import { startSession } from "mongoose";
+import { MongooseError, startSession } from "mongoose";
 
 import { type IStaff } from "../models/staff.model.ts";
 import { type ILogin } from "../models/logins.model.ts";
@@ -29,18 +29,24 @@ export const StaffService = {
                 const { _id } = staff;
                 const { email, password } = data;
 
-                await LoginRepository.createLogin({
-                    email,
-                    password,
-                    type: "staff",
-                    ref: _id,
-                } as ILogin, session);
+                await LoginRepository.createLogin(
+                    {
+                        email,
+                        password,
+                        type: "staff",
+                        ref: _id,
+                    } as ILogin,
+                    session,
+                );
 
                 return staff;
             });
-        } catch (error) {
+        } catch (error: any) {
+            if (error.code === 11000) {
+                throw new RangeError("Email already exists");
+            }
             console.error(error);
-            throw new Error("Staff creation was attempted but was unsuccessful");
+            throw new MongooseError("Internal error: could not create staff");
         } finally {
             session.endSession();
         }
@@ -59,9 +65,12 @@ export const StaffService = {
 
                 return staff;
             });
-        } catch (error) {
+        } catch (error: any) {
+            if (error.code === 11000) {
+                throw new RangeError("Email already exists");
+            }
             console.error(error);
-            throw new Error("Staff update was attempted but was unsuccessful");
+            throw new MongooseError("Internal error: could not update staff");
         } finally {
             session.endSession();
         }
@@ -78,7 +87,7 @@ export const StaffService = {
             });
         } catch (error) {
             console.error(error);
-            throw new Error("Staff update was attempted but was unsuccessful");
+            throw new MongooseError("Internal error: could not delete staff");
         } finally {
             session.endSession();
         }

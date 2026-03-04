@@ -1,4 +1,4 @@
-import { type AppointmentType } from "../models/appointments.model.ts";
+import { type AppointmentType, appointmentTypes } from "../models/appointments.model.ts";
 import { type IAvailability } from "../models/availabilities.model.ts";
 import AppointmentRepository from "../repositories/appointments.repo.ts";
 import AvailabilityRepository from "../repositories/availabilities.repo.ts";
@@ -42,7 +42,10 @@ async function getAllAvailableTimes(
     appointmentType: AppointmentType,
     startTime: Date = new Date(),
 ) {
-    // This is probably super buggy. I hate myself.
+    if (!appointmentTypes.includes(appointmentType)) {
+        throw new RangeError("Invalid appointment type");
+    }
+
     const availabilities =
         await AvailabilityRepository.findAvailabilitiesByAppointmentType(appointmentType);
 
