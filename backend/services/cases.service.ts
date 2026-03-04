@@ -73,7 +73,7 @@ async function createCase(data: NewCaseInfo) {
 
             // Check if citizen already has appointment at that time
             const [existingCase] = await CaseRepository.findCaseByTimeAndCitizen(citizen, time);
-            
+
             if (existingCase != null) {
                 throw new RangeError("Existing appointment at scheduled time");
             }
@@ -89,7 +89,7 @@ async function createCase(data: NewCaseInfo) {
 
             // Creates the case with a random reference number
             const referenceNumber = Math.floor(Math.random() * Math.pow(10, refLength + 1)) + 1;
-            await CaseRepository.createCase(
+            const [createdCase] = await CaseRepository.createCase(
                 {
                     citizen: new Types.ObjectId(citizen),
                     appointment: _id,
@@ -99,13 +99,13 @@ async function createCase(data: NewCaseInfo) {
                 session,
             );
 
-            return await CaseRepository.findCaseByRef(referenceNumber);
+            return await createdCase.populate(["appointment", "assignedStaff", "citizen"]);
         });
     } catch (error) {
-        console.error(error);
         if (error instanceof RangeError) {
             throw error;
         }
+        console.error(error);
         throw new MongooseError("Internal error: could not create case");
     } finally {
         await session.endSession();
