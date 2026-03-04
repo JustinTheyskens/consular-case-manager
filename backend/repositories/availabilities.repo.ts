@@ -89,16 +89,8 @@ function findOverlap(
         $or: [
             {
                 dayOfWeek: dayOfWeek,
-                $or: [
-                    {
-                        startTime: { $lte: startTime },
-                        endTime: { $gt: startTime },
-                    },
-                    {
-                        startTime: { $lte: endTime },
-                        endTime: { $gt: endTime },
-                    },
-                ],
+                startTime: { $lte: endTime },
+                endTime: { $gte: startTime },
             },
             {
                 dayOfWeek: (dayOfWeek + 6) % 7,

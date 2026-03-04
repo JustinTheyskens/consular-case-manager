@@ -75,8 +75,6 @@ async function getAllAvailableTimes(
         new Date(times[0] - DAY),
     );
 
-    console.log(appointments);
-
     // Map grouping appointments by staff
     const staffAppointments = new Map<string, Set<number>>();
 
@@ -116,9 +114,6 @@ async function getAllAvailableTimes(
         prioQueue.push([nextPeriodStart, nextPeriodEnd, availability]);
     }
 
-    console.log(prioQueue);
-    console.log(staffAppointments);
-
     // Return all times such that
     // there is one open availability for the time
     // AND the availability does not already have an appointment at the same time
@@ -130,7 +125,7 @@ async function getAllAvailableTimes(
                 !staffAppointments.get(staff)?.has(time)
             );
         });
-    });
+    }).map((time) => new Date(time).toISOString());
 }
 
 /**
@@ -251,22 +246,6 @@ function getTimes(startTime: Date) {
 
     return returnValue;
 }
-
-// function withinInterval(
-//     time: Date,
-//     period: { startTime: number; endTime: number; dayOfWeek: number },
-// ) {
-//     const dayOfWeek = time.getUTCDay();
-//     const hours = time.getUTCHours();
-//     const minutes = time.getUTCMinutes();
-//     const timeOfDay = 60 * hours + minutes;
-
-//     return (
-//         period.endTime >= timeOfDay + EXCLUSIVE_INTERVAL &&
-//         ((period.dayOfWeek === dayOfWeek && period.startTime <= timeOfDay && period.endTime) ||
-//             period.dayOfWeek === (dayOfWeek + 6) % 7)
-//     );
-// }
 
 const AvailabilityService = {
     getAll,
