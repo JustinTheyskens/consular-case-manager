@@ -27,6 +27,7 @@ function createLogin(data: ILogin, session: ClientSession) {
  * @param session The transactional session to use
  * @returns A promise with the updated login
  */
+
 async function updateLogin(userId: string, newData: ILogin, session: ClientSession) {
     return Login.findOneAndUpdate({ ref: userId }, newData, { returnDocument: "after" })
         .session(session)
