@@ -73,26 +73,6 @@ const appointmentTypes: AppointmentType[] = [
     },
 ];
 
-<<<<<<< HEAD
-// dummy appointment
-const upcomingAppointment = {
-    type: "Renewal",
-    date: "March 12, 2026",
-    time: "10:30 AM",
-    reference: "CCM-2026-48291",
-    status: "Confirmed",
-};
-
-const name = "Justin";
-
-export const UserDashboard = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        dispatch(clearSession());
-        navigate("/user/login");
-=======
 export const UserDashboard = () => {
     // Session
     const userId = useSelector((state: { session: SessionState }) => state.session.userId);
@@ -120,7 +100,6 @@ export const UserDashboard = () => {
     const handleCancel = async () => {
         if (!upcomingAppointment?.reference) return;
         await deleteCase(upcomingAppointment.reference.toString());
->>>>>>> origin/dev
     };
 
     return (
@@ -131,48 +110,7 @@ export const UserDashboard = () => {
                         title="Consular Case Manager"
                         subtitle="Passport appointments and case tracking"
                     />
-<<<<<<< HEAD
-                    {/* Greeting */}
-                    <Box
-                        sx={{
-                            px: 8,
-                            pb: 6,
-                            borderColor: "divider",
-                            backgroundColor: "background.paper",
-                        }}
-                    >
-                        <Typography
-                            variant="h5"
-                            fontWeight={600}
-                            sx={{ color: "text.primary" }}
-                        >
-                            Welcome, {name}
-                        </Typography>
-
-                        <Typography
-                            data-testid="user-dashboard"
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mt: 0.5 }}
-                        >
-                            User Dashboard
-                        </Typography>
-                    </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-                            <Button
-                                data-testid="logout-btn"
-                                variant="outlined"
-                                color="primary"
-                                startIcon={<LogoutIcon />}
-                                onClick={handleLogout}
-                            >
-                                Logout
-                            </Button>
-                        </Box>
-=======
-                    <Box sx={{ px: 3, pb: 4 }}>
->>>>>>> origin/dev
                         {/* Summary Metrics */}
                         <Grid
                             container
