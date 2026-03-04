@@ -6,6 +6,7 @@ export type SessionState = {
     userId: string | null;
     loginType: LoginType | null;
     emailAddress: string | null;
+    name?: string | null;
 };
 
 const initialState: SessionState = {
@@ -20,16 +21,18 @@ const sessionSlice = createSlice({
     reducers: {
         setSession(
             state,
-            action: PayloadAction<{ userId: string; loginType: LoginType; emailAddress: string }>,
+            action: PayloadAction<{ userId: string; loginType: LoginType; emailAddress: string; name?: string}}>,
         ) {
             state.userId = action.payload.userId;
             state.loginType = action.payload.loginType;
             state.emailAddress = action.payload.emailAddress;
+            state.name = action.payload.name ?? null;
         },
         clearSession(state) {
             state.userId = null;
             state.loginType = null;
             state.emailAddress = null;
+            state.name = null;
         },
     },
 });
