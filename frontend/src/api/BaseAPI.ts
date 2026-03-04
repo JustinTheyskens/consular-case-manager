@@ -6,6 +6,6 @@ export const baseApi = createApi({
         baseUrl: import.meta.env.VITE_API_URL,
     }),
     //TODO: ADD TAGS FOR ALL TYPES
-    tagTypes: ["Citizen", "Staff", "Case", "Appointment"],
+    tagTypes: ["Citizen", "Staff", "Case", "Appointment", "UpcomingAppointment"],
     endpoints: () => ({}),
 });

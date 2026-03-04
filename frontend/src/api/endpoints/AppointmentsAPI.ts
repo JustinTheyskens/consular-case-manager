@@ -6,10 +6,12 @@ export const appointmentsApi = baseApi.injectEndpoints({
         // do we need this, or are our apt types static?
         getAppointmentTypes: builder.query<Appointment[], void>({
             query: () => "/appointments/types", // verify this
+            providesTags: ["UpcomingAppointment"],
         }),
 
         getUpcomingAppointment: builder.query({
             query: (userId: string) => `/appointments/upcoming/${userId}`,
+            providesTags: ["UpcomingAppointment"],
         }),
 
         bookAppointment: builder.mutation({
@@ -18,6 +20,7 @@ export const appointmentsApi = baseApi.injectEndpoints({
                 method: "POST",
                 body: payload,
             }),
+            invalidatesTags: ["UpcomingAppointment"],
         }),
 
         modifyAppointment: builder.mutation({
@@ -26,6 +29,7 @@ export const appointmentsApi = baseApi.injectEndpoints({
                 method: "PATCH",
                 body: changes,
             }),
+            invalidatesTags: ["UpcomingAppointment"],
         }),
 
         cancelAppointment: builder.mutation({
@@ -33,6 +37,7 @@ export const appointmentsApi = baseApi.injectEndpoints({
                 url: `/appointments/${id}`,
                 method: "DELETE",
             }),
+            invalidatesTags: ["UpcomingAppointment"],
         }),
     }),
 });

@@ -55,6 +55,18 @@ export const casesApi = baseApi.injectEndpoints({
             ],
         }),
 
+        // GET /cases?citizen=:citizenId
+        getCasesByCitizen: builder.query<Case[], string>({
+            query: (citizenId) => ({ url: `/cases?citizen=${citizenId}`, method: "GET" }),
+            providesTags: (result) =>
+                result
+                    ? [
+                          ...result.map((c) => ({ type: "Case" as const, id: c._id })),
+                          { type: "Case" as const, id: "LIST" },
+                      ]
+                    : [{ type: "Case" as const, id: "LIST" }],
+        }),
+
         // DELETE /cases/:ref
         deleteCase: builder.mutation<{ success: boolean } | void, string>({
             query: (ref) => ({ url: `/cases/${ref}`, method: "DELETE" }),
@@ -70,6 +82,7 @@ export const casesApi = baseApi.injectEndpoints({
 export const {
     useGetCasesQuery,
     useGetCaseByRefQuery,
+    useGetCasesByCitizenQuery,
     useCreateCaseMutation,
     useUpdateCaseMutation,
     useDeleteCaseMutation,

@@ -17,13 +17,15 @@ const sessionSlice = createSlice({
     name: "session",
     initialState,
     reducers: {
-        setSession(state, action: PayloadAction<{ userId: string; loginType: LoginType }>) {
+        setSession(state, action: PayloadAction<{ userId: string; loginType: LoginType; name?: string}>) {
             state.userId = action.payload.userId;
             state.loginType = action.payload.loginType;
+            state.name = action.payload.name ?? null;
         },
         clearSession(state) {
             state.userId = null;
             state.loginType = null;
+            state.name = null;
         },
     },
 });

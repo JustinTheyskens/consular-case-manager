@@ -63,6 +63,7 @@ export const citizensApi = baseApi.injectEndpoints({
 export const {
     useGetCitizensQuery,
     useGetCitizenByIdQuery,
+    useLazyGetCitizenByIdQuery,
     useCreateCitizenMutation,
     useUpdateCitizenMutation,
     useDeleteCitizenMutation,
