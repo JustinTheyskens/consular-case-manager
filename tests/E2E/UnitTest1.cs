@@ -5,17 +5,21 @@ using OpenQA.Selenium;
 
 public class ExamplePageTests
 {
-    private WebDriver _driver;
+    private static string BaseUrl = "http://localhost:5173";
+    private WebDriver driver;
+
     [SetUp]
     public void Setup()
     {
-        _driver = new ChromeDriver();
+        driver = new ChromeDriver();
+        driver.Manage().Window.Maximize();
     }
 
     [TearDown]
-    public void Teardown()
+    public void TearDown()
     {
-        _driver.Close();
+        //driver.Quit();
+        driver.Dispose();
     }
 
     [Test]
