@@ -78,21 +78,28 @@ async function createCase(data: NewCaseInfo) {
                 throw new RangeError("Existing appointment at scheduled time");
             }
 
+            // Checks if there is an available staff member for the appointment
             const staff = await assignAppointmentStaff(appointmentDetails);
+
+            // If so, creates the appointment
             const [{ _id }] = await AppointmentRepository.createAppointment(
                 appointmentDetails,
                 session,
             );
 
-            return await CaseRepository.createCase(
+            // Creates the case with a random reference number
+            const referenceNumber = Math.floor(Math.random() * Math.pow(10, refLength + 1)) + 1;
+            await CaseRepository.createCase(
                 {
                     citizen: new Types.ObjectId(citizen),
                     appointment: _id,
                     assignedStaff: staff,
-                    reference: Math.floor(Math.random() * Math.pow(10, refLength + 1)) + 1,
+                    reference: referenceNumber,
                 },
                 session,
             );
+
+            return await CaseRepository.findCaseByRef(referenceNumber);
         });
     } catch (error) {
         console.error(error);
