@@ -1,6 +1,6 @@
 import { type Request, type Response } from "express";
 import EmailService from "../services/email.service.ts";
-import { EmailOptions } from "../config/email.ts";
+import { type EmailOptions } from "../config/email.ts";
 
 /**
  * Handles POST /email/send

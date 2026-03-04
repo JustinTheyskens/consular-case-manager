@@ -1,4 +1,4 @@
-import nodemailer, { Transporter } from "nodemailer";
+import nodemailer, { type Transporter } from "nodemailer";
 
 export interface EmailOptions {
     from?: string; //Optional in case the SMTP user is different than the 'from'
