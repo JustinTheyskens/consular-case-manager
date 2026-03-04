@@ -7,7 +7,7 @@
     "type": "module",
     "main": "server.ts",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "cross-env NODE_ENV=test nodemon server.ts",
         "start": "npx tsx server.ts",
         "dev": "nodemon server.ts"
     },
@@ -18,6 +18,10 @@
         "dotenv": "^17.3.0",
         "express": "^5.2.1",
         "heap-js": "^2.7.1",
-        "mongoose": "^9.2.1"
+        "mongoose": "^9.2.1",
+        "nodemailer": "^8.0.1"
+    },
+    "devDependencies": {
+        "@types/nodemailer": "^7.0.11"
     }
 }

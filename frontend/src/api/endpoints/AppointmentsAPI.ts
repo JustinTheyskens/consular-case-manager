@@ -1,9 +1,8 @@
 import { baseApi } from "../BaseAPI.ts";
 
 export type Appointment = {
-    _id: string;
     type: string;
-    time: Date;
+    time: string;
 };
 
 export type UpdateAppointmentRequest = Partial<Omit<Appointment, "_id">> & { _id: string };
@@ -11,7 +10,7 @@ export type UpdateAppointmentRequest = Partial<Omit<Appointment, "_id">> & { _id
 export const casesApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // PUT /appointments/:id
-        updateAppointment: builder.mutation<UpdateAppointmentRequest, Appointment>({
+        updateAppointment: builder.mutation<Appointment, UpdateAppointmentRequest>({
             query: ({ _id, ...body }) => ({ url: `/cases/${_id}`, method: "PUT", body }),
             invalidatesTags: (result, error, arg) => [
                 { type: "Appointment" as const, id: arg["_id"] },

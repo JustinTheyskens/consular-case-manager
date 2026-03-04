@@ -31,12 +31,14 @@ export default function StaffCreateAccountPage() {
                 setSession({
                     userId: response["_id"],
                     loginType: "staff",
+                    emailAddress: email,
                 }),
             );
 
             //REDIRECT USER TO APPROPRIATE LOGIN PAGE
             setAccountCreated(true);
         } catch (err) {
+            console.log(err);
             setErrorMessage("Failed to create account. Please try again.");
         }
     }

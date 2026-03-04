@@ -1,12 +1,11 @@
 import { Box, Card, CardContent, Typography, CardActionArea } from "@mui/material";
 
-const handleOnClick = () => {};
-
 export const AppointmentCard = ({
     label,
     icon,
     description,
     color,
+    onClick,
 }: {
     label: string;
     icon: React.ReactNode;
@@ -29,34 +28,34 @@ export const AppointmentCard = ({
         }}
     >
         <CardActionArea
-      onClick={handleOnClick}
-      sx={{ height: "100%" }}
-    >
-        <CardContent
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                gap: 1,
-                py: 3,
-            }}
+            onClick={onClick}
+            sx={{ height: "100%" }}
         >
-            <Box sx={{ color }}>{icon}</Box>
-            <Typography
-                variant="subtitle1"
-                fontWeight={600}
+            <CardContent
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    gap: 1,
+                    py: 3,
+                }}
             >
-                {label}
-            </Typography>
-            <Typography
-                variant="body2"
-                color="text.secondary"
-            >
-                {description}
-            </Typography>
-        </CardContent>
+                <Box sx={{ color }}>{icon}</Box>
+                <Typography
+                    variant="subtitle1"
+                    fontWeight={600}
+                >
+                    {label}
+                </Typography>
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                >
+                    {description}
+                </Typography>
+            </CardContent>
         </CardActionArea>
     </Card>
 );

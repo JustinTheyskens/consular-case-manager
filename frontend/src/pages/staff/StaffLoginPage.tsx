@@ -25,10 +25,12 @@ export default function CreateStaffAccountPage() {
                 setSession({
                     userId: response["userId"],
                     loginType: "staff",
+                    emailAddress: email,
                 }),
             );
             setLoggedIn(true);
         } catch (err) {
+            console.log(err);
             setErrorMessage("Failed to log in. Please try again.");
         }
     }

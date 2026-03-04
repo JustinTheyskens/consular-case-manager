@@ -5,12 +5,14 @@ import { Link, Navigate } from "react-router-dom";
 import LoginForm from "../../components/forms/LoginForm.tsx";
 import { Typography } from "@mui/material";
 import { useSendLoginMutation } from "../../api/endpoints/LoginAPI.ts";
+import { useLazyGetCitizenByIdQuery } from "../../api/endpoints/CitizensAPI.ts";
 
 export default function CitizenLoginPage() {
     const dispatch = useDispatch();
     const [loggedIn, setLoggedIn] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [sendLogin] = useSendLoginMutation();
+    const [getCitizenById] = useLazyGetCitizenByIdQuery();
 
     async function onLoginSubmission(email: string, password: string) {
         try {
@@ -20,11 +22,15 @@ export default function CitizenLoginPage() {
                 password,
             }).unwrap();
 
+            const citizen = await getCitizenById(response["userId"]).unwrap();
+
             //Stores the userID and login type in the session
             dispatch(
                 setSession({
                     userId: response["userId"],
                     loginType: "citizen",
+                    name: `${citizen.firstName} ${citizen.lastName}`,
+                    emailAddress: email,
                 }),
             );
             setLoggedIn(true);

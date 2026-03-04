@@ -1,8 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IStaff extends mongoose.Document {
-    email: string;
-    password: string;
     firstName: string;
     lastName: string;
 }

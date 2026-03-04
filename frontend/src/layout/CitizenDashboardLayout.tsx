@@ -18,7 +18,6 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
-import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
@@ -27,34 +26,54 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { clearSession } from "../store/SessionSlice";
 
+import { useState, type ReactElement } from "react";
+import CreateAppointmentModal from "../components/modals/CreateAppointmentModal";
+
+import { useSelector } from "react-redux";
+import type { SessionState } from "../store/SessionSlice";
+import { useGetCasesByCitizenQuery, useDeleteCaseMutation } from "../api/endpoints/CasesAPI";
+
+export interface AppointmentType {
+    label: string;
+    icon: ReactElement;
+    description: string;
+    color: string;
+    type: string;
+}
+
 // appointment types
-const appointmentTypes = [
+const appointmentTypes: AppointmentType[] = [
     {
         label: "Passport Renewal",
         icon: <AutorenewIcon sx={{ fontSize: 36 }} />,
         description: "Renew an existing passport",
-        color: "#1976d2", // Blue
+        color: "#1976d2",
+        type: "passport-renewal",
     },
     {
         label: "First-Time Passport",
         icon: <AddCardIcon sx={{ fontSize: 36 }} />,
         description: "Apply for your first passport",
-        color: "#2e7d32", // Green
+        color: "#2e7d32",
+        type: "passport-first",
     },
     {
         label: "Emergency Travel Document",
         icon: <FlightTakeoffIcon sx={{ fontSize: 36 }} />,
         description: "Urgent travel within 72 hours",
-        color: "#ed6c02", // Orange
+        color: "#ed6c02",
+        type: "passport-emergency",
     },
     {
         label: "Lost or Stolen Passport",
         icon: <ReportProblemIcon sx={{ fontSize: 36 }} />,
         description: "Report and replace a lost passport",
-        color: "#d32f2f", // Red
+        color: "#d32f2f",
+        type: "passport-lost",
     },
 ];
 
+<<<<<<< HEAD
 // dummy appointment
 const upcomingAppointment = {
     type: "Renewal",
@@ -73,6 +92,35 @@ export const UserDashboard = () => {
     const handleLogout = () => {
         dispatch(clearSession());
         navigate("/user/login");
+=======
+export const UserDashboard = () => {
+    // Session
+    const userId = useSelector((state: { session: SessionState }) => state.session.userId);
+    const name = useSelector((state: { session: SessionState }) => state.session.name ?? "guest");
+
+    // API hooks
+    const { data: cases, isLoading: casesLoading } = useGetCasesByCitizenQuery(userId!, {
+        skip: !userId,
+    });
+    const [deleteCase] = useDeleteCaseMutation();
+
+    // Derived data
+    const upcomingAppointment = cases?.find((c) => c.status === "scheduled");
+    const upcoming = cases?.filter((c) => c.status === "scheduled").length ?? 0;
+    const completed = cases?.filter((c) => c.status === "completed").length ?? 0;
+    const pending = cases?.filter((c) => c.status === "in-review").length ?? 0;
+
+    // Modal state
+    const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentType>(
+        appointmentTypes[0],
+    );
+
+    // Handlers
+    const handleCancel = async () => {
+        if (!upcomingAppointment?.reference) return;
+        await deleteCase(upcomingAppointment.reference.toString());
+>>>>>>> origin/dev
     };
 
     return (
@@ -83,6 +131,7 @@ export const UserDashboard = () => {
                         title="Consular Case Manager"
                         subtitle="Passport appointments and case tracking"
                     />
+<<<<<<< HEAD
                     {/* Greeting */}
                     <Box
                         sx={{
@@ -121,38 +170,55 @@ export const UserDashboard = () => {
                                 Logout
                             </Button>
                         </Box>
+=======
+                    <Box sx={{ px: 3, pb: 4 }}>
+>>>>>>> origin/dev
                         {/* Summary Metrics */}
                         <Grid
                             container
                             spacing={3}
+                            justifyContent="right"
                             sx={{ mb: 8 }}
                         >
+                            <Grid
+                                pl={10}
+                                pt={2}
+                                size={{ xs: 12, sm: 6, md: 3 }}
+                            >
+                                <Typography
+                                    variant="h5"
+                                    fontWeight={600}
+                                    sx={{ color: "text.primary" }}
+                                >
+                                    Welcome, {name}
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ mt: 0.5 }}
+                                >
+                                    User Dashboard
+                                </Typography>
+                            </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
                                     label="Upcoming Appointments"
-                                    value={1}
+                                    value={upcoming}
                                     icon={<CalendarMonthIcon />}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
                                     label="Completed"
-                                    value={3}
+                                    value={completed}
                                     icon={<BookmarkAddedIcon />}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
                                     label="Pending Review"
-                                    value={1}
+                                    value={pending}
                                     icon={<PendingActionsIcon />}
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard
-                                    label="Modifications Made"
-                                    value={2}
-                                    icon={<EditCalendarIcon />}
                                 />
                             </Grid>
                         </Grid>
@@ -189,7 +255,13 @@ export const UserDashboard = () => {
                                                     key={apt.label}
                                                     size={{ xs: 12, sm: 6 }}
                                                 >
-                                                    <AppointmentCard {...apt} />
+                                                    <AppointmentCard
+                                                        {...apt}
+                                                        onClick={() => {
+                                                            setSelectedAppointment(apt);
+                                                            setShowAppointmentDialog(true);
+                                                        }}
+                                                    />
                                                 </Grid>
                                             ))}
                                         </Grid>
@@ -219,92 +291,123 @@ export const UserDashboard = () => {
                                                     Upcoming Appointment
                                                 </Typography>
                                                 <Divider sx={{ mb: 2 }} />
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        mb: 1,
-                                                    }}
-                                                >
+                                                {casesLoading ? (
+                                                    <Typography variant="body2">
+                                                        Loading...
+                                                    </Typography>
+                                                ) : upcomingAppointment ? (
+                                                    <>
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                justifyContent: "space-between",
+                                                                mb: 1,
+                                                            }}
+                                                        >
+                                                            <Typography
+                                                                variant="body2"
+                                                                color="text.secondary"
+                                                            >
+                                                                Type
+                                                            </Typography>
+                                                            <Typography
+                                                                variant="body2"
+                                                                fontWeight={500}
+                                                            >
+                                                                {
+                                                                    upcomingAppointment.appointment
+                                                                        .type
+                                                                }
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                justifyContent: "space-between",
+                                                                mb: 1,
+                                                            }}
+                                                        >
+                                                            <Typography
+                                                                variant="body2"
+                                                                color="text.secondary"
+                                                            >
+                                                                Date
+                                                            </Typography>
+                                                            <Typography
+                                                                variant="body2"
+                                                                fontWeight={500}
+                                                            >
+                                                                {new Date(
+                                                                    upcomingAppointment.appointment
+                                                                        .time,
+                                                                ).toLocaleDateString("en-US", {
+                                                                    year: "numeric",
+                                                                    month: "long",
+                                                                    day: "numeric",
+                                                                })}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                justifyContent: "space-between",
+                                                                mb: 1,
+                                                            }}
+                                                        >
+                                                            <Typography
+                                                                variant="body2"
+                                                                color="text.secondary"
+                                                            >
+                                                                Time
+                                                            </Typography>
+                                                            <Typography
+                                                                variant="body2"
+                                                                fontWeight={500}
+                                                            >
+                                                                {new Date(
+                                                                    upcomingAppointment.appointment
+                                                                        .time,
+                                                                ).toLocaleTimeString("en-US", {
+                                                                    hour: "numeric",
+                                                                    minute: "2-digit",
+                                                                })}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                justifyContent: "space-between",
+                                                                mb: 2,
+                                                            }}
+                                                        >
+                                                            <Typography
+                                                                variant="body2"
+                                                                color="text.secondary"
+                                                            >
+                                                                Reference
+                                                            </Typography>
+                                                            <Typography
+                                                                variant="body2"
+                                                                fontWeight={500}
+                                                                sx={{ fontFamily: "monospace" }}
+                                                            >
+                                                                {upcomingAppointment.reference}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Chip
+                                                            label={upcomingAppointment.status}
+                                                            color="success"
+                                                            size="small"
+                                                        />
+                                                    </>
+                                                ) : (
                                                     <Typography
                                                         variant="body2"
                                                         color="text.secondary"
                                                     >
-                                                        Type
+                                                        No upcoming appointments.
                                                     </Typography>
-                                                    <Typography
-                                                        variant="body2"
-                                                        fontWeight={500}
-                                                    >
-                                                        {upcomingAppointment.type}
-                                                    </Typography>
-                                                </Box>
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        mb: 1,
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        variant="body2"
-                                                        color="text.secondary"
-                                                    >
-                                                        Date
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="body2"
-                                                        fontWeight={500}
-                                                    >
-                                                        {upcomingAppointment.date}
-                                                    </Typography>
-                                                </Box>
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        mb: 1,
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        variant="body2"
-                                                        color="text.secondary"
-                                                    >
-                                                        Time
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="body2"
-                                                        fontWeight={500}
-                                                    >
-                                                        {upcomingAppointment.time}
-                                                    </Typography>
-                                                </Box>
-                                                <Box
-                                                    sx={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        mb: 2,
-                                                    }}
-                                                >
-                                                    <Typography
-                                                        variant="body2"
-                                                        color="text.secondary"
-                                                    >
-                                                        Reference
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="body2"
-                                                        fontWeight={500}
-                                                        sx={{ fontFamily: "monospace" }}
-                                                    >
-                                                        {upcomingAppointment.reference}
-                                                    </Typography>
-                                                </Box>
-                                                <Chip
-                                                    label={upcomingAppointment.status}
-                                                    color="success"
-                                                    size="small"
-                                                />
+                                                )}
                                             </CardContent>
                                         </Card>
                                     </Grid>
@@ -341,6 +444,7 @@ export const UserDashboard = () => {
                                                     <Button
                                                         variant="outlined"
                                                         fullWidth
+                                                        disabled={true}
                                                     >
                                                         Modify Appointment
                                                     </Button>
@@ -348,6 +452,8 @@ export const UserDashboard = () => {
                                                         variant="outlined"
                                                         color="error"
                                                         fullWidth
+                                                        onClick={handleCancel}
+                                                        disabled={!upcomingAppointment}
                                                     >
                                                         Cancel Appointment
                                                     </Button>
@@ -360,6 +466,11 @@ export const UserDashboard = () => {
                         </Grid>
                     </Box>
                 </Box>
+                <CreateAppointmentModal
+                    appointment={selectedAppointment}
+                    isOpen={showAppointmentDialog}
+                    closeModal={() => setShowAppointmentDialog(false)}
+                />
             </ThemeProvider>
         </Box>
     );
