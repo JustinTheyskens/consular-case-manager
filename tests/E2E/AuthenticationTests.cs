@@ -4,17 +4,17 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
-    /// <summary>
-    /// Contains authentication tests verifying that user with proper
-    /// credentials are router to the dashboard, while user with
-    /// improper credentials are rejected.
-    /// 
-    /// Locator Strategy:
-    /// - Uses data-testid attributes with CSS selectors.
-    /// - Avoids dynamic MUI class names and brittle DOM chains.
-    /// 
-    /// This ensures stable and maintainable E2E automation.
-    /// </summary>
+/// <summary>
+/// Contains authentication tests verifying that user with proper
+/// credentials are router to the dashboard, while user with
+/// improper credentials are shown an error message.
+/// 
+/// Locator Strategy:
+/// - Uses data-testid attributes with CSS selectors.
+/// - Avoids dynamic MUI class names and brittle DOM chains.
+/// 
+/// This ensures stable and maintainable E2E automation.
+/// </summary>
 
 public class AuthenticationTests
 {
