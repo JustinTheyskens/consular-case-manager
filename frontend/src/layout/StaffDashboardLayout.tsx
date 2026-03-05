@@ -22,10 +22,12 @@ import {
     Chip,
     Tooltip,
     Badge,
+    Avatar,
 } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
 import { theme } from "../theme";
+
 import SaveIcon from "@mui/icons-material/Save";
 import FlagIcon from "@mui/icons-material/Flag";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
@@ -38,13 +40,17 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
+
 import { useState } from "react";
 import { StatusEditor } from "../components/StatusEditor";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { clearSession } from "../store/SessionSlice";
 import { Link } from "react-router-dom";
+import { AvailabilityModal } from "../components/AvailabilityModal";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
+/* Constants */
 // Scheduled, In Review, Approved, Rejected, and Completed
 const statusOptions = [
     "All",
@@ -55,6 +61,7 @@ const statusOptions = [
     "Completed",
     "Cancelled",
 ];
+
 const typeOptions = ["All", "Renewal", "First-Time", "Emergency", "Lost or Stolen"];
 
 const statusColors: Record<string, "default" | "warning" | "info" | "success" | "error"> = {
@@ -186,6 +193,7 @@ export const StaffDashboard = () => {
     const [typeFilter, setTypeFilter] = useState("All");
     const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
     const [activeStatusEditId, setActiveStatusEditId] = useState<number | null>(null);
+    const [availabilityOpen, setAvailabilityOpen] = useState(false);
 
     const filtered = appointments.filter((a) => {
         const matchedSearch =
@@ -224,6 +232,9 @@ export const StaffDashboard = () => {
         navigate("/user/login");
     };
 
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -246,23 +257,68 @@ export const StaffDashboard = () => {
                         </Button>
                     </PageHeader>
 
-                    {/* Logout button */}
-                    <Button
-                        data-testid="logout-btn"
-                        variant="outlined"
-                        color="primary"
-                        startIcon={<LogoutIcon />}
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </Button>
-
                     <Box sx={{ px: 3 }}>
-                        {/* ── Metric Cards ── */}
+                        {/*  Greeting + Logout */}
+                        <Box
+                            sx={{
+                                mt: 1,
+                                mb: 2.5,
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                            }}
+                        >
+                            {/*greeting - on the left */}
+                            <Box>
+                                <Typography
+                                    variant="h5"
+                                    fontWeight={700}
+                                    color="text.primary"
+                                >
+                                    {greeting}, Staff Member!
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    {new Date().toLocaleDateString("en-IE", {
+                                        weekday: "long",
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                    })}
+                                    {" · "}Today you have{" "}
+                                    <strong>{appointments.length} appointments</strong> scheduled.
+                                </Typography>
+
+                            {/* Availability button */}
+                            <Button
+                                variant="outlined"
+                                size="small"
+                                startIcon={<CalendarMonthIcon />}
+                                onClick={() => setAvailabilityOpen(true)}
+                            >
+                                My Availability
+                            </Button>
+                            </Box>
+
+                            {/* logout button - on the right */}
+                            <Button
+                                data-testid="logout-btn"
+                                variant="outlined"
+                                color="primary"
+                                startIcon={<LogoutIcon />}
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </Button>
+                        </Box>
+
+                        {/*  Metric Cards  */}
                         <Grid
                             container
                             spacing={3}
-                            sx={{ mb: 4 }}
+                            sx={{ flex: 1 }}
                         >
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
