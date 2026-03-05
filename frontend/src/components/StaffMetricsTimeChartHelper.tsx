@@ -1,37 +1,35 @@
-function lastNumDays(num: number) {
-    const today = new Date();
-    const lastNDays: Record<string, number> = {};
-    if (num >= 0) {
-        for (let i = num; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(today.getDate() - i);
-            const key = d.toISOString().split("T")[0];
-            lastNDays[key] = 0;
-        }
-    } else {
-        for (let i = num; i <= 0; i++) {
-            const d = new Date();
-            d.setDate(today.getDate() - i);
-            const key = d.toISOString().split("T")[0];
-            lastNDays[key] = 0;
-        }
-    }
-    return lastNDays;
+import dayjs from "dayjs";
+import type { Case } from "../api/endpoints/CasesAPI";
+
+/**
+ * Filters cases by a start and optional end date (inclusive).
+ * If endDate is null or undefined, includes all cases from startDate onward.
+ */
+export function filterCasesByDate(
+  cases: Case[] | undefined,
+  startDate: dayjs.Dayjs | null,
+  endDate?: dayjs.Dayjs | null,
+): Case[] {
+  if (!cases || !startDate) {
+    console.log("No Cases found or no Start Date Set");
+    return [];
+  }
+
+  const start = startDate.startOf("day");
+  const end = endDate?.startOf("day");
+
+  return cases.filter((c) => {
+    const time = c.appointment?.time ?? null;
+    if (!time) return false; // skip null appointments
+
+    const date = dayjs(time).startOf("day");
+
+    if (!end) return date.isSame(start, "day") || date.isAfter(start, "day");
+
+    return (
+      date.isSame(start, "day") ||
+      date.isSame(end, "day") ||
+      (date.isAfter(start, "day") && date.isBefore(end, "day"))
+    );
+  });
 }
-
-function createRangeOptions() {
-    const rangeOptions = [];
-
-    for (let i = -60; i <= 60; i += 15) {
-        if (i != 0) {
-            rangeOptions.push({
-                start: i,
-                end: i + 15,
-                label: `${i < 0 ? Math.abs(i) + " days ahead" : i + " days ago"}`,
-            });
-        }
-    }
-    return rangeOptions;
-}
-
-export { lastNumDays, createRangeOptions };

@@ -55,6 +55,10 @@ async function createCitizen(newCitizen: ICitizenAccount) {
 
 async function updateCitizen(id: string, updatedCitizen: ICitizenAccount) {
     // Begins mongoose transaction for integrity (update both a login and citizen document)
+    if (await citizenRepo.getCitizenById(id) == null) {
+        throw new ReferenceError("No citizen found at ID");
+    }
+
     const session = await startSession();
 
     try {
