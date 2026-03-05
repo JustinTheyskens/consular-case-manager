@@ -5,6 +5,7 @@ import {
   Typography,
   Box,
   Grid,
+  Button,
 } from "@mui/material";
 import {
   Scatter,
@@ -19,6 +20,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import type { Case } from "../../../api/endpoints/CasesAPI.ts";
 import MetricCard from "./MetricCard.tsx";
+import { exportAsCSV } from "../../../components/ExportAsCSV.tsx";
 
 interface Props {
   cases: Case[];
@@ -136,6 +138,15 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
                   <MetricCard label="Scheduled" value={cSched} />
                 </Grid>
               </Grid>
+
+              <Box sx={{ mt: 3, textAlign: "center" }}>
+                <Button
+                  variant="contained"
+                  onClick={() => exportAsCSV(cases, "case_history")}
+                >
+                  Export CSV
+                </Button>
+              </Box>
             </Box>
           </Grid>
         </Grid>
