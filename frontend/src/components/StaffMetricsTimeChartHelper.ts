@@ -1,4 +1,3 @@
-// frontend/src/utils/filterCasesByDate.ts
 import dayjs from "dayjs";
 import type { Case } from "../api/endpoints/CasesAPI";
 
@@ -11,13 +10,16 @@ export function filterCasesByDate(
   startDate: dayjs.Dayjs | null,
   endDate?: dayjs.Dayjs | null,
 ): Case[] {
-  if (!cases || !startDate) return [];
+  if (!cases || !startDate) {
+    console.log("No Cases found or no Start Date Set");
+    return [];
+  }
 
   const start = startDate.startOf("day");
   const end = endDate?.startOf("day");
 
   return cases.filter((c) => {
-    const time = c.appointment?.time;
+    const time = c.appointment?.time ?? null;
     if (!time) return false; // skip null appointments
 
     const date = dayjs(time).startOf("day");

@@ -42,6 +42,7 @@ export default function StaffMetricsPieChart({ cases }: Props) {
         case "In Review":
         case "Review":
         case "in review":
+        case "in-review":
           cInReview++;
           break;
         case "Approved":
