@@ -19,18 +19,18 @@ export type CreateCaseRequest = {
     appointment: Appointment;
     citizen: string;
 };
-export type UpdateCaseRequest = Partial<Omit<Case, "reference">> & { reference: string };
+export type UpdateCaseRequest = Partial<Omit<Case, "reference">> & { reference: number };
 
 export const casesApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // GET /cases
-        getCases: builder.query<Case[], void>({
-            query: () => ({ url: "/cases", method: "GET" }),
+        getCases: builder.query<Case[], { staff?: string; citizen?: string } | void>({
+            query: (params) => ({ url: "/cases", method: "GET", params: params ?? undefined }),
             providesTags: (result) =>
                 result
                     ? [
-                          ...result.map((c) => ({ type: "Case" as const, _id: c["_id"] })),
-                          { type: "Case" as const, _id: "LIST" },
+                          ...result.map((c) => ({ type: "Case" as const, id: c["_id"] })),
+                          { type: "Case" as const, id: "LIST" },
                       ]
                     : [{ type: "Case" as const, id: "LIST" }],
         }),
@@ -48,9 +48,9 @@ export const casesApi = baseApi.injectEndpoints({
         }),
 
         // PUT /cases/:ref
-        updateCase: builder.mutation<Case, UpdateCaseRequest>({
-            query: ({ reference, ...body }) => ({
-                url: `/cases/${reference}`,
+        updateCase: builder.mutation<Case, Case>({
+            query: (body) => ({
+                url: `/cases/${body.reference}`,
                 method: "PUT",
                 body,
             }),
