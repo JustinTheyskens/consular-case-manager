@@ -19,18 +19,18 @@ describe("filterCasesByDate", () => {
     },
     assignedStaff: {firstName: "",lastName: "",_id: "",email: "",password: ""},citizen: {_id: "",email: "",firstName: "",lastName: "",password: "",},checkedIn: false,flagged: false,notes: "",
   },
-  // Entry 2 Tomorrow 
+  // Entry 2 Yesterday 
   {
     _id: "2",
     reference: 2,
     status: "Scheduled",
     appointment: {
       type: "passport-renewal",
-      time: "2026-03-06T08:00:00.000Z",  
+      time: "2026-03-04T08:00:00.000Z",  
     },
     assignedStaff: {firstName: "",lastName: "",_id: "",email: "",password: ""},citizen: {_id: "",email: "",firstName: "",lastName: "",password: "",},checkedIn: false,flagged: false,notes: "",
   },
-    // Entry 3 Yesterday 
+    // Entry 3 Tomorrow 
   {
     _id: "3",
     reference: 3,
@@ -40,8 +40,19 @@ describe("filterCasesByDate", () => {
       time: "2026-03-06T08:00:00.000Z",  
     },
     assignedStaff: {firstName: "",lastName: "",_id: "",email: "",password: ""},citizen: {_id: "",email: "",firstName: "",lastName: "",password: "",},checkedIn: false,flagged: false,notes: "",
-  }
+  },
 
+       // Entry 4 No Time 
+  {
+    _id: "3",
+    reference: 3,
+    status: "Completed",
+    appointment: {
+      type: "passport-renewal",
+      time: "",  
+    },
+    assignedStaff: {firstName: "",lastName: "",_id: "",email: "",password: ""},citizen: {_id: "",email: "",firstName: "",lastName: "",password: "",},checkedIn: false,flagged: false,notes: "",
+  }
 
 
   ];
@@ -52,7 +63,7 @@ describe("filterCasesByDate", () => {
 
     const result = filterCasesByDate(cases, start, end);
 
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(2); // yesterday and today
     expect(result.map(c => c._id)).toEqual(["1", "2"]);
   });
 
@@ -60,15 +71,15 @@ describe("filterCasesByDate", () => {
     const start = dayjs("2025-01-01");
     const end = dayjs("2025-01-31");
 
-    const result = filterCasesByDate(cases, start, end);
-    expect(result).toHaveLength(0);
+    const result = filterCasesByDate(cases, start, end); 
+    expect(result).toHaveLength(0); // no valid cases
   });
 
   it("returns cases after start date if endDate is not provided", () => {
     const start = dayjs("2026-03-05");
 
     const result = filterCasesByDate(cases, start);
-    expect(result.map(c => c._id)).toEqual(["2", "3"]);
+    expect(result.map(c => c._id)).toEqual(["1", "3"]); // should include today and tomorrow 
   });
 
   it("ignores cases with null appointment.time", () => {
@@ -76,6 +87,14 @@ describe("filterCasesByDate", () => {
     const end = dayjs("2026-03-31");
 
     const result = filterCasesByDate(cases, start, end);
-    expect(result.find(c => c._id === "4")).toBeUndefined();
+    expect(result.find(c => c._id === "4")).toBeUndefined(); // shouldn't find case 4 
   });
+
+  it("Gives no response if start and end are switched", () =>{
+    const start = dayjs("2026-03-31");
+    const end = dayjs("2026-03-01");
+    const result = filterCasesByDate(cases,start,end);
+    expect(result.find(c => c._id === "1")).toBeUndefined(); // shouldn't find today in the range
+  })
+
 });

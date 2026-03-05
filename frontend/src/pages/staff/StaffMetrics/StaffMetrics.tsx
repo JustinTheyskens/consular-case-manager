@@ -7,7 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 import dayjs, { Dayjs } from "dayjs";
-import { filterCasesByDate } from "../../../components/StaffMetricsTimeChartHelper.tsx";
+import { filterCasesByDate } from "../../../components/StaffMetricsTimeChartHelper.ts";
 
 export default function StaffMetrics() {
   const { data: cases, isLoading, isError, error } = useGetCasesQuery();

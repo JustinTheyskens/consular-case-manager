@@ -32,40 +32,36 @@ export default function StaffMetricsPieChart({ cases }: Props) {
     cApproved = 0,
     cRejected = 0,
     cCompleted = 0,
+    cCancelled = 0,
     cUnknown = 0;
 
-  const today = new Date();
   cases.forEach((c) => {
-    if (today.getTime() <= new Date(c.appointment?.time ?? 0).getTime()) {
-      cTotal++;
-      switch (c.status) {
-        case "Scheduled":
-        case "scheduled":
-          cScheduled++;
-          break;
-        case "In Review":
-        case "Review":
-        case "in review":
-        case "in-review":
-          cInReview++;
-          break;
-        case "Approved":
-        case "Approve":
-        case "approved":
-          cApproved++;
-          break;
-        case "Rejected":
-        case "rejected":
-          cRejected++;
-          break;
-        case "Completed":
-        case "Complete":
-        case "completed":
-          cCompleted++;
-          break;
-        default:
-          cUnknown++;
-      }
+    cTotal++;
+    const status = (c.status ?? "").toLowerCase();
+
+    switch (status) {
+      case "scheduled":
+        cScheduled++;
+        break;
+      case "in review":
+      case "review":
+      case "In Review":
+        cInReview++;
+        break;
+      case "approved":
+        cApproved++;
+        break;
+      case "rejected":
+        cRejected++;
+        break;
+      case "completed":
+        cCompleted++;
+        break;
+      case "cancelled":
+        cCancelled++;
+        break;
+      default:
+        cUnknown++;
     }
   });
 
@@ -75,7 +71,8 @@ export default function StaffMetricsPieChart({ cases }: Props) {
     { id: 2, value: cApproved, label: "Approved" },
     { id: 3, value: cRejected, label: "Rejected" },
     { id: 4, value: cCompleted, label: "Completed" },
-    { id: 5, value: cUnknown, label: "Unknown" },
+    { id: 5, value: cCancelled, label: "Cancelled" },
+    { id: 6, value: cUnknown, label: "Unknown" },
   ];
 
   return (
