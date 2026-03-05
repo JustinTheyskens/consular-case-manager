@@ -12,9 +12,11 @@ export const AppointmentCard = ({
     description: string;
     color: string;
     onClick?: () => void;
+    "data-testid"?: string;
 }) => (
     <Card
         elevation={1}
+        data-testid={`appointment-card-${label.replace(/\s+/g, "-").toLowerCase()}`}
         sx={{
             height: "100%",
             cursor: "pointer",

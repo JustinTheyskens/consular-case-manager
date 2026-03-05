@@ -59,4 +59,13 @@ public class DashboardTests
         driver?.Quit();
         driver?.Dispose();
     }
+
+    [Test]
+    [Category("Dashboard")]
+    public void User_Can_Book_Appointment_For_New_Passport()
+    {
+        UserLogin();
+
+        driver.FindElement(By.CssSelector("[data-testid='appointment-card-first-time-passport']")).Click();
+    }
 }
