@@ -97,8 +97,5 @@ public class SmokeTests
 
         Assert.That(driver.Url, Does.Contain("/dashboard"));
 
-        // var header = driver.FindElement(By.CssSelector("[data-testid='user-dashboard']"));
-        // Assert.That(header.Text, Is.Not.Empty);
-        
     }
 }
