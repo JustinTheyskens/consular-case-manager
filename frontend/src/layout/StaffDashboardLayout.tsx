@@ -1,28 +1,27 @@
 import Grid from "@mui/material/Grid";
 import {
-    Box,
-    ThemeProvider,
-    Card,
-    CardContent,
-    InputLabel,
-    Typography,
-    Divider,
-    TextField,
-    MenuItem,
-    Select,
-    FormControl,
-    Button,
-    IconButton,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Chip,
-    Tooltip,
-    Badge,
-
+  Box,
+  ThemeProvider,
+  Card,
+  CardContent,
+  InputLabel,
+  Typography,
+  Divider,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  Button,
+  IconButton,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Chip,
+  Tooltip,
+  Badge,
 } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
@@ -41,13 +40,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useState } from "react";
 import { StatusEditor } from "../components/StatusEditor";
-<<<<<<< HEAD
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { clearSession } from "../store/SessionSlice";
-=======
 import { Link } from "react-router-dom";
->>>>>>> origin/dev
 
 // Scheduled, In Review, Approved, Rejected, and Completed
 const statusOptions = [
@@ -213,19 +206,6 @@ export const StaffDashboard = () => {
     return matchedSearch && matchedStatus && matchedType;
   });
 
-<<<<<<< HEAD
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        dispatch(clearSession());
-        navigate("/staff/login");
-    };
-
-    const flaggedCount = appointments.filter((a) => a.flagged).length;
-    const reviewCount = appointments.filter((a) => a.status == "In Review").length;
-    const completedCount = appointments.filter((a) => a.status == "Completed").length;
-=======
   const flaggedCount = appointments.filter((a) => a.flagged).length;
   const reviewCount = appointments.filter(
     (a) => a.status == "In Review",
@@ -233,7 +213,6 @@ export const StaffDashboard = () => {
   const completedCount = appointments.filter(
     (a) => a.status == "Completed",
   ).length;
->>>>>>> origin/dev
 
   const toggleFlag = (id: number) => {
     setAppointments((prev) =>
@@ -337,220 +316,6 @@ export const StaffDashboard = () => {
                         ),
                       }}
                     />
-<<<<<<< HEAD
-
-                    <Box sx={{ px: 3 }}>
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
-                            <Button
-                                data-testid="logout-btn"
-                                variant="outlined"
-                                color="primary"
-                                startIcon={<LogoutIcon />}
-                                onClick={handleLogout}
-                            >
-                                Logout
-                            </Button>
-                        </Box>
-                        {/* ── Metric Cards ── */}
-                        <Grid
-                            container
-                            spacing={3}
-                            sx={{ mb: 4 }}
-                        >
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard
-                                    label="Appointments Today"
-                                    value={42}
-                                    icon={<EventAvailableIcon />}
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard
-                                    label="Available Slots"
-                                    value={18}
-                                    icon={<AccessTimeIcon />}
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard
-                                    label="Pending Cases"
-                                    value={24}
-                                    icon={<AssignmentIcon />}
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard
-                                    label="Flagged Cases"
-                                    value={3}
-                                    icon={<WarningAmberIcon />}
-                                />
-                            </Grid>
-                        </Grid>
-
-                        {/* Search & Filters */}
-                        <Card
-                            elevation={1}
-                            sx={{ mb: 3 }}
-                        >
-                            <CardContent>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                                    <FilterListIcon color="action" />
-                                    <Typography
-                                        variant="subtitle1"
-                                        fontWeight={600}
-                                    >
-                                        Search & Filter
-                                    </Typography>
-                                </Box>
-                                <Divider sx={{ mb: 2 }} />
-                                <Grid
-                                    container
-                                    spacing={2}
-                                    alignItems="center"
-                                >
-                                    <Grid size={{ xs: 12, sm: 5 }}>
-                                        <TextField
-                                            fullWidth
-                                            size="small"
-                                            placeholder="Search by reference or applicant name..."
-                                            value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <SearchIcon
-                                                        fontSize="small"
-                                                        sx={{ mr: 1, color: "text.secondary" }}
-                                                    />
-                                                ),
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid size={{ xs: 12, sm: 3 }}>
-                                        <FormControl
-                                            fullWidth
-                                            size="small"
-                                        >
-                                            <InputLabel>Status</InputLabel>
-                                            <Select
-                                                value={statusFilter}
-                                                label="Status"
-                                                onChange={(e) => setStatusFilter(e.target.value)}
-                                            >
-                                                {statusOptions.map((s) => (
-                                                    <MenuItem
-                                                        key={s}
-                                                        value={s}
-                                                    >
-                                                        {s}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid size={{ xs: 12, sm: 3 }}>
-                                        <FormControl
-                                            fullWidth
-                                            size="small"
-                                        >
-                                            <InputLabel>Type</InputLabel>
-                                            <Select
-                                                value={typeFilter}
-                                                label="Type"
-                                                onChange={(e) => setTypeFilter(e.target.value)}
-                                            >
-                                                {typeOptions.map((t) => (
-                                                    <MenuItem
-                                                        key={t}
-                                                        value={t}
-                                                    >
-                                                        {t}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid size={{ xs: 12, sm: 1 }}>
-                                        <Button
-                                            size="small"
-                                            variant="outlined"
-                                            onClick={() => {
-                                                setSearch("");
-                                                setStatusFilter("All");
-                                                setTypeFilter("All");
-                                            }}
-                                        >
-                                            Clear
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </CardContent>
-                        </Card>
-                        {/* Appointment Table */}
-                        <Card data-testid="todays-schedule">
-                            {/* Header */}
-                            <CardContent>
-                                <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                                    <Typography
-                                        variant="subtitle1"
-                                        fontWeight={600}
-                                    >
-                                        Today's Schedule
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        color="text.secondary"
-                                    >
-                                        {filtered.length} of {appointments.length} appointments
-                                    </Typography>
-                                </Box>
-                                <Divider sx={{ mb: 2 }} />
-                                <TableContainer>
-                                    <Table size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <strong>Time</strong>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <strong>Reference</strong>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <strong>Applicant</strong>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <strong>Type</strong>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <strong>Status</strong>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <strong>Notes</strong>
-                                                </TableCell>
-                                                <TableCell align="center">
-                                                    <strong>Actions</strong>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {filtered.map((apt) => (
-                                                <>
-                                                    <TableRow
-                                                        key={apt.id}
-                                                        sx={{
-                                                            backgroundColor: apt.flagged
-                                                                ? "rgba(255, 152, 0, 0.06)"
-                                                                : "inherit",
-                                                            "&:hover": {
-                                                                backgroundColor: "action.hover",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <TableCell>{apt.time}</TableCell>
-                                                        <TableCell>{apt.reference}</TableCell>
-                                                        <TableCell>{apt.applicant}</TableCell>
-                                                        <TableCell>{apt.type}</TableCell>
-                                                        {/* If actively editing, 
-=======
                   </Grid>
                   <Grid size={{ xs: 12, sm: 3 }}>
                     <FormControl fullWidth size="small">
@@ -659,7 +424,6 @@ export const StaffDashboard = () => {
                             <TableCell>{apt.applicant}</TableCell>
                             <TableCell>{apt.type}</TableCell>
                             {/* If actively editing, 
->>>>>>> origin/dev
                                                         dropdown menu, 
                                                         else, 
                                                         chip */}
