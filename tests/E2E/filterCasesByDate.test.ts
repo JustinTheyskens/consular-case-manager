@@ -89,4 +89,12 @@ describe("filterCasesByDate", () => {
     const result = filterCasesByDate(cases, start, end);
     expect(result.find(c => c._id === "4")).toBeUndefined(); // shouldn't find case 4 
   });
+
+  it("Gives no response if start and end are switched", () =>{
+    const start = dayjs("2026-03-31");
+    const end = dayjs("2026-03-01");
+    const result = filterCasesByDate(cases,start,end);
+    expect(result.find(c => c._id === "1")).toBeUndefined(); // shouldn't find today in the range
+  })
+
 });
