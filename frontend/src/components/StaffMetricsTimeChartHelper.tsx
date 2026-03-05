@@ -22,7 +22,7 @@ function lastNumDays(num: number) {
 function createRangeOptions() {
   const rangeOptions = [];
 
-  for (let i = -60; i < 60; i += 15) {
+  for (let i = -60; i <= 60; i += 15) {
     if (i != 0) {
       rangeOptions.push({
         start: i,

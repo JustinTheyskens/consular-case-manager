@@ -41,12 +41,9 @@ export default function StaffMetrics() {
         </Select>
       </FormControl>
 
-      <StaffMetricsTimeChart
-        cases={cases ?? []}
-        selectedOption={selectedOption}
-      />
+      <StaffMetricsPieChart cases={cases ?? []} />
 
-      <StaffMetricsPieChart
+      <StaffMetricsTimeChart
         cases={cases ?? []}
         selectedOption={selectedOption}
       />

@@ -35,7 +35,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import type { Case } from "../../../api/endpoints/CasesAPI.ts";
 import { lastNumDays } from "../../../components/StaffMetricsTimeChartHelper.tsx";
-import { MetricCard } from "../../../components/MetricCard.tsx";
+import MetricCard from "./MetricCard.tsx";
 
 interface Props {
   cases: Case[];
@@ -59,7 +59,7 @@ export default function StaffMetricsTimeChart({
 
   // Adds a counter for the number of cases on each days
   function addCountDays(num: number) {
-    let lastNDays = lastNumDays(num);
+    const lastNDays = lastNumDays(num);
 
     let cTotal = 0;
     let cRenewal = 0;
@@ -132,57 +132,63 @@ export default function StaffMetricsTimeChart({
     <>
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography variant="h6">Cases History</Typography>
+          <Typography variant="h6">Cases History ({cTotal})</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Box sx={{ mt: 4, height: 400 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={chartData}>
-                <CartesianGrid />
-                <XAxis dataKey="date" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
+          <Grid container spacing={2} sx={{ mt: 4 }}>
+            <Grid size={8}>
+              <Box sx={{ mt: 4, height: "66.7vh", width: "66.7vw" }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={chartData}>
+                    <CartesianGrid />
+                    <XAxis dataKey="date" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip />
 
-                <Line type="monotone" dataKey="count" dot={false} />
-                <Scatter dataKey="count" />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </Box>
-
-          {/** Counts */}
-
-          <Box sx={{ px: 3 }}>
-            {/* ── Metric Cards ─from Staff Dashboard */}
-            <Grid container spacing={3} sx={{ mb: 1 }}>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <MetricCard label="Total Count" value={cTotal} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <MetricCard label="Total Renewals" value={cRenewal} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <MetricCard label="Total First Time" value={cFirstTime} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <MetricCard label="Total Emergencies" value={cEmergency} />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <MetricCard
-                  label="Total Lost or Stolen"
-                  value={cLostOrStolen}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <MetricCard
-                  label="Total No Show or Cancel"
-                  value={cNoShowOrCancel}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <MetricCard label="Scheduled" value={cSched} />
-              </Grid>
+                    <Line type="monotone" dataKey="count" dot={false} />
+                    <Scatter dataKey="count" />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </Box>
             </Grid>
-          </Box>
+
+            {/** Counts */}
+            <Grid size={4}>
+              <Box sx={{ px: 3 }}>
+                <Grid container spacing={2}>
+                  <Grid size={6}>
+                    <MetricCard label="Total Renewals" value={cRenewal} />
+                  </Grid>
+
+                  <Grid size={6}>
+                    <MetricCard label="Total First Time" value={cFirstTime} />
+                  </Grid>
+
+                  <Grid size={6}>
+                    <MetricCard label="Total Emergencies" value={cEmergency} />
+                  </Grid>
+
+                  <Grid size={6}>
+                    <MetricCard
+                      label="Total Lost or Stolen"
+                      value={cLostOrStolen}
+                    />
+                  </Grid>
+
+                  <Grid size={6}>
+                    <MetricCard
+                      label="Total No Show or Cancel"
+                      value={cNoShowOrCancel}
+                    />
+                  </Grid>
+
+                  <Grid size={6}>
+                    <MetricCard label="Scheduled" value={cSched} />
+                  </Grid>
+                </Grid>
+              </Box>
+            </Grid>
+          </Grid>
         </AccordionDetails>
       </Accordion>
     </>
