@@ -1,20 +1,29 @@
 import { useGetCasesQuery } from "../../../api/endpoints/CasesAPI.ts";
 import StaffMetricsTimeChart from "./StaffMetricsTimeChart.tsx";
 import StaffMetricsPieChart from "./StaffMetricsPieChart.tsx";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { createRangeOptions } from "../../../components/StaffMetricsTimeChartHelper.tsx";
+import { Box } from "@mui/material";
 import { useState } from "react";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
+import dayjs, { Dayjs } from "dayjs";
+import { filterCasesByDate } from "../../../components/StaffMetricsTimeChartHelper.tsx";
 
 export default function StaffMetrics() {
   const { data: cases, isLoading, isError, error } = useGetCasesQuery();
 
-  const rangeOptions = createRangeOptions();
+  const [range, setRange] = useState<[Dayjs | null, Dayjs | null]>([
+    dayjs().subtract(30, "day"),
+    dayjs(),
+  ]);
 
-  const [selectedOption, setSelectedOption] = useState(
-    rangeOptions.find((r) => r.start === 30) || rangeOptions[0],
-  );
+  const [startDate, endDate] = range;
+  const filteredCases = filterCasesByDate(cases, startDate, endDate);
 
+  const today = dayjs();
+  const currentCases = startDate ? filterCasesByDate(cases, today) : [];
   if (isLoading) return <div>Loading...</div>;
+
   if (isError) {
     console.log(error);
     return <div>Error loading cases</div>;
@@ -22,31 +31,22 @@ export default function StaffMetrics() {
 
   return (
     <>
-      <FormControl sx={{ minWidth: 200, mb: 2 }}>
-        <InputLabel>Range</InputLabel>
-        <Select
-          value={selectedOption.start}
-          label="Range"
-          onChange={(e) => {
-            const start = Number(e.target.value);
-            const option = rangeOptions.find((o) => o.start === start);
-            if (option) setSelectedOption(option);
-          }}
-        >
-          {rangeOptions.map((opt) => (
-            <MenuItem key={opt.start} value={opt.start}>
-              {opt.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Box sx={{ mb: 2, width: 320 }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DateRangePicker
+            value={range}
+            onChange={(newValue) => setRange(newValue)}
+            localeText={{ start: "Start Date", end: "End Date" }}
+            slotProps={{
+              textField: { size: "small" },
+            }}
+          />
+        </LocalizationProvider>
+      </Box>
 
-      <StaffMetricsPieChart cases={cases ?? []} />
+      <StaffMetricsPieChart cases={currentCases} />
 
-      <StaffMetricsTimeChart
-        cases={cases ?? []}
-        selectedOption={selectedOption}
-      />
+      <StaffMetricsTimeChart cases={filteredCases} />
     </>
   );
 }
