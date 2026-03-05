@@ -673,12 +673,6 @@ export const StaffDashboard = () => {
                     open={availabilityOpen}
                     onClose={() => setAvailabilityOpen(false)}
                     staffId={staffId ?? ""}
-                    allowedAppointments={[
-                        "passport-renewal",
-                        "passport-first",
-                        "passport-emergency",
-                        "passport-lost",
-                    ]}
                 />
             </ThemeProvider>
         </Box>
