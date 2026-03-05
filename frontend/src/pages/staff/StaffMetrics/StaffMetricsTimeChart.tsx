@@ -31,7 +31,6 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
   let cEmergency = 0;
   let cLostOrStolen = 0;
   let cNoShowOrCancel = 0;
-  let cSched = 0;
 
   const countsByDay: Record<string, number> = {};
 
@@ -48,24 +47,27 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
     countsByDay[dateKey]++;
     cTotal++;
 
-    switch (c.status) {
+    switch (c.appointment?.type) {
       case "Renewal":
+      case "passport-renewal":
         cRenewal++;
         break;
       case "First Time":
+      case "passport-first":
         cFirstTime++;
         break;
       case "Emergency":
+      case "passport-emergency":
         cEmergency++;
         break;
       case "Lost or Stolen":
+      case "passport-lost":
+      case "passport-stolen":
         cLostOrStolen++;
         break;
       case "No Show/Cancel":
+      case "Cancelled":
         cNoShowOrCancel++;
-        break;
-      case "scheduled":
-        cSched++;
         break;
     }
   });
@@ -130,10 +132,6 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
                     label="Total No Show or Cancel"
                     value={cNoShowOrCancel}
                   />
-                </Grid>
-
-                <Grid size={6}>
-                  <MetricCard label="Scheduled" value={cSched} />
                 </Grid>
               </Grid>
             </Box>
