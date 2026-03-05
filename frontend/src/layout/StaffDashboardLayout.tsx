@@ -46,6 +46,9 @@ import { Link } from "react-router-dom";
 import { useGetCasesQuery, useUpdateCaseMutation } from "../api/endpoints/CasesAPI";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/Store";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 // Scheduled, In Review, Approved, Rejected, and Completed
 const statusOptions = [
@@ -57,7 +60,13 @@ const statusOptions = [
     "Completed",
     "Cancelled",
 ];
-const typeOptions = ["All", "Renewal", "First-Time", "Emergency", "Lost or Stolen"];
+const typeOptions = [
+    "All",
+    "passport-renewal",
+    "passport-first",
+    "passport-emergency",
+    "passport-lost",
+];
 
 const statusColors: Record<string, "default" | "warning" | "info" | "success" | "error"> = {
     Approved: "success",
@@ -66,6 +75,10 @@ const statusColors: Record<string, "default" | "warning" | "info" | "success" | 
     Completed: "default",
     Cancelled: "error",
 };
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const clientTimeZone = dayjs.tz.guess();
 
 /* Notepad */
 const NoteModal = ({
@@ -131,51 +144,43 @@ export const StaffDashboard = () => {
         const matchedStatus = statusFilter == "All" || _case.status == statusFilter;
         const matchedType = typeFilter == "All" || _case.appointment.type == typeFilter;
 
-        return matchedSearch && matchedStatus && matchedType;
+        const matchedDate = dayjs(_case.appointment.time).isSame(dayjs().utc(), "day");
+
+        return matchedSearch && matchedStatus && matchedType && matchedDate;
     });
 
     if (isLoading) {
         return <Typography>Loading Cases...</Typography>;
     }
 
-    const flaggedCount = cases.filter((_case) => _case.flagged).length;
-    const reviewCount = cases.filter((_case) => _case.status == "In Review").length;
-    const completedCount = cases.filter((_case) => _case.status == "Completed").length;
+    let flaggedCount = cases.filter((_case) => _case.flagged).length;
+    let reviewCount = cases.filter((_case) => _case.status == "In Review").length;
+    let completedCount = cases.filter((_case) => _case.status == "Completed").length;
+    let pendingCount = cases.filter(
+        (_case) => _case.status === "In Review" || _case.status === "scheduled",
+    ).length;
 
-    //TODO: Rework these, I'm moving away from `appointments` as state.
     const toggleFlag = async (ref: number) => {
-        // setAppointments((prev) =>
-        //     prev.map((a) => (a.id == id ? { ...a, flagged: !a.flagged } : a)),
-        // );
         const relatedCase = cases.find((c) => c.reference == ref);
         if (!relatedCase) return;
 
-        console.log("Updating case:");
-        console.log(relatedCase);
-
         const { flagged, ...rest } = relatedCase;
+
         await updateCase({ ...rest, flagged: !flagged }).unwrap();
     };
 
     const updateNote = async (ref: number, note: string) => {
-        // setAppointments((prev) => prev.map((a) => (a.id == id ? { ...a, notes: note } : a)));
         const relatedCase = cases.find((c) => c.reference == ref);
         if (!relatedCase) return;
-
-        console.log("Updating case:");
-        console.log(relatedCase);
         const { notes, ...rest } = relatedCase;
         await updateCase({ ...rest, notes: note }).unwrap();
     };
 
     const updateStatus = async (ref: number, newStatus: string) => {
-        // setAppointments((prev) => prev.map((a) => (a.id == id ? { ...a, status } : a)));
         const relatedCase = cases.find((c) => c.reference == ref);
         if (!relatedCase) return;
-
-        console.log("Updating case:");
-        console.log(relatedCase);
         const { status, ...rest } = relatedCase;
+
         await updateCase({ ...rest, status: newStatus }).unwrap();
     };
 
@@ -211,28 +216,21 @@ export const StaffDashboard = () => {
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
                                     label="Appointments Today"
-                                    value={42}
+                                    value={filtered.length}
                                     icon={<EventAvailableIcon />}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
-                                    label="Available Slots"
-                                    value={18}
-                                    icon={<AccessTimeIcon />}
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard
                                     label="Pending Cases"
-                                    value={24}
+                                    value={pendingCount}
                                     icon={<AssignmentIcon />}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
                                     label="Flagged Cases"
-                                    value={3}
+                                    value={flaggedCount}
                                     icon={<WarningAmberIcon />}
                                 />
                             </Grid>
@@ -397,7 +395,9 @@ export const StaffDashboard = () => {
                                                             }}
                                                         >
                                                             <TableCell>
-                                                                {apt.appointment.time}
+                                                                {dayjs(apt.appointment.time)
+                                                                    .tz(clientTimeZone)
+                                                                    .format("h:mm A")}
                                                             </TableCell>
                                                             <TableCell>{apt.reference}</TableCell>
                                                             <TableCell>
@@ -474,7 +474,7 @@ export const StaffDashboard = () => {
                                                                         title={
                                                                             apt.flagged
                                                                                 ? "Remove Flag"
-                                                                                : "FLag or Follow Up"
+                                                                                : "Flag or Follow Up"
                                                                         }
                                                                     >
                                                                         <IconButton

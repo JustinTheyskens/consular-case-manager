@@ -29,8 +29,8 @@ export const casesApi = baseApi.injectEndpoints({
             providesTags: (result) =>
                 result
                     ? [
-                          ...result.map((c) => ({ type: "Case" as const, _id: c["_id"] })),
-                          { type: "Case" as const, _id: "LIST" },
+                          ...result.map((c) => ({ type: "Case" as const, id: c["_id"] })),
+                          { type: "Case" as const, id: "LIST" },
                       ]
                     : [{ type: "Case" as const, id: "LIST" }],
         }),
@@ -48,9 +48,9 @@ export const casesApi = baseApi.injectEndpoints({
         }),
 
         // PUT /cases/:ref
-        updateCase: builder.mutation<Case, UpdateCaseRequest>({
-            query: ({ reference, ...body }) => ({
-                url: `/cases/${reference}`,
+        updateCase: builder.mutation<Case, Case>({
+            query: (body) => ({
+                url: `/cases/${body.reference}`,
                 method: "PUT",
                 body,
             }),
