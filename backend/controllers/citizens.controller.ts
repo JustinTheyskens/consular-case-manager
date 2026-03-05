@@ -4,7 +4,7 @@ import { type Request, type Response } from "express";
 
 async function getAllCitizens(req: Request, res: Response) {
     try {
-        res.status(200).send(await citizenService.getAllCitizens());
+        res.status(200).json(await citizenService.getAllCitizens());
     } catch (error) {
         console.log("Error getting all citizens.");
         console.log(error);
@@ -14,11 +14,17 @@ async function getAllCitizens(req: Request, res: Response) {
 
 async function getCitizenById(req: Request, res: Response, id: string) {
     try {
-        res.status(200).send(await citizenService.getCitizenById(id));
+        const result = await citizenService.getCitizenById(id);
+
+        if (result == null) {
+            return res.sendStatus(404);
+        }
+
+        res.status(200).json(result);
     } catch (error) {
         console.log("Error getting all citizens.");
         console.log(error);
-        res.sendStatus(404);
+        res.sendStatus(500);
     }
 }
 
@@ -31,6 +37,8 @@ async function createCitizen(req: Request, res: Response) {
         console.log(error);
         if (error instanceof RangeError) {
             return res.status(400).send({ message: error.message });
+        } else if (error instanceof ReferenceError) {
+            return res.sendStatus(404);
         } else if (error instanceof MongooseError) {
             return res.status(500).send({ message: error.message });
         }

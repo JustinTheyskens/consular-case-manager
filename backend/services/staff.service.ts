@@ -52,6 +52,10 @@ export const StaffService = {
         }
     },
     update: async (id: string, data: IStaffAccount) => {
+        if (await StaffRepository.findById(id) == null) {
+            throw new ReferenceError("No staff found at ID");
+        }
+        
         // Begins mongoose transaction for integrity (update both a login and staff document)
         const session = await startSession();
 
