@@ -102,6 +102,14 @@ export const UserDashboard = () => {
         await deleteCase(upcomingAppointment.reference.toString());
     };
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(clearSession());
+        navigate("/user/login");
+    };
+
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -110,6 +118,18 @@ export const UserDashboard = () => {
                         title="Consular Case Manager"
                         subtitle="Passport appointments and case tracking"
                     />
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                        {/* Logout button */}
+                        <Button
+                            data-testid="logout-btn"
+                            variant="outlined"
+                            color="primary"
+                            startIcon={<LogoutIcon />}
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                    </Box>
                     <Box sx={{ px: 3, pb: 4 }}>
                         {/* Summary Metrics */}
                         <Grid
