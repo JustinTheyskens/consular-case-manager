@@ -9,11 +9,14 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  Button,
   Typography,
 } from "@mui/material";
 import type { Case } from "../../../api/endpoints/CasesAPI.ts";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { PieChart } from "@mui/x-charts/PieChart";
+import { exportAsCSV } from "../../../components/ExportAsCSV.tsx";
 interface Props {
   cases: Case[];
 }
@@ -79,15 +82,27 @@ export default function StaffMetricsPieChart({ cases }: Props) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <PieChart
-            series={[
-              {
-                data: pieData,
-              },
-            ]}
-            width={400}
-            height={200}
-          />
+          <Box display="flex" justifyContent="center">
+            <Box sx={{ display: "inline-flex", alignItems: "center", gap: 2 }}>
+              <PieChart
+                series={[
+                  {
+                    data: pieData,
+                  },
+                ]}
+                width={400}
+                height={200}
+              />
+
+              <Button
+                variant="contained"
+                onClick={() => exportAsCSV(cases, "current_cases")}
+                sx={{ height: "fit-content" }}
+              >
+                Export CSV
+              </Button>
+            </Box>
+          </Box>
         </AccordionDetails>
       </Accordion>
     </>
