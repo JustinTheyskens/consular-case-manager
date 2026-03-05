@@ -216,6 +216,14 @@ export const StaffDashboard = () => {
         setAppointments((prev) => prev.map((a) => (a.id == id ? { ...a, status } : a)));
     };
 
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(clearSession());
+        navigate("/user/login");
+    };
+
     return (
         <Box>
             <ThemeProvider theme={theme}>
@@ -237,6 +245,17 @@ export const StaffDashboard = () => {
                             View System Analytics
                         </Button>
                     </PageHeader>
+
+                    {/* Logout button */}
+                    <Button
+                        data-testid="logout-btn"
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<LogoutIcon />}
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </Button>
 
                     <Box sx={{ px: 3 }}>
                         {/* ── Metric Cards ── */}
