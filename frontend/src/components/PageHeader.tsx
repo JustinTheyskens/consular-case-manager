@@ -7,21 +7,6 @@ interface PageHeaderProps {
   children?: ReactNode;
 }
 
-<<<<<<< HEAD
-export const PageHeader = ({ title, subtitle }: PageHeaderProps) => {
-    return (
-        <Box
-            data-testid="page-header"
-            sx={{
-                mb: 4,
-                px: 4,
-                py: 3,
-                backgroundColor: "primary.main",
-                color: "primary.contrastText",
-            }}
-        >
-            <Typography variant="h1">{title}</Typography>
-=======
 export const PageHeader = ({ title, subtitle, children }: PageHeaderProps) => {
   return (
     <Box
@@ -36,7 +21,6 @@ export const PageHeader = ({ title, subtitle, children }: PageHeaderProps) => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box>
           <Typography variant="h1">{title}</Typography>
->>>>>>> origin/dev
 
           {subtitle && (
             <Typography
@@ -47,13 +31,9 @@ export const PageHeader = ({ title, subtitle, children }: PageHeaderProps) => {
             </Typography>
           )}
         </Box>
-<<<<<<< HEAD
-    );
-=======
 
         {children}
       </Box>
     </Box>
   );
->>>>>>> origin/dev
 };

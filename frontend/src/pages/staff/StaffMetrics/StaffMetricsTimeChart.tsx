@@ -20,14 +20,9 @@ import {
   AccordionDetails,
   Typography,
   Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Grid,
 } from "@mui/material";
 import {
-  ScatterChart,
   Scatter,
   Line,
   XAxis,
@@ -38,12 +33,8 @@ import {
   ComposedChart,
 } from "recharts";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useState } from "react";
 import type { Case } from "../../../api/endpoints/CasesAPI.ts";
-import {
-  lastNumDays,
-  createRangeOptions,
-} from "../../../components/StaffMetricsTimeChartHelper.tsx";
+import { lastNumDays } from "../../../components/StaffMetricsTimeChartHelper.tsx";
 import { MetricCard } from "../../../components/MetricCard.tsx";
 
 interface Props {
@@ -58,7 +49,7 @@ export default function StaffMetricsTimeChart({
   selectedOption,
 }: Props) {
   // Sorts case by newest to oldest
-  let sortedCases = [...(cases ?? [])].sort((a, b) => {
+  const sortedCases = [...(cases ?? [])].sort((a, b) => {
     const timeA = new Date(a.appointment?.time ?? 0).getTime();
     const timeB = new Date(b.appointment?.time ?? 0).getTime();
     return timeB - timeA; // ascending

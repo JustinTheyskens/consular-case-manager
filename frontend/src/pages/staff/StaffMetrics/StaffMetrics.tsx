@@ -1,7 +1,6 @@
 import { useGetCasesQuery } from "../../../api/endpoints/CasesAPI.ts";
 import StaffMetricsTimeChart from "./StaffMetricsTimeChart.tsx";
 import StaffMetricsPieChart from "./StaffMetricsPieChart.tsx";
-import type { Case } from "../../../api/endpoints/CasesAPI.ts";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { createRangeOptions } from "../../../components/StaffMetricsTimeChartHelper.tsx";
 import { useState } from "react";
@@ -9,17 +8,17 @@ import { useState } from "react";
 export default function StaffMetrics() {
   const { data: cases, isLoading, isError, error } = useGetCasesQuery();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) {
-    console.log(error);
-    return <div>Error loading cases</div>;
-  }
-
   const rangeOptions = createRangeOptions();
 
   const [selectedOption, setSelectedOption] = useState(
     rangeOptions.find((r) => r.start === 30) || rangeOptions[0],
   );
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    console.log(error);
+    return <div>Error loading cases</div>;
+  }
 
   return (
     <>
@@ -46,6 +45,7 @@ export default function StaffMetrics() {
         cases={cases ?? []}
         selectedOption={selectedOption}
       />
+
       <StaffMetricsPieChart
         cases={cases ?? []}
         selectedOption={selectedOption}

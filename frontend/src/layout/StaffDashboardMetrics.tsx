@@ -1,6 +1,6 @@
 import { PageHeader } from "../components/PageHeader.tsx";
 import { theme } from "../theme";
-import { Box, Button, ThemeProvider } from "@mui/material";
+import { Button, ThemeProvider } from "@mui/material";
 import StaffMetrics from "../pages/staff/StaffMetrics/StaffMetrics.tsx";
 import { Link } from "react-router-dom";
 
