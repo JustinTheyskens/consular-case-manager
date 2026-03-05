@@ -43,11 +43,11 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 
 import { useState } from "react";
 import { StatusEditor } from "../components/StatusEditor";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { clearSession } from "../store/SessionSlice";
+import { clearSession, type SessionState } from "../store/SessionSlice";
 import { Link } from "react-router-dom";
-import { AvailabilityModal } from "../components/AvailabilityModal";
+import { AvailabilityModal } from "../components/modals/AvailabilityModal";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 /* Constants */
@@ -187,6 +187,8 @@ const dummyData = [
 
 /* Main Dashboard */
 export const StaffDashboard = () => {
+    // Session
+    const staffId = useSelector((state: { session: SessionState }) => state.session.userId);
     const [appointments, setAppointments] = useState(dummyData);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
@@ -291,15 +293,15 @@ export const StaffDashboard = () => {
                                     <strong>{appointments.length} appointments</strong> scheduled.
                                 </Typography>
 
-                            {/* Availability button */}
-                            <Button
-                                variant="outlined"
-                                size="small"
-                                startIcon={<CalendarMonthIcon />}
-                                onClick={() => setAvailabilityOpen(true)}
-                            >
-                                My Availability
-                            </Button>
+                                {/* Availability button */}
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    startIcon={<CalendarMonthIcon />}
+                                    onClick={() => setAvailabilityOpen(true)}
+                                >
+                                    My Availability
+                                </Button>
                             </Box>
 
                             {/* logout button - on the right */}
@@ -670,6 +672,13 @@ export const StaffDashboard = () => {
                 <AvailabilityModal
                     open={availabilityOpen}
                     onClose={() => setAvailabilityOpen(false)}
+                    staffId={staffId ?? ""}
+                    allowedAppointments={[
+                        "passport-renewal",
+                        "passport-first",
+                        "passport-emergency",
+                        "passport-lost",
+                    ]}
                 />
             </ThemeProvider>
         </Box>
