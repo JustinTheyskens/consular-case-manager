@@ -5,7 +5,7 @@ import { type Request, type Response } from "express";
 export const StaffController = {
     getAll: async (req: Request, res: Response) => {
         try {
-            res.status(200).send(await StaffService.getAll());
+            res.status(200).json(await StaffService.getAll());
         } catch (error) {
             console.log("Error getting all staff.");
             console.log(error);
@@ -22,7 +22,13 @@ export const StaffController = {
                 return res.status(400).json({ message: "Invalid staff ID" });
             }
 
-            res.status(200).send(await StaffService.getById(id));
+            const result = await StaffService.getById(id);
+
+            if (result == null) {
+                return res.sendStatus(404);
+            }
+
+            res.status(200).json(result);
         } catch (error) {
             res.status(500).json({ message: `Error encountered: ${(error as Error).message}` });
         }
@@ -46,10 +52,12 @@ export const StaffController = {
         try {
             const id = String(req.params.id);
             const updatedStaff: IStaffAccount = req.body;
-            res.status(201).send(await StaffService.update(id, updatedStaff));
+            res.status(200).send(await StaffService.update(id, updatedStaff));
         } catch (error) {
             if (error instanceof RangeError) {
                 return res.status(400).send({ message: error.message });
+            } else if (error instanceof ReferenceError) {
+                return res.sendStatus(404);
             } else if (error instanceof MongooseError) {
                 return res.status(500).send({ message: error.message });
             }

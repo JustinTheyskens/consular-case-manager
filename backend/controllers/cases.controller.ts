@@ -43,7 +43,7 @@ async function getCaseByReference(req: Request<CaseParams>, res: Response) {
         const { ref } = req.params;
         const data = await CaseService.getCaseByReference(Number(ref));
 
-        if (!data) {
+        if (data == null) {
             return res.sendStatus(404);
         }
 
