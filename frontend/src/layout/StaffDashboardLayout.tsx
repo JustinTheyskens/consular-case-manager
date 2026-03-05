@@ -666,6 +666,11 @@ export const StaffDashboard = () => {
                         </Card>
                     </Box>
                 </Box>
+                {/* Availability Modal */}
+                <AvailabilityModal
+                    open={availabilityOpen}
+                    onClose={() => setAvailabilityOpen(false)}
+                />
             </ThemeProvider>
         </Box>
     );

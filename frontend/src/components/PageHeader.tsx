@@ -10,7 +10,6 @@ interface PageHeaderProps {
 export const PageHeader = ({ title, subtitle, children }: PageHeaderProps) => {
     return (
         <Box
-            data-testid="page-header"
             sx={{
                 mb: 4,
                 px: 4,
