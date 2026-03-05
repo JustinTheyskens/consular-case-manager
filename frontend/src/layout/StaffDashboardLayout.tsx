@@ -12,7 +12,9 @@ import {
     Select,
     FormControl,
     Button,
+    CardActionArea,
     IconButton,
+    Icon,
     TableContainer,
     Table,
     TableHead,
@@ -40,8 +42,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
-
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { StatusEditor } from "../components/StatusEditor";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +50,11 @@ import { clearSession, type SessionState } from "../store/SessionSlice";
 import { Link } from "react-router-dom";
 import { AvailabilityModal } from "../components/modals/AvailabilityModal";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { useGetCasesQuery, useUpdateCaseMutation } from "../api/endpoints/CasesAPI";
+import type { RootState } from "../store/Store";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 /* Constants */
 // Scheduled, In Review, Approved, Rejected, and Completed
@@ -61,8 +67,13 @@ const statusOptions = [
     "Completed",
     "Cancelled",
 ];
-
-const typeOptions = ["All", "Renewal", "First-Time", "Emergency", "Lost or Stolen"];
+const typeOptions = [
+    "All",
+    "passport-renewal",
+    "passport-first",
+    "passport-emergency",
+    "passport-lost",
+];
 
 const statusColors: Record<string, "default" | "warning" | "info" | "success" | "error"> = {
     Approved: "success",
@@ -71,6 +82,10 @@ const statusColors: Record<string, "default" | "warning" | "info" | "success" | 
     Completed: "default",
     Cancelled: "error",
 };
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const clientTimeZone = dayjs.tz.guess();
 
 /* Notepad */
 const NoteModal = ({
@@ -115,116 +130,22 @@ const NoteModal = ({
     );
 };
 
-/* Hard coded data */
-const dummyData = [
-    {
-        id: 1,
-        reference: "CCM-2026-48291",
-        applicant: "Maria Santos",
-        type: "Renewal",
-        date: "Feb 23, 2026",
-        time: "9:00 AM",
-        status: "Confirmed",
-        flagged: false,
-        notes: "",
-    },
-    {
-        id: 2,
-        reference: "CCM-2026-48302",
-        applicant: "James O'Brien",
-        type: "First-Time",
-        date: "Feb 23, 2026",
-        time: "10:30 AM",
-        status: "In Review",
-        flagged: true,
-        notes: "Missing birth certificate copy",
-    },
-    {
-        id: 3,
-        reference: "CCM-2026-48317",
-        applicant: "Aisha Kamara",
-        type: "Emergency",
-        date: "Feb 23, 2026",
-        time: "11:00 AM",
-        status: "Scheduled",
-        flagged: false,
-        notes: "",
-    },
-    {
-        id: 4,
-        reference: "CCM-2026-48330",
-        applicant: "David Chen",
-        type: "Lost or Stolen",
-        date: "Feb 23, 2026",
-        time: "1:00 PM",
-        status: "Confirmed",
-        flagged: false,
-        notes: "",
-    },
-    {
-        id: 5,
-        reference: "CCM-2026-48345",
-        applicant: "Fatima Al-Hassan",
-        type: "Renewal",
-        date: "Feb 23, 2026",
-        time: "2:30 PM",
-        status: "Completed",
-        flagged: false,
-        notes: "Processed successfully",
-    },
-    {
-        id: 6,
-        reference: "CCM-2026-48360",
-        applicant: "Tom Gallagher",
-        type: "First-Time",
-        date: "Feb 23, 2026",
-        time: "3:00 PM",
-        status: "In Review",
-        flagged: true,
-        notes: "Requires supervisor sign-off",
-    },
-];
+const hour = new Date().getHours();
+const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
 /* Main Dashboard */
 export const StaffDashboard = () => {
     // Session
     const staffId = useSelector((state: { session: SessionState }) => state.session.userId);
-    const [appointments, setAppointments] = useState(dummyData);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [typeFilter, setTypeFilter] = useState("All");
     const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
     const [activeStatusEditId, setActiveStatusEditId] = useState<number | null>(null);
     const [availabilityOpen, setAvailabilityOpen] = useState(false);
-
-    const filtered = appointments.filter((a) => {
-        const matchedSearch =
-            a.reference.toLowerCase().includes(search.toLocaleLowerCase()) ||
-            a.applicant.toLocaleLowerCase().includes(search.toLocaleLowerCase());
-
-        const matchedStatus = statusFilter == "All" || a.status == statusFilter;
-        const matchedType = typeFilter == "All" || a.type == typeFilter;
-
-        return matchedSearch && matchedStatus && matchedType;
-    });
-
-    const flaggedCount = appointments.filter((a) => a.flagged).length;
-    const reviewCount = appointments.filter((a) => a.status == "In Review").length;
-    const completedCount = appointments.filter((a) => a.status == "Completed").length;
-
-    const toggleFlag = (id: number) => {
-        setAppointments((prev) =>
-            prev.map((a) => (a.id == id ? { ...a, flagged: !a.flagged } : a)),
-        );
-    };
-
-    const updateNote = (id: number, note: string) => {
-        setAppointments((prev) => prev.map((a) => (a.id == id ? { ...a, notes: note } : a)));
-    };
-
-    const updateStatus = (id: number, status: string) => {
-        setAppointments((prev) => prev.map((a) => (a.id == id ? { ...a, status } : a)));
-    };
+    const { userId, emailAddress } = useSelector((state: RootState) => state.session);
+    const { data: cases = [], isLoading } = useGetCasesQuery({ staff: userId! });
+    const [updateCase] = useUpdateCaseMutation();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -234,8 +155,54 @@ export const StaffDashboard = () => {
         navigate("/user/login");
     };
 
-    const hour = new Date().getHours();
-    const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+    const filtered = cases.filter((_case) => {
+        const matchedSearch =
+            _case.reference.toString().includes(search.toLocaleLowerCase()) ||
+            _case.citizen.firstName.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
+            _case.citizen.lastName.toLocaleLowerCase().includes(search.toLocaleLowerCase());
+
+        const matchedStatus = statusFilter == "All" || _case.status == statusFilter;
+        const matchedType = typeFilter == "All" || _case.appointment.type == typeFilter;
+
+        const matchedDate = dayjs(_case.appointment.time).isSame(dayjs().utc(), "day");
+
+        return matchedSearch && matchedStatus && matchedType && matchedDate;
+    });
+
+    if (isLoading) {
+        return <Typography>Loading Cases...</Typography>;
+    }
+
+    let flaggedCount = cases.filter((_case) => _case.flagged).length;
+    let reviewCount = cases.filter((_case) => _case.status == "In Review").length;
+    let completedCount = cases.filter((_case) => _case.status == "Completed").length;
+    let pendingCount = cases.filter(
+        (_case) => _case.status === "In Review" || _case.status === "scheduled",
+    ).length;
+
+    const toggleFlag = async (ref: number) => {
+        const relatedCase = cases.find((c) => c.reference == ref);
+        if (!relatedCase) return;
+
+        const { flagged, ...rest } = relatedCase;
+
+        await updateCase({ ...rest, flagged: !flagged }).unwrap();
+    };
+
+    const updateNote = async (ref: number, note: string) => {
+        const relatedCase = cases.find((c) => c.reference == ref);
+        if (!relatedCase) return;
+        const { notes, ...rest } = relatedCase;
+        await updateCase({ ...rest, notes: note }).unwrap();
+    };
+
+    const updateStatus = async (ref: number, newStatus: string) => {
+        const relatedCase = cases.find((c) => c.reference == ref);
+        if (!relatedCase) return;
+        const { status, ...rest } = relatedCase;
+
+        await updateCase({ ...rest, status: newStatus }).unwrap();
+    };
 
     return (
         <Box>
@@ -290,7 +257,7 @@ export const StaffDashboard = () => {
                                         day: "numeric",
                                     })}
                                     {" · "}Today you have{" "}
-                                    <strong>{appointments.length} appointments</strong> scheduled.
+                                    <strong>{pendingCount} appointments</strong> scheduled.
                                 </Typography>
 
                                 {/* Availability button */}
@@ -325,28 +292,21 @@ export const StaffDashboard = () => {
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
                                     label="Appointments Today"
-                                    value={42}
+                                    value={filtered.length}
                                     icon={<EventAvailableIcon />}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
-                                    label="Available Slots"
-                                    value={18}
-                                    icon={<AccessTimeIcon />}
-                                />
-                            </Grid>
-                            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                                <MetricCard
                                     label="Pending Cases"
-                                    value={24}
+                                    value={pendingCount}
                                     icon={<AssignmentIcon />}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
                                     label="Flagged Cases"
-                                    value={3}
+                                    value={flaggedCount}
                                     icon={<WarningAmberIcon />}
                                 />
                             </Grid>
@@ -465,7 +425,7 @@ export const StaffDashboard = () => {
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        {filtered.length} of {appointments.length} appointments
+                                        {filtered.length} of {cases.length} appointments
                                     </Typography>
                                 </Box>
                                 <Divider sx={{ mb: 2 }} />
@@ -497,170 +457,200 @@ export const StaffDashboard = () => {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {filtered.map((apt) => (
-                                                <>
-                                                    <TableRow
-                                                        key={apt.id}
-                                                        sx={{
-                                                            backgroundColor: apt.flagged
-                                                                ? "rgba(255, 152, 0, 0.06)"
-                                                                : "inherit",
-                                                            "&:hover": {
-                                                                backgroundColor: "action.hover",
-                                                            },
-                                                        }}
-                                                    >
-                                                        <TableCell>{apt.time}</TableCell>
-                                                        <TableCell>{apt.reference}</TableCell>
-                                                        <TableCell>{apt.applicant}</TableCell>
-                                                        <TableCell>{apt.type}</TableCell>
-                                                        {/* If actively editing, 
+                                            {filtered.map((apt) => {
+                                                return (
+                                                    <Fragment key={apt.reference}>
+                                                        <TableRow
+                                                            sx={{
+                                                                backgroundColor: apt.flagged
+                                                                    ? "rgba(255, 152, 0, 0.06)"
+                                                                    : "inherit",
+                                                                "&:hover": {
+                                                                    backgroundColor: "action.hover",
+                                                                },
+                                                            }}
+                                                        >
+                                                            <TableCell>
+                                                                {dayjs(apt.appointment.time)
+                                                                    .tz(clientTimeZone)
+                                                                    .format("h:mm A")}
+                                                            </TableCell>
+                                                            <TableCell>{apt.reference}</TableCell>
+                                                            <TableCell>
+                                                                {apt.citizen.firstName +
+                                                                    " " +
+                                                                    apt.citizen.lastName}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {apt.appointment.type}
+                                                            </TableCell>
+                                                            {/* If actively editing, 
                                                         dropdown menu, 
                                                         else, 
                                                         chip */}
-                                                        <TableCell>
-                                                            {activeStatusEditId == apt.id ? (
-                                                                <StatusEditor
-                                                                    current={apt.status}
-                                                                    onSave={(s) =>
-                                                                        updateStatus(apt.id, s)
-                                                                    }
-                                                                    onClose={() =>
-                                                                        setActiveStatusEditId(null)
-                                                                    }
-                                                                />
-                                                            ) : (
-                                                                <Chip
-                                                                    label={apt.status}
-                                                                    color={
-                                                                        statusColors[apt.status] ??
-                                                                        "default"
-                                                                    }
-                                                                    size="small"
-                                                                />
-                                                            )}
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Typography
-                                                                variant="body2"
-                                                                color={
-                                                                    apt.notes
-                                                                        ? "text.primary"
-                                                                        : "text.disabled"
-                                                                }
-                                                                sx={{
-                                                                    fontStyle: apt.notes
-                                                                        ? "normal"
-                                                                        : "italic",
-                                                                    maxWidth: 160,
-                                                                    overflow: "hidden",
-                                                                    textOverflow: "ellipsis",
-                                                                    whiteSpace: "nowrap",
-                                                                }}
-                                                            >
-                                                                {apt.notes || "no notes"}
-                                                            </Typography>
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <Box
-                                                                sx={{
-                                                                    display: "flex",
-                                                                    gap: 0.5,
-                                                                    justifyContent: "center",
-                                                                }}
-                                                            >
-                                                                <Tooltip
-                                                                    title={
-                                                                        apt.flagged
-                                                                            ? "Remove Flag"
-                                                                            : "FLag or Follow Up"
-                                                                    }
-                                                                >
-                                                                    <IconButton
-                                                                        size="small"
-                                                                        onClick={() =>
-                                                                            toggleFlag(apt.id)
-                                                                        }
-                                                                        color={
-                                                                            apt.flagged
-                                                                                ? "warning"
-                                                                                : "default"
-                                                                        }
-                                                                    >
-                                                                        <Badge
-                                                                            color="warning"
-                                                                            variant="dot"
-                                                                            invisible={!apt.flagged}
-                                                                        >
-                                                                            <FlagIcon fontSize="small" />
-                                                                        </Badge>
-                                                                    </IconButton>
-                                                                </Tooltip>
-                                                                <Tooltip title="Add / Edit Note">
-                                                                    <IconButton
-                                                                        size="small"
-                                                                        onClick={() =>
-                                                                            setActiveNoteId(
-                                                                                activeNoteId ==
-                                                                                    apt.id
-                                                                                    ? null
-                                                                                    : apt.id,
+                                                            <TableCell>
+                                                                {activeStatusEditId ==
+                                                                apt.reference ? (
+                                                                    <StatusEditor
+                                                                        current={apt.status}
+                                                                        onSave={(s) =>
+                                                                            updateStatus(
+                                                                                apt.reference,
+                                                                                s,
                                                                             )
                                                                         }
-                                                                        color={
-                                                                            activeNoteId == apt.id
-                                                                                ? "primary"
-                                                                                : "default"
-                                                                        }
-                                                                    >
-                                                                        <NoteAddIcon fontSize="small" />
-                                                                    </IconButton>
-                                                                </Tooltip>
-                                                                <Tooltip title="Update Status">
-                                                                    <IconButton
-                                                                        size="small"
-                                                                        onClick={() =>
+                                                                        onClose={() =>
                                                                             setActiveStatusEditId(
-                                                                                activeStatusEditId ==
-                                                                                    apt.id
-                                                                                    ? null
-                                                                                    : apt.id,
+                                                                                null,
                                                                             )
                                                                         }
+                                                                    />
+                                                                ) : (
+                                                                    <Chip
+                                                                        label={apt.status}
                                                                         color={
-                                                                            activeStatusEditId ==
-                                                                            apt.id
-                                                                                ? "primary"
-                                                                                : "default"
+                                                                            statusColors[
+                                                                                apt.status
+                                                                            ] ?? "default"
+                                                                        }
+                                                                        size="small"
+                                                                    />
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Typography
+                                                                    variant="body2"
+                                                                    color={
+                                                                        apt.notes
+                                                                            ? "text.primary"
+                                                                            : "text.disabled"
+                                                                    }
+                                                                    sx={{
+                                                                        fontStyle: apt.notes
+                                                                            ? "normal"
+                                                                            : "italic",
+                                                                        maxWidth: 160,
+                                                                        overflow: "hidden",
+                                                                        textOverflow: "ellipsis",
+                                                                        whiteSpace: "nowrap",
+                                                                    }}
+                                                                >
+                                                                    {apt.notes || "no notes"}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            <TableCell align="center">
+                                                                <Box
+                                                                    sx={{
+                                                                        display: "flex",
+                                                                        gap: 0.5,
+                                                                        justifyContent: "center",
+                                                                    }}
+                                                                >
+                                                                    <Tooltip
+                                                                        title={
+                                                                            apt.flagged
+                                                                                ? "Remove Flag"
+                                                                                : "Flag or Follow Up"
                                                                         }
                                                                     >
-                                                                        <EditIcon fontSize="small" />
-                                                                    </IconButton>
-                                                                </Tooltip>
-                                                            </Box>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                    {activeNoteId == apt.id && (
-                                                        <TableRow key={`note-${apt.id}`}>
-                                                            <TableCell
-                                                                colSpan={7}
-                                                                sx={{ py: 0, px: 2 }}
-                                                            >
-                                                                <NoteModal
-                                                                    reference={apt.reference}
-                                                                    existingNotes={apt.notes}
-                                                                    onSave={(note) =>
-                                                                        updateNote(apt.id, note)
-                                                                    }
-                                                                    onClose={() =>
-                                                                        setActiveNoteId(null)
-                                                                    }
-                                                                />
+                                                                        <IconButton
+                                                                            size="small"
+                                                                            onClick={() =>
+                                                                                toggleFlag(
+                                                                                    apt.reference,
+                                                                                )
+                                                                            }
+                                                                            color={
+                                                                                apt.flagged
+                                                                                    ? "warning"
+                                                                                    : "default"
+                                                                            }
+                                                                        >
+                                                                            <Badge
+                                                                                color="warning"
+                                                                                variant="dot"
+                                                                                invisible={
+                                                                                    !apt.flagged
+                                                                                }
+                                                                            >
+                                                                                <FlagIcon fontSize="small" />
+                                                                            </Badge>
+                                                                        </IconButton>
+                                                                    </Tooltip>
+                                                                    <Tooltip title="Add / Edit Note">
+                                                                        <IconButton
+                                                                            size="small"
+                                                                            onClick={() =>
+                                                                                setActiveNoteId(
+                                                                                    activeNoteId ==
+                                                                                        apt.reference
+                                                                                        ? null
+                                                                                        : apt.reference,
+                                                                                )
+                                                                            }
+                                                                            color={
+                                                                                activeNoteId ==
+                                                                                apt.reference
+                                                                                    ? "primary"
+                                                                                    : "default"
+                                                                            }
+                                                                        >
+                                                                            <NoteAddIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </Tooltip>
+                                                                    <Tooltip title="Update Status">
+                                                                        <IconButton
+                                                                            size="small"
+                                                                            onClick={() =>
+                                                                                setActiveStatusEditId(
+                                                                                    activeStatusEditId ==
+                                                                                        apt.reference
+                                                                                        ? null
+                                                                                        : apt.reference,
+                                                                                )
+                                                                            }
+                                                                            color={
+                                                                                activeStatusEditId ==
+                                                                                apt.reference
+                                                                                    ? "primary"
+                                                                                    : "default"
+                                                                            }
+                                                                        >
+                                                                            <EditIcon fontSize="small" />
+                                                                        </IconButton>
+                                                                    </Tooltip>
+                                                                </Box>
                                                             </TableCell>
                                                         </TableRow>
-                                                    )}
-                                                </>
-                                            ))}
+                                                        {activeNoteId == apt.reference && (
+                                                            <TableRow key={`note-${apt.reference}`}>
+                                                                <TableCell
+                                                                    colSpan={7}
+                                                                    sx={{ py: 0, px: 2 }}
+                                                                >
+                                                                    <NoteModal
+                                                                        reference={apt.reference.toString()}
+                                                                        existingNotes={
+                                                                            apt.notes
+                                                                                ? apt.notes
+                                                                                : ""
+                                                                        }
+                                                                        onSave={(note) =>
+                                                                            updateNote(
+                                                                                apt.reference,
+                                                                                note,
+                                                                            )
+                                                                        }
+                                                                        onClose={() =>
+                                                                            setActiveNoteId(null)
+                                                                        }
+                                                                    />
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )}
+                                                    </Fragment>
+                                                );
+                                            })}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
