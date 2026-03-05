@@ -19,6 +19,7 @@ using OpenQA.Selenium.Support.UI;
 public class AuthenticationTests
 {
     private static string BaseUrl = "http://localhost:5173";
+    private static string ValidStaffEmail = "staff@staff.com";
     private WebDriver driver;
 
     [SetUp]
@@ -40,8 +41,8 @@ public class AuthenticationTests
     {
         driver.Navigate().GoToUrl(BaseUrl + "/staff/login");
 
-        driver.FindElement(By.Id("email-field")).SendKeys("justin@gmail.com");
-        driver.FindElement(By.Id("password-field")).SendKeys("abacabb");
+        driver.FindElement(By.Id("email-field")).SendKeys(ValidStaffEmail);
+        driver.FindElement(By.Id("password-field")).SendKeys("password321");
         driver.FindElement(By.CssSelector("button[type='submit']")).Click();
 
         new WebDriverWait(driver, TimeSpan.FromSeconds(10))
@@ -63,7 +64,7 @@ public class AuthenticationTests
     {
         driver.Navigate().GoToUrl(BaseUrl + "/staff/login");
 
-        driver.FindElement(By.Id("email-field")).SendKeys("justin@gmail.com");
+        driver.FindElement(By.Id("email-field")).SendKeys(ValidStaffEmail);
         driver.FindElement(By.Id("password-field")).SendKeys("wrongpassword");
         driver.FindElement(By.CssSelector("button[type='submit']")).Click();
 
@@ -96,7 +97,7 @@ public class AuthenticationTests
 
     [Test]
     [Category("Authentication")]
-    [Ignore("Route protection hasn't been implemented yet.")]
+    //[Ignore("Route protection hasn't been implemented yet.")]
     public void Unauthenticated_User_Cannot_Access_Dashboard()
     {
         driver.Navigate().GoToUrl(BaseUrl + "/staff/dashboard");

@@ -16,7 +16,11 @@ import {
 import type { Case } from "../../../api/endpoints/CasesAPI.ts";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { PieChart } from "@mui/x-charts/PieChart";
+<<<<<<< HEAD
+
+=======
 import { exportAsCSV } from "../../../components/ExportAsCSV.tsx";
+>>>>>>> origin/dev
 interface Props {
   cases: Case[];
 }

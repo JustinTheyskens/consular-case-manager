@@ -24,10 +24,12 @@ import {
     Chip,
     Tooltip,
     Badge,
+    Avatar,
 } from "@mui/material";
 import { PageHeader } from "../components/PageHeader";
 import { MetricCard } from "../components/MetricCard";
 import { theme } from "../theme";
+
 import SaveIcon from "@mui/icons-material/Save";
 import FlagIcon from "@mui/icons-material/Flag";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
@@ -42,14 +44,19 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { Fragment, useState } from "react";
 import { StatusEditor } from "../components/StatusEditor";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearSession, type SessionState } from "../store/SessionSlice";
 import { Link } from "react-router-dom";
+import { AvailabilityModal } from "../components/modals/AvailabilityModal";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useGetCasesQuery, useUpdateCaseMutation } from "../api/endpoints/CasesAPI";
-import { useSelector } from "react-redux";
 import type { RootState } from "../store/Store";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
+/* Constants */
 // Scheduled, In Review, Approved, Rejected, and Completed
 const statusOptions = [
     "All",
@@ -123,17 +130,30 @@ const NoteModal = ({
     );
 };
 
+const hour = new Date().getHours();
+const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
 /* Main Dashboard */
 export const StaffDashboard = () => {
-    const { userId, emailAddress } = useSelector((state: RootState) => state.session);
-    const { data: cases = [], isLoading } = useGetCasesQuery({ staff: userId! });
-    const [updateCase] = useUpdateCaseMutation();
-
+    // Session
+    const staffId = useSelector((state: { session: SessionState }) => state.session.userId);
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
     const [typeFilter, setTypeFilter] = useState("All");
     const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
     const [activeStatusEditId, setActiveStatusEditId] = useState<number | null>(null);
+    const [availabilityOpen, setAvailabilityOpen] = useState(false);
+    const { userId, emailAddress } = useSelector((state: RootState) => state.session);
+    const { data: cases = [], isLoading } = useGetCasesQuery({ staff: userId! });
+    const [updateCase] = useUpdateCaseMutation();
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(clearSession());
+        navigate("/user/login");
+    };
 
     const filtered = cases.filter((_case) => {
         const matchedSearch =
@@ -207,11 +227,67 @@ export const StaffDashboard = () => {
                     </PageHeader>
 
                     <Box sx={{ px: 3 }}>
-                        {/* ── Metric Cards ── */}
+                        {/*  Greeting + Logout */}
+                        <Box
+                            sx={{
+                                mt: 1,
+                                mb: 2.5,
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                            }}
+                        >
+                            {/*greeting - on the left */}
+                            <Box>
+                                <Typography
+                                    variant="h5"
+                                    fontWeight={700}
+                                    color="text.primary"
+                                >
+                                    {greeting}, Staff Member!
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    {new Date().toLocaleDateString("en-IE", {
+                                        weekday: "long",
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                    })}
+                                    {" · "}Today you have{" "}
+                                    <strong>{pendingCount} appointments</strong> scheduled.
+                                </Typography>
+
+                                {/* Availability button */}
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    startIcon={<CalendarMonthIcon />}
+                                    onClick={() => setAvailabilityOpen(true)}
+                                >
+                                    My Availability
+                                </Button>
+                            </Box>
+
+                            {/* logout button - on the right */}
+                            <Button
+                                data-testid="logout-btn"
+                                variant="outlined"
+                                color="primary"
+                                startIcon={<LogoutIcon />}
+                                onClick={handleLogout}
+                            >
+                                Logout
+                            </Button>
+                        </Box>
+
+                        {/*  Metric Cards  */}
                         <Grid
                             container
                             spacing={3}
-                            sx={{ mb: 4 }}
+                            sx={{ flex: 1 }}
                         >
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <MetricCard
@@ -582,6 +658,12 @@ export const StaffDashboard = () => {
                         </Card>
                     </Box>
                 </Box>
+                {/* Availability Modal */}
+                <AvailabilityModal
+                    open={availabilityOpen}
+                    onClose={() => setAvailabilityOpen(false)}
+                    staffId={staffId ?? ""}
+                />
             </ThemeProvider>
         </Box>
     );

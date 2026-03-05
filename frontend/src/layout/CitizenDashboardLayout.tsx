@@ -92,6 +92,7 @@ export const UserDashboard = () => {
       skip: !userId,
     },
   );
+  
   const [deleteCase] = useDeleteCaseMutation();
 
   // Derived data
