@@ -1,9 +1,11 @@
+using Allure.NUnit;
 using Newtonsoft.Json.Serialization;
 using RestAssured.Logging;
 using RestAssured.Request.Builders;
 
 namespace API.Base;
 
+[AllureNUnit]
 public abstract class BaseTest
 {
     protected RequestSpecification _requestSpecification;
