@@ -150,3 +150,8 @@ vite.config.ts.timestamp-*
 [Rr]elease/
 x64/
 [Bb]in/
+
+# Allure
+
+allure-report/
+allure-results/
