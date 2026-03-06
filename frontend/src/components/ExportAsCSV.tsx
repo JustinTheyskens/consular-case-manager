@@ -4,6 +4,7 @@ export function exportAsCSV(cases: Case[], csvType : string) {
   const headers = [
     "Reference",
     "Status",
+    "Appointment Type",
     "Appointment Time",
     "Citizen Name",
     "Assigned Staff",
@@ -15,6 +16,7 @@ export function exportAsCSV(cases: Case[], csvType : string) {
   const rows = cases.map((c) => [
     c.reference,
     c.status,
+    c.appointment?.type ?? "",
     c.appointment?.time ?? "",
     c.citizen ? `${c.citizen.firstName} ${c.citizen.lastName}` : "",
     c.assignedStaff

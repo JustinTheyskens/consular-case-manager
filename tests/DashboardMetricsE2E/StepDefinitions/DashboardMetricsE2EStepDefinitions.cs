@@ -5,6 +5,7 @@ using OpenQA.Selenium.Support.UI;
 using Reqnroll;
 using NUnit.Framework;
 using System;
+using System.Runtime.CompilerServices;
 
 [Binding]
 public class DashboardMetricsSteps
@@ -16,7 +17,9 @@ public class DashboardMetricsSteps
     private StaffDashboardPage _staffDashboard;
     private StaffAnalyticsPage _staffAnalytics;
 
-    private string _initialScheduled;
+    private string _initialRenewals;
+    private string _initialTotalCases;
+    private int _initialNumCSVs;
 
     public DashboardMetricsSteps(ScenarioContext context)
     {
@@ -48,7 +51,7 @@ public class DashboardMetricsSteps
     }
 
     [When("I click the View System Analytics button")]
-    public void WhenIClicktheViewSystemAnalyticsButton()
+    public void WhenIClickTheViewSystemAnalyticsButton()
     {
         _staffDashboard.GoToAnalytics();
     }
@@ -56,16 +59,38 @@ public class DashboardMetricsSteps
     [When("I apply a date filter")]
     public void WhenIApplyADateFilter()
     {
-        _initialScheduled = _staffAnalytics.GetScheduled();
+        _initialRenewals = _staffAnalytics.GetRenewals();
+        _initialTotalCases = _staffAnalytics.GetTotalCases();
 
         _staffAnalytics.ApplyFilter();
+    }
+
+    [When("I click the Export Selected Cases button")]
+    public void WhenIClickTheExportSelectedCasesButton()
+    {
+        _initialNumCSVs = _staffAnalytics.CountDownloadedCSVs();
+
+        _staffAnalytics.ClickExport();
     }
 
     [Then("the analytics charts should update")]
     public void ThenTheAnalyticsChartsShouldUpdate()
     {
-        var newScheduled = _staffAnalytics.GetScheduled();
+        var newRenewals = _staffAnalytics.GetRenewals();
+        var newTotalCases = _staffAnalytics.GetTotalCases();
 
-        Assert.That(newScheduled, Is.Not.EqualTo(_initialScheduled));
+        Assert.Multiple(() =>
+        {
+            Assert.That(newRenewals, Is.Not.EqualTo(_initialRenewals));
+            Assert.That(newTotalCases, Is.Not.EqualTo(_initialTotalCases));
+        });
+    }
+
+    [Then("the csv should be downloaded")]
+    public void ThenTheCsvShouldBeDownloaded()
+    {
+        var newNumCSVs = _staffAnalytics.CountDownloadedCSVs();
+
+        Assert.That(newNumCSVs, Is.Not.EqualTo(_initialNumCSVs));
     }
 }

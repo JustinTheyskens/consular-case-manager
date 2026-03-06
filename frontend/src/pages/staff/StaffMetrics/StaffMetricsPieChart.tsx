@@ -98,7 +98,7 @@ export default function StaffMetricsPieChart({ cases }: Props) {
                                 onClick={() => exportAsCSV(cases, "current_cases")}
                                 sx={{ height: "fit-content" }}
                             >
-                                Export CSV
+                                Export Current Cases
                             </Button>
                         </Box>
                     </Box>

@@ -2,17 +2,28 @@ namespace DashboardMetricsE2E;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.IO;
+using System.Threading;
 
 public class StaffAnalyticsPage : BasePage
 {
     public StaffAnalyticsPage(IWebDriver driver) : base(driver) {}
 
-    public string GetScheduled()
+    public string GetRenewals()
     {
-        var Scheduled =
-            WaitForElement(By.XPath("//h6[text()='Scheduled']/following-sibling::h6")).Text;
+        var Renewals =
+            WaitForElement(By.XPath("//h6[text()='Total Renewals']/following-sibling::h6")).Text;
             
-        return Scheduled;
+        return Renewals;
+    }
+
+    public string GetTotalCases()
+    {
+        var TotalCases =
+            WaitForElement(By.XPath("//h6[contains(text(),'Cases History')]")).Text;
+            
+        return TotalCases;
     }
 
     public void ApplyFilter()
@@ -40,5 +51,25 @@ public class StaffAnalyticsPage : BasePage
         var endYear = WaitForElement(By.XPath("//span[@aria-label='Year' and @data-range-position='end']"));
         endYear.Click();
         endYear.SendKeys("2026");
+    }
+
+    public void ClickExport()
+    {
+        var exportButton = 
+            WaitForElement(By.XPath("//button[normalize-space()='Export Selected Cases']"));
+
+        exportButton.Click();
+
+        Thread.Sleep(2000);
+    }
+
+    public int CountDownloadedCSVs()
+    {
+        string downloadPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Downloads"
+        );
+
+        return Directory.GetFiles(downloadPath, "*.csv").Length;
     }
 }
