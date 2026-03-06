@@ -68,4 +68,31 @@ public class DashboardTests
 
         driver.FindElement(By.CssSelector("[data-testid='appointment-card-first-time-passport']")).Click();
     }
+
+    [Test]
+    [Category("Dashboard")]
+    public void User_Can_Book_Appointment_For_Passport_Renewal()
+    {
+        UserLogin();
+
+        driver.FindElement(By.CssSelector("[data-testid='appointment-card-passport-renewal']")).Click();
+    }
+
+    [Test]
+    [Category("Dashboard")]
+    public void User_Can_Book_Appointment_For_Lost_Or_Stolen_Passport()
+    {
+        UserLogin();
+
+        driver.FindElement(By.CssSelector("[data-testid='appointment-card-lost-or-stolen-passport']")).Click();
+    }
+
+    [Test]
+    [Category("Dashboard")]
+    public void User_Can_Book_Appointment_For_Emergency_Travel_Document()
+    {
+        UserLogin();
+
+        driver.FindElement(By.CssSelector("[data-testid='appointment-card-emergency-travel-document']")).Click();
+    }
 }
