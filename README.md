@@ -310,7 +310,6 @@ Enterprise Full Stack Developer Program
 | Justin Theyskens | [@JustinTheyskens](https://github.com/JustinTheyskens) |
 | Gavin Scheidler | [@GavinScheidler](https://github.com/GavinScheidler) |
 | Jason Seguin | [@jasonseguin-dev](https://github.com/jasonseguin-dev) |
-| J. Sanchez | [@JSanchez009](https://github.com/JSanchez009) |
 
 # System Architecture
 
