@@ -49,6 +49,10 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
     countsByDay[dateKey]++;
     cTotal++;
 
+    if (c.status == "Cancelled") {
+      cNoShowOrCancel++;
+    }
+
     switch (c.appointment?.type) {
       case "Renewal":
       case "passport-renewal":
@@ -66,10 +70,6 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
       case "passport-lost":
       case "passport-stolen":
         cLostOrStolen++;
-        break;
-      case "No Show/Cancel":
-      case "Cancelled":
-        cNoShowOrCancel++;
         break;
     }
   });
@@ -129,9 +129,9 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
                   />
                 </Grid>
 
-                <Grid size={6}>
+                <Grid size={12}>
                   <MetricCard
-                    label="Total No Show or Cancel"
+                    label="Total No Show or Cancel out of all Cases"
                     value={cNoShowOrCancel}
                   />
                 </Grid>
