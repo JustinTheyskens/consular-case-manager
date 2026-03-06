@@ -18,6 +18,7 @@ public class DashboardMetricsSteps
     private StaffAnalyticsPage _staffAnalytics;
 
     private string _initialRenewals;
+    private string _initialNoShowsAndCancels;
     private string _initialTotalCases;
     private int _initialNumCSVs;
 
@@ -47,7 +48,7 @@ public class DashboardMetricsSteps
     [When("I enter valid staff credentials")]
     public void WhenIEnterValidStaffCredentials()
     {
-        _staffLogin.Login("chuckfinley@email.com", "MemeBaseAlpha123");
+        _staffLogin.Login("jason.patel.staff@example.com", "password10");
     }
 
     [When("I click the View System Analytics button")]
@@ -60,6 +61,7 @@ public class DashboardMetricsSteps
     public void WhenIApplyADateFilter()
     {
         _initialRenewals = _staffAnalytics.GetRenewals();
+        _initialNoShowsAndCancels = _staffAnalytics.GetNoShowsAndCancels();
         _initialTotalCases = _staffAnalytics.GetTotalCases();
 
         _staffAnalytics.ApplyFilter();
@@ -77,11 +79,13 @@ public class DashboardMetricsSteps
     public void ThenTheAnalyticsChartsShouldUpdate()
     {
         var newRenewals = _staffAnalytics.GetRenewals();
+        var newNoShowsAndCancels = _staffAnalytics.GetNoShowsAndCancels();
         var newTotalCases = _staffAnalytics.GetTotalCases();
 
         Assert.Multiple(() =>
         {
             Assert.That(newRenewals, Is.Not.EqualTo(_initialRenewals));
+            Assert.That(newNoShowsAndCancels, Is.Not.EqualTo(_initialNoShowsAndCancels));
             Assert.That(newTotalCases, Is.Not.EqualTo(_initialTotalCases));
         });
     }
