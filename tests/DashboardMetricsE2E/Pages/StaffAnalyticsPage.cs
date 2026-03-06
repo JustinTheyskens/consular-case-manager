@@ -18,6 +18,14 @@ public class StaffAnalyticsPage : BasePage
         return Renewals;
     }
 
+    public string GetNoShowsAndCancels()
+    {
+        var NoShowsAndCancels =
+            WaitForElement(By.XPath("//h6[text()='Total No Show or Cancel out of all Cases']/following-sibling::h6")).Text;
+            
+        return NoShowsAndCancels;
+    }
+
     public string GetTotalCases()
     {
         var TotalCases =
@@ -34,7 +42,7 @@ public class StaffAnalyticsPage : BasePage
 
         var startDay = WaitForElement(By.XPath("//span[@aria-label='Day' and @data-range-position='start']"));
         startDay.Click();
-        startDay.SendKeys("05");
+        startDay.SendKeys("06");
 
         var startYear = WaitForElement(By.XPath("//span[@aria-label='Year' and @data-range-position='start']"));
         startYear.Click();
