@@ -142,7 +142,7 @@ export default function StaffMetricsTimeChart({ cases }: Props) {
                   variant="contained"
                   onClick={() => exportAsCSV(cases, "case_history")}
                 >
-                  Export CSV
+                  Export Selected Cases
                 </Button>
               </Box>
             </Box>

@@ -5,4 +5,6 @@ Feature: Dashboard Metrics E2E
         And I enter valid staff credentials
         And I click the View System Analytics button
         And I apply a date filter
+        And I click the Export Selected Cases button
         Then the analytics charts should update
+        And the csv should be downloaded
